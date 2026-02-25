@@ -1,0 +1,75 @@
+.hero {
+    height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920') center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: $white;
+
+    .hero-content {
+        h1 {
+            font-size: clamp(2rem, 8vw, 4rem);
+            letter-spacing: 4px;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: $accent-orange;
+            color: $white;
+            padding: 1rem 2.5rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: $transition;
+            display: inline-block;
+
+            &:hover {
+                background: darken($accent-orange, 10%);
+                transform: scale(1.05);
+            }
+        }
+    }
+}
+
+.login-section {
+    padding: 4rem 1rem;
+    
+    .login-form {
+        background: $white;
+        max-width: 450px;
+        margin: 0 auto;
+        padding: 3rem;
+        border-radius: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+
+        h2 { margin-bottom: 2rem; color: $dark-grey; text-align: center; }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            label { display: block; margin-bottom: .5rem; font-weight: 600; }
+            input {
+                width: 100%;
+                padding: 0.8rem;
+                border: 2px solid $light-grey;
+                border-radius: 6px;
+                outline: none;
+                &:focus { border-color: $primary-green; }
+            }
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 1rem;
+            background: $primary-green;
+            color: $white;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            &:hover { background: darken($primary-green, 5%); }
+        }
+    }
+}
