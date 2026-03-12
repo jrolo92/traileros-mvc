@@ -12,10 +12,17 @@ class Carrera extends Controller {
     */
     function render() {
         sec_session_start();
+<<<<<<< HEAD
         // $this->requireLogin();
 
         // Capa gestión rol de usuario
         // $this->requirePrivilege($GLOBALS['carrera']['render']);
+=======
+        $this->requireLogin();
+
+        // Capa gestión rol de usuario
+        $this->requirePrivilege($GLOBALS['carrera']['render']);
+>>>>>>> d433a5ac32231aef6a3724f097bc097c226c63ef
 
         if(empty($_SESSION['csrf_token'])){
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -177,8 +184,13 @@ class Carrera extends Controller {
     */
     public function show($params) {
         sec_session_start();
+<<<<<<< HEAD
         // $this->requireLogin();
         // $this->requirePrivilege($GLOBALS['carrera']['show']);
+=======
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['carrera']['show']);
+>>>>>>> d433a5ac32231aef6a3724f097bc097c226c63ef
 
         $id = (int) $params[0];
         $this->view->carrera = $this->model->read($id);
