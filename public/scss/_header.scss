@@ -1,0 +1,78 @@
+.main-header {
+    background-color: $header-bg;
+    color: $header-text;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    padding: 0 2rem;
+}
+
+.header-container {
+    width: 100%;
+    margin-left: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    cursor: pointer;
+
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+
+        
+
+        a {
+            color: #fff;
+            text-decoration: none;
+
+            i {
+            font-size: 1.8rem;
+            color: $header-text; 
+        }
+        }
+    }
+}
+
+.header-right {
+    .btn-login-header {
+        text-decoration: none;
+        color: $header-text;
+        border: 1px solid rgba(255,255,255,0.3);
+        padding: 8px 20px;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: $white;
+            color: $header-bg;
+            border-color: $white;
+        }
+    }
+
+    .btn-user {
+        color: $white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        
+        i { color: $accent; }
+    }
+}
+
+// Ajuste para que el contenido no se pegue al header
+.content-wrapper {
+    padding-top: 0; 
+}

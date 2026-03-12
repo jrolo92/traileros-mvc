@@ -1,0 +1,30 @@
+// Colores
+$primary-green: #2d5a27;
+$dark-grey: #1a1a1a;
+$light-grey: #f4f4f4;
+$white: #ffffff;
+
+// Variables para el estilo minimalista
+$header-bg: #111;
+$header-text: #fff;
+$accent: #ff6b00;
+
+// Menú lateral
+$sidebar-width: 320px;
+$transition: all 0.3s ease;
+
+// Fuente
+$font-main: 'Inter', sans-serif;
+
+// Reset
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: $font-main;
+}
+
+body {
+    background-color: $light-grey;
+    overflow-x: hidden;
+}

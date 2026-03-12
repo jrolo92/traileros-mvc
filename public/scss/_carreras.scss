@@ -1,0 +1,177 @@
+// --- Contenedor Principal ---
+.carreras-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+// --- Toolbar: Buscador + Select ---
+.toolbar {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    
+    .search-box {
+        flex: 3;
+        position: relative;
+        input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            font-size: 1rem;
+            &:focus { outline: 2px solid $primary-green; border-color: transparent; }
+        }
+        i { position: absolute; left: 15px; top: 15px; color: #888; }
+    }
+
+    .filter-box {
+        flex: 1;
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+        }
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+    }
+}
+
+// --- Grid de Carreras (2 columnas) ---
+.carreras-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // Dos columnas iguales
+    gap: 25px; // Espacio entre tarjetas
+    
+    @media (max-width: 1024px) {
+        // En tablets y pantallas no muy anchas, pasamos a 1 columna
+        grid-template-columns: 1fr;
+    }
+}
+
+// --- Card Horizontal Estilizada ---
+.carrera-card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover { 
+        transform: translateY(-5px); 
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+
+    .card-horizontal {
+        display: flex; 
+        height: 200px;
+
+        @media (max-width: 480px) {
+            flex-direction: column; 
+            height: auto;
+        }
+    }
+
+    .card-img-container {
+        flex: 0 0 40%; // Ancho de la imagen dentro de la card
+        background-size: cover;
+        background-position: center;
+        position: relative;
+
+        .dificultad-tag {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 4px 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            
+            &.alta { background: #e74c3c; }
+            &.media { background: #f39c12; }
+            &.baja { background: #2ecc71; }
+        }
+
+        @media (max-width: 480px) {
+            height: 150px;
+            width: 100%;
+        }
+    }
+
+    .card-info {
+        flex: 1;
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        h3 { 
+            color: $primary-green; 
+            margin-bottom: 5px; 
+            font-size: 1.2rem;
+        }
+        
+        .ubicacion { 
+            color: #666; 
+            font-size: 0.85rem; 
+            margin-bottom: 10px;
+        }
+
+        .tech-specs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            
+            .spec {
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                color: #444;
+                font-size: 0.8rem;
+                i { color: $primary-green; } // Cambiado de naranja a tu verde
+            }
+        }
+
+        .organizador {
+            font-size: 0.75rem;
+            color: #888;
+            border-top: 1px solid #eee;
+            padding-top: 8px;
+            strong { color: #444; }
+        }
+    }
+}
+
+// --- Botón flotante (Estilo FAB) ---
+.btn-float-add {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: $primary-green; // Ahora es verde para ser coherente
+    color: $white;
+    padding: 15px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: $transition;
+    
+    &:hover { 
+        background: darken($primary-green, 5%); 
+        transform: scale(1.05);
+    }
+}

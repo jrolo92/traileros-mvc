@@ -1,0 +1,33 @@
+.footer {
+    background-color: $light-grey; 
+    border-top: 1px solid #eee;
+    padding: 2rem 0; 
+    margin-top: 4rem;
+    position: relative; 
+
+    .container {
+        display: flex;
+        flex-direction: column; // Apilamos los elementos
+        justify-content: center; // Centrado vertical
+        align-items: center;     // Centrado horizontal
+        gap: 8px;            
+        color: $dark-grey;
+    }
+
+    .text-muted {
+        font-size: 0.85rem;
+        font-weight: 400;
+        text-align: center;
+        
+        strong {
+            font-weight: 600;
+            margin-left: 4px;
+        }
+    }
+
+    .version-tag {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+}
