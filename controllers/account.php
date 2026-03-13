@@ -6,6 +6,11 @@ class Account extends Controller
     {
 
         parent::__construct();
+        // Iniciamos sesión una sola vez para todos los métodos de este controlador
+        if (session_status() == PHP_SESSION_NONE) {
+            sec_session_start();
+        }
+
     }
 
     /*
@@ -18,7 +23,7 @@ class Account extends Controller
     public function render()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -71,7 +76,7 @@ class Account extends Controller
     public function edit()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -147,7 +152,7 @@ class Account extends Controller
     public function update()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // comprobar si hay usuario logueado
         $this->requireLogin();
@@ -232,7 +237,7 @@ class Account extends Controller
     public function password()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -295,7 +300,7 @@ class Account extends Controller
     public function update_password()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // comprobar si hay usuario logueado
         $this->requireLogin();
@@ -367,7 +372,7 @@ class Account extends Controller
     public function delete()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -392,7 +397,7 @@ class Account extends Controller
     public function delete_confirmed()
     {
         // inicio o continuo la sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -412,7 +417,7 @@ class Account extends Controller
         setcookie(session_name(), '', time() - 3600);
 
         // vuelvo a abrir sesión
-        sec_session_start();
+        // sec_session_start(); 
 
         // Genero mensaje de éxito
         $_SESSION['notify'] = 'Cuenta usuario eliminada correctamente';

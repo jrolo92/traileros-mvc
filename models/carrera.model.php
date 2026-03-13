@@ -40,6 +40,38 @@ class carreraModel extends Model {
     }
 
     /*
+        Método: getProximas()
+        Descripción: Devuelve las 4 próximas carreras ordenadas por fecha mas cercana 
+        a partir de la fecha actual.
+    */
+    public function getProximas() {
+        $items = [];
+        try {
+            // Forzamos la obtención de la conexión
+            $conexion = $this->db->connect(); 
+            
+            // Usamos una consulta simple primero para asegurar resultados
+            $sql = "SELECT * FROM eventos 
+                    WHERE fecha >= CURDATE() 
+                    ORDER BY fecha ASC 
+                    LIMIT 4";
+            
+            $query = $conexion->query($sql);
+
+            if ($query) {
+                while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+                    $items[] = $row;
+                }
+            }
+            
+            return $items;
+
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /*
         Método: create(classCarrera $carrera)
         Descripción: Inserta un nuevo evento
     */
@@ -77,7 +109,13 @@ class carreraModel extends Model {
     */
     public function read(int $id) {
         try {
-            $sql = "SELECT * FROM Eventos WHERE id = :id LIMIT 1";
+            $sql = "SELECT 
+                    e.*, 
+                    u.name AS organizador 
+                FROM Eventos e
+                INNER JOIN Users AS u ON e.organizador_id = u.id
+                WHERE e.id = :id 
+                LIMIT 1";
             
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
@@ -156,7 +194,14 @@ class carreraModel extends Model {
     public function search(string $term) {
         try {
             $sql = "SELECT 
-                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad,
+                        e.id, 
+                        e.nombre, 
+                        e.fecha, 
+                        e.ubicacion, 
+                        e.distancia, 
+                        e.desnivel, 
+                        e.dificultad, 
+                        e.imagenUrl,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
@@ -196,7 +241,7 @@ class carreraModel extends Model {
 
         try {
             $sql = "SELECT 
-                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad,
+                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad, e.imagenUrl,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id

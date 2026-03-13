@@ -12,7 +12,10 @@
         function __construct() {
 
             parent::__construct();
-
+            // Iniciamos sesión una sola vez para todos los métodos de este controlador
+            if (session_status() == PHP_SESSION_NONE) {
+                sec_session_start();
+            }
         }
 
         /*
@@ -23,7 +26,7 @@
         function render() {
 
         // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Capa de validación de sesión
             // Si el usuario no está autenticado
@@ -60,7 +63,7 @@
             Descripción: Muestra el formulario para crear un nuevo usuario
         */
         function new() {
-            sec_session_start();
+            // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['new']);
 
@@ -92,7 +95,7 @@
             Descripción: Recibe datos para insertar nuevo usuario y su rol
         */
         public function create() {
-            sec_session_start();
+            // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['create']);
 
@@ -157,7 +160,7 @@
             Método: edit
         */
         public function edit($params) {
-            sec_session_start();
+            // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['edit']);
 
@@ -191,7 +194,7 @@
             Método: update
         */
         public function update($params) {
-            sec_session_start();
+            // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['update']);
 
@@ -258,7 +261,7 @@
             Método: delete
         */
         public function delete($params) {
-            sec_session_start();
+            // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['delete']);
 
@@ -289,7 +292,7 @@
         public function show($params) {
 
             // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Capa de validación de sesión
             $this->requireLogin();
@@ -329,7 +332,7 @@
         public function search() {
 
             // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Capa de validación de sesión
             $this->requireLogin();
@@ -361,7 +364,7 @@
         public function order($params) {
 
             // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Capa de validación de sesión
             $this->requireLogin();

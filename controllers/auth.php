@@ -9,7 +9,10 @@
         function __construct() {
 
             parent ::__construct(); 
-            
+            // Iniciamos sesión una sola vez para todos los métodos de este controlador
+            if (session_status() == PHP_SESSION_NONE) {
+                sec_session_start();
+            }
         }
 
         /*
@@ -23,7 +26,7 @@
         function login() {
 
             // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Generar token CSRF:
             if(empty($_SESSION['csrf_token'])){
@@ -84,7 +87,7 @@
        public function validate_login() {
 
         // Inicio o continúo sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -170,7 +173,7 @@
         $_SESSION['notify'] = "Usuario ". $user->name. " ha iniciado sesión.";
 
         // Redirigir a la vista de login
-        header('Location: ' . URL . 'carrera');
+        header('Location: ' . URL . 'main');
         exit();
 
     }   
@@ -186,7 +189,7 @@
         function register() {
 
             // Iniciar o continuar sesión
-            sec_session_start();
+            // sec_session_start();
 
             // Generar token CSRF:
             if(empty($_SESSION['csrf_token'])){
@@ -255,7 +258,7 @@
        public function validate_register() {
 
         // Inicio o continúo sesión
-        sec_session_start();
+        // sec_session_start();
 
         // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -353,7 +356,7 @@
 
     public function logout() {
         // 1. Iniciar o continuar sesión
-        sec_session_start();
+        // sec_session_start();
 
         // 2. Terminar la sesión
         sec_session_destroy();

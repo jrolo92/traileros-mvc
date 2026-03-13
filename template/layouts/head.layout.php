@@ -4,4 +4,3 @@
     <link rel="stylesheet" href="<?= URL ?>public/css/style.css">
 	<!-- Cargar iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	<script src="public/js/main.js" defer></script>

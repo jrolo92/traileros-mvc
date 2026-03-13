@@ -8,7 +8,7 @@
 
 <body>
 
-    <?php require_once("template/partials/menu.auth.partial.php") ?>
+    <?php require_once("template/partials/header.partial.php") ?>
 
     <div class="container">
         <br><br><br><br>
@@ -127,8 +127,9 @@
         </main>
     </div>
 
-    <?php require_once("template/partials/footer.partial.php") ?>
-    <?php require_once("template/layouts/javascript.layout.php") ?>
+    <footer>
+        <?php require_once 'template/partials/footer.partial.php' ?>
+    </footer>
 
 </body>
 </html>

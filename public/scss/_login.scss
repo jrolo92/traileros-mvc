@@ -1,0 +1,142 @@
+// Variables (asegúrate de que coincidan con las tuyas)
+$card-radius: 15px;
+
+.login-page {
+    min-height: calc(100vh - 160px); // Ajuste para el header y el footer
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f4f7f6;
+    // padding: 20px;
+}
+
+.login-card {
+    display: flex; // <--- ESTO pone la imagen al lado del formulario
+    width: 100%;
+    max-width: 950px;
+    background: #fff;
+    border-radius: $card-radius;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    min-height: 550px;
+
+    // Lado de la imagen
+    .login-visual {
+        flex: 1.1; // Un poco más ancho que el formulario
+        background: linear-gradient(rgba($header-bg, 0.5), rgba($header-bg, 0.5)), 
+                    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        padding: 40px;
+
+        .visual-content {
+            text-align: center;
+            i { font-size: 4rem; margin-bottom: 1rem; }
+            h1 { font-weight: 900; letter-spacing: 5px; margin: 0; }
+            p { opacity: 0.8; font-weight: 300; margin-top: 10px; }
+        }
+    }
+
+    // Lado del formulario
+    .login-content {
+        flex: 1; // Proporción del formulario
+        padding: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .login-header h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: $header-bg;
+            margin-bottom: 30px;
+        }
+    }
+}
+
+// Estilos de los elementos del formulario
+.login-form {
+    .input-group {
+        margin-bottom: 25px; // Espacio entre Email y Password
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            transition: border-color 0.3s;
+
+            &:focus {
+                border-color: $primary-green;
+                outline: none;
+            }
+        }
+    }
+}
+
+.form-actions-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+
+    .forgot-link {
+        color: $primary-green;
+        text-decoration: none;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+.form-buttons {
+    display: flex;
+    gap: 15px;
+
+    button, .btn-register {
+        flex: 1;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.2s;
+
+        &:active { transform: scale(0.98); }
+    }
+
+    .btn-submit {
+        background: $primary-green;
+        color: white;
+        border: none;
+    }
+
+    .btn-register {
+        background: #f8f9fa;
+        color: #555;
+        border: 1px solid #ddd;
+    }
+}
+
+// Responsive: Móvil
+@media (max-width: 768px) {
+    .login-card {
+        flex-direction: column; // En móvil, uno arriba del otro
+        
+        .login-visual {
+            flex: 0 0 180px; // Altura fija para la imagen en móvil
+            padding: 20px;
+        }
+    }
+}

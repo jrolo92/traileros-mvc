@@ -1,9 +1,9 @@
-<!doctype html>
-<html lang="es">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
-    <title><?= $this->title ?> </title>
+    <title><?= $this->title . ": " . $this->carrera['nombre'] ?> </title>
+    <script src="<?= URL ?>public/js/modal-image.js" defer></script>
 </head>
 
 <body>
@@ -14,7 +14,7 @@
             <div class="carrera-detail-grid">
                 
                 <div class="carrera-media">
-                    <img src="<?= URL . $this->carrera['imagen_url'] ?>" alt="<?= $this->carrera['nombre'] ?>" class="img-fluid detail-img">
+                    <img src="<?= URL . $this->carrera['imagenUrl'] ?>" alt="<?= $this->carrera['nombre'] ?>" class="img-fluid detail-img">
                 </div>
 
                 <div class="carrera-info-panel">
@@ -91,8 +91,17 @@
         </div>
     </main>
 
-    <?php require_once("template/partials/footer.partial.php") ?>
-    <?php require_once("template/layouts/javascript.layout.php") ?>
+    <div id="imageModal" class="modal-lightbox">
+        <span class="close-modal">&times;</span>
+        
+        <img class="modal-content" id="modalImage">
+        
+        <div id="modalCaption"></div>
+    </div>
+
+    <footer class="footer">
+        <?php require_once("template/partials/footer.partial.php") ?> 
+    </footer>
 
 </body>
 </html>

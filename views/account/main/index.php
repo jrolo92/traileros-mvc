@@ -8,7 +8,7 @@
 
 <body>
     <!-- Menú fijo superior -->
-    <?php require_once 'template/partials/menu.auth.partial.php' ?>
+    <?php require_once 'template/partials/header.partial.php' ?>
 
     <!-- Capa Principal -->
     <div class="container">
@@ -70,10 +70,10 @@
 
     </div>
 
-    <!-- /.container -->
-
-    <?php require_once 'template/partials/footer.partial.php' ?>
-    <?php require_once 'template/layouts/javascript.layout.php' ?>
+    <footer>
+        <?php require_once 'template/partials/footer.partial.php' ?>
+    </footer>
+    
 
 </body>
 

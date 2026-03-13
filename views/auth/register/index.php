@@ -1,133 +1,85 @@
-<!doctype html>
-<html lang="es">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?></title>
 </head>
-
+   
 <body>
+    <?php require_once 'template/partials/header.partial.php' ?>
 
-    <!-- Menú fijo superior -->
-    <?php require_once 'template/partials/menu.principal.partial.php' ?>
-
-    <!-- Capa Principal -->
-    <div class="container">
-        <br><br><br><br><br>
-
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-
-                <?php require_once("template/partials/mensaje.partial.php") ?>
-                <?php require_once("template/partials/error.partial.php") ?>
-
-                <div class="card">
-                    <div class="card-header">REGISTRO</div>
-
-                    <div class="card-body">
-
-                        <form method="POST" action="<?= URL ?>auth/validate_register">
-
-                            <!-- token csrf -->
-                            <input type="hidden" name="csrf_token"
-                                   value="<?= $_SESSION['csrf_token'] ?>">
-
-                            <!-- Nombre -->
-                            <div class="mb-3 row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Nombre</label>
-
-                                <div class="col-md-6">
-                                    <input id="name" type="text"
-                                           class="form-control <?= isset($this->errors['name']) ? 'is-invalid' : '' ?>"
-                                           name="name"
-                                           value="<?= htmlspecialchars($this->name) ?>"
-                                           required autofocus>
-
-                                    <span class="form-text text-danger">
-                                        <?= $this->errors['name'] ?? '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Email -->
-                            <div class="mb-3 row">
-                                <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
-
-                                <div class="col-md-6">
-                                    <input id="email" type="email"
-                                           class="form-control <?= isset($this->errors['email']) ? 'is-invalid' : '' ?>"
-                                           name="email"
-                                           value="<?= htmlspecialchars($this->email) ?>"
-                                           required>
-
-                                    <span class="form-text text-danger">
-                                        <?= $this->errors['email'] ?? '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Password -->
-                            <div class="mb-3 row">
-                                <label for="pass" class="col-md-4 col-form-label text-md-right">Contraseña</label>
-
-                                <div class="col-md-6">
-                                    <input id="pass" type="password"
-                                           class="form-control <?= isset($this->errors['password']) ? 'is-invalid' : '' ?>"
-                                           name="password"
-                                           value="<?= htmlspecialchars($this->password) ?>"
-                                           required>
-
-                                    <span class="form-text text-danger">
-                                        <?= $this->errors['password'] ?? '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Confirmación Password -->
-                            <div class="mb-3 row">
-                                <label for="password2" class="col-md-4 col-form-label text-md-right">Repetir contraseña</label>
-
-                                <div class="col-md-6">
-                                    <input id="password2" type="password"
-                                           class="form-control <?= isset($this->errors['password2']) ? 'is-invalid' : '' ?>"
-                                           name="password2"
-                                           value="<?= htmlspecialchars($this->password2) ?>"
-                                           required>
-
-                                    <span class="form-text text-danger">
-                                        <?= $this->errors['password2'] ?? '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Botones de acción -->
-                            <div class="mb-3 row mb-0">
-                                <div class="col-md-8 offset-md-4">
-
-                                    <a class="btn btn-secondary" href="<?= URL ?>index" role="button">
-                                        Volver
-                                    </a>
-
-                                    <button type="submit" class="btn btn-primary">
-                                        Crear cuenta
-                                    </button>
-
-                                </div>
-                            </div>
-
-                        </form>
-
-                    </div>
+    <main class="login-page">
+        
+        <div class="login-card">
+            
+            <section class="login-visual">
+                <div class="visual-content">
+                    <i class="fas fa-user-plus"></i>
+                    <h1>ÚNETE</h1>
+                    <p>Forma parte de la mayor comunidad de Trail Running</p>
                 </div>
+            </section>
 
-            </div>
+            <section class="login-content">
+                
+                <header class="login-header">
+                    <h2>Registro</h2>
+                    <?php require_once("template/partials/mensaje.partial.php") ?>
+                    <?php require_once("template/partials/error.partial.php") ?>
+                </header>
+
+                <form method="POST" action="<?= URL ?>auth/validate_register" class="login-form">
+                    
+                    <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+                    <div class="input-group">
+                        <label for="name">Nombre</label>
+                        <input id="name" type="text" name="name" 
+                               class="<?= isset($this->errors['name']) ? 'is-invalid' : '' ?>"
+                               value="<?= htmlspecialchars($this->name) ?>" required autofocus>
+                        <small class="text-danger"><?= $this->errors['name'] ?? '' ?></small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="email">Email</label>
+                        <input id="email" type="email" name="email" 
+                               class="<?= isset($this->errors['email']) ? 'is-invalid' : '' ?>"
+                               value="<?= htmlspecialchars($this->email) ?>" required>
+                        <small class="text-danger"><?= $this->errors['email'] ?? '' ?></small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="pass">Contraseña</label>
+                        <input id="pass" type="password" name="password" 
+                               class="<?= isset($this->errors['password']) ? 'is-invalid' : '' ?>"
+                               required>
+                        <small class="text-danger"><?= $this->errors['password'] ?? '' ?></small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="password2">Repetir contraseña</label>
+                        <input id="password2" type="password" name="password2" 
+                               class="<?= isset($this->errors['password2']) ? 'is-invalid' : '' ?>"
+                               required>
+                        <small class="text-danger"><?= $this->errors['password2'] ?? '' ?></small>
+                    </div>
+
+                    <div class="form-buttons">
+                        <a href="<?= URL ?>auth/login" class="btn-register">Volver</a>
+                        <button type="submit" class="btn-submit">Crear cuenta</button>
+                    </div>
+
+                </form>
+            </section>
         </div>
+    </main>
 
-    </div>
-
-    <?php require_once 'template/partials/footer.partial.php' ?>
-    <?php require_once 'template/layouts/javascript.layout.php' ?>
-
+    <footer class="footer">
+        <?php require_once 'template/partials/footer.partial.php' ?>
+    </footer>
 </body>
 
 </html>
+

@@ -12,37 +12,35 @@
 
 .header-container {
     width: 100%;
-    margin-left: 40px;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; // Logo a un lado, resto al otro
     align-items: center;
 }
 
-.header-left {
-    cursor: pointer;
-    .logo {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 800;
-        font-size: 1.4rem;
-        letter-spacing: 1px;
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 30px; // Espacio entre el menú "Carreras" y el botón de Login/Perfil
 
-        
-
+    .header-nav {
         a {
-            color: #fff;
+            color: rgba($header-text, 0.8);
             text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
 
-            i {
-            font-size: 1.8rem;
-            color: $header-text; 
-        }
+            &:hover, &.active {
+                color: $primary-green;
+            }
+
+            &.active {
+                font-weight: 700;
+                padding-bottom: 4px;
+            }
         }
     }
-}
 
-.header-right {
     .btn-login-header {
         text-decoration: none;
         color: $header-text;
@@ -53,8 +51,8 @@
         transition: all 0.3s ease;
 
         &:hover {
-            background: $white;
-            color: $header-bg;
+            background: $primary-green;
+            color: $header-text;
             border-color: $white;
         }
     }
@@ -67,11 +65,36 @@
         gap: 8px;
         font-weight: 500;
         
-        i { color: $accent; }
+        i { 
+            color: $primary-green; 
+            font-size: 1.3rem;
+        }
     }
 }
 
-// Ajuste para que el contenido no se pegue al header
-.content-wrapper {
-    padding-top: 0; 
+.header-left {
+    transition: transform 0.3s ease;
+    display: inline-block;
+
+    &:hover {
+        // Aumenta un 5% el tamaño
+        transform: scale(1.05);
+    }
+
+    .logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.4rem;
+        color: #fff;
+        text-decoration: none;
+
+        i {
+            font-size: 1.8rem;
+            color: $header-text; 
+
+        }
+        
+    }
 }

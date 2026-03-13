@@ -3,7 +3,11 @@
 class Carrera extends Controller {
 
     function __construct() {
-        parent::__construct(); 
+        parent::__construct();
+        // Iniciamos sesión una sola vez para todos los métodos de este controlador
+        if (session_status() == PHP_SESSION_NONE) {
+            sec_session_start();
+        }
     }
 
     /*
@@ -11,18 +15,11 @@ class Carrera extends Controller {
         Descripción: Renderiza la lista principal de carreras
     */
     function render() {
-        sec_session_start();
-<<<<<<< HEAD
+        // sec_session_start();
         // $this->requireLogin();
 
         // Capa gestión rol de usuario
         // $this->requirePrivilege($GLOBALS['carrera']['render']);
-=======
-        $this->requireLogin();
-
-        // Capa gestión rol de usuario
-        $this->requirePrivilege($GLOBALS['carrera']['render']);
->>>>>>> d433a5ac32231aef6a3724f097bc097c226c63ef
 
         if(empty($_SESSION['csrf_token'])){
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -46,7 +43,7 @@ class Carrera extends Controller {
         Descripción: Muestra el formulario para crear una nueva carrera
     */
     function new() {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['new']);
 
@@ -65,7 +62,7 @@ class Carrera extends Controller {
             $this->view->error = "Errores en el formulario";
         }
 
-        $this->view->title = "Nueva Carrera -Traileros";
+        $this->view->title = "Añadir Evento - Traileros";
 
         $this->view->render('carrera/new/index');
     }
@@ -75,7 +72,7 @@ class Carrera extends Controller {
         Descripción: Procesa el envío del formulario de nueva carrera
     */
     public function create() {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['create']);
 
@@ -121,7 +118,7 @@ class Carrera extends Controller {
         Descripción: Carga datos para editar una carrera existente
     */
     public function edit($params) {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['edit']);
 
@@ -142,7 +139,7 @@ class Carrera extends Controller {
             $this->view->error = "Errores en el formulario";
         }
 
-        $this->view->title = "Editar Carrera";
+        $this->view->title = "Editar Evento - Traileros";
 
         $this->view->render('carrera/edit/index');
     }
@@ -152,7 +149,7 @@ class Carrera extends Controller {
         Descripción: Actualiza los datos de la carrera
     */
     public function update($params) {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['update']);
 
@@ -183,18 +180,18 @@ class Carrera extends Controller {
         Descripción: Muestra detalles de la carrera (Solo lectura)
     */
     public function show($params) {
-        sec_session_start();
-<<<<<<< HEAD
+        // sec_session_start();
         // $this->requireLogin();
         // $this->requirePrivilege($GLOBALS['carrera']['show']);
-=======
-        $this->requireLogin();
-        $this->requirePrivilege($GLOBALS['carrera']['show']);
->>>>>>> d433a5ac32231aef6a3724f097bc097c226c63ef
 
         $id = (int) $params[0];
-        $this->view->carrera = $this->model->read($id);
-        $this->view->title = "Detalles de la Carrera";
+        $carrera = $this->model->read($id);
+        $this->view->carrera = $carrera;
+        if ($carrera && isset($carrera['nombre'])) {
+            $this->view->title = $carrera['nombre'] . " - Traileros";
+        } else {
+            $this->view->title = "Carrera no encontrada";
+        }
         $this->view->render('carrera/show/index');
     }
 
@@ -203,7 +200,7 @@ class Carrera extends Controller {
         Descripción: Elimina un evento
     */
     public function delete($params) {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['delete']);
 
@@ -224,17 +221,17 @@ class Carrera extends Controller {
         Parámetros: $param (id del criterio de ordenación)
     */
     public function order($param) {
-        sec_session_start();
-        $this->requireLogin();
+        // sec_session_start();
+        // $this->requireLogin();
 
         // Capa gestión rol de usuario (usamos el permiso de order)
-        $this->requirePrivilege($GLOBALS['carrera']['order']);
+        // $this->requirePrivilege($GLOBALS['carrera']['order']);
 
         // Recogemos el criterio de ordenación del parámetro
         $criterio = $param[0];
 
         // Título de la página
-        $this->view->title = "Ordenar Carreras - Traileros";
+        $this->view->title = "Explorar Carreras - Traileros";
 
         // Llamamos al método order del modelo
         // El modelo ya tiene la lógica para mapear 1->id, 2->nombre, etc.
@@ -249,11 +246,11 @@ class Carrera extends Controller {
         Descripción: Filtra las carreras según un término de búsqueda
     */
     public function search() {
-        sec_session_start();
-        $this->requireLogin();
+        // sec_session_start();
+        // $this->requireLogin();
 
         // Capa gestión rol de usuario
-        $this->requirePrivilege($GLOBALS['carrera']['search']);
+        // $this->requirePrivilege($GLOBALS['carrera']['search']);
 
         // Validar que el término de búsqueda existe y no está vacío
         if (isset($_GET['term']) && (!empty($_GET['term']))) {
@@ -279,7 +276,7 @@ class Carrera extends Controller {
         Descripción: Permite a un corredor inscribirse en la carrera
     */
     public function inscribir($params) {
-        sec_session_start();
+        // sec_session_start();
         $this->requireLogin();
         
         $evento_id = (int) $params[0];
