@@ -7,89 +7,83 @@
 </head>
 
 <body>
-    <!-- Menú fijo superior -->
-    <?php require_once 'template/partials/menu.auth.partial.php' ?>
+    <?php require_once 'template/partials/header.partial.php'?>
 
-    <!-- Capa Principal -->
-    <div class="container">
-        <br><br><br><br><br>
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <?php require_once("template/partials/mensaje.partial.php") ?>
-                <?php require_once("template/partials/error.partial.php") ?>
-                <div class="card">
-                    <div class="card-header"><?= $this->title ?></div>
-                    <div class="card-header">
-                        <?php require_once("views/account/partials/menu.partial.php") ?>
-                    </div>
-                    <div class="card-body">
-                        <form action="<?= URL ?>account/update?>" method="post">
+    <main class="account-container">
 
-                            <!-- token crsf -->
-                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+        <div class="account-card">
 
-                            <!-- campo name -->
-                            <div class="mb-3 row">
-                                <label for="name" class="col-md-4 col-form-label text-md-right">Name</label>
-                                <div class="col-md-6">
-                                    <input id="name" type="name"
-                                        class="form-control <?= (isset($this->errors['name'])) ? 'is-invalid' : null ?>"
-                                        name="name" value="<?= htmlspecialchars($this->account->name); ?>" required
-                                        autocomplete="name" autofocus>
-                                    <!-- control de errores -->
-                                    <span class="form-text text-danger" role="alert">
-                                        <?= $this->errors['name'] ??= '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- campo email -->
-                            <div class="mb-3 row">
-                                <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
-                                <div class="col-md-6">
-                                    <input id="email" type="email"
-                                        class="form-control <?= (isset($this->errors['email'])) ? 'is-invalid' : null ?>"
-                                        name="email" value="<?= htmlspecialchars($this->account->email); ?>" required
-                                        autocomplete="email" autofocus>
-                                    <!-- control de errores -->
-                                    <span class="form-text text-danger" role="alert">
-                                        <?= $this->errors['email'] ??= '' ?>
-                                    </span>
-                                </div>
-                            </div>
-
-
-                            <!-- campo rol -->
-                            <div class="mb-3 row">
-                                <label class="col-md-4 col-form-label text-md-right">Rol</label>
-                                <div class="col-md-6">
-                                    <input type="text" class="form-control" name="role_name"
-                                        value="<?= htmlspecialchars($_SESSION['role_name']); ?>" disabled>
-                                </div>
-                            </div>
-
-                            <!-- botones de acción -->
-                            <div class="mb-3 row mb-0">
-                                <div class="col-md-8 offset-md-4">
-                                    <a class="btn btn-secondary" href="<?=URL?>account" role="button">Cancelar</a>
-                                    <button type="reset" class="btn btn-secondary" >Reset</button>
-                                    <button type="submit" class="btn btn-primary">Actualizar</button>
-                                </div>
-                            </div>
-                        </form>
+            <header class="account-header">
+                <div class="user-info-main">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <h2><?= $this->title ?></h2>
+                        <p>Actualiza la información de tu cuenta personal</p>
                     </div>
                 </div>
-            </div>
+
+                <nav class="account-menu">
+                    <?php require_once "views/account/partials/menu.partial.php"?>
+                </nav>
+            </header>
+
+            <section class="account-main-content">
+
+                <?php require_once "template/partials/mensaje.partial.php"?>
+                <?php require_once "template/partials/error.partial.php"?>
+
+                <div class="account-content">
+                    <form action="<?= URL ?>account/update" method="post" class="account-form">
+
+                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+                        <div class="form-grid">
+                            <h3 class="form-section-title">Datos personales</h3>
+                            <div class="form-group">
+                                <label for="name">Nombre Completo</label>
+                                <input id="name" type="text" name="name"
+                                       class="<?= (isset($this->errors['name'])) ? 'input-error' : '' ?>"
+                                       value="<?= htmlspecialchars($this->account->name); ?>"
+                                       required autofocus>
+                                <?php if (isset($this->errors['name'])): ?>
+                                    <span class="error-msg" role="alert">
+                                        <?= $this->errors['name'] ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Correo Electrónico</label>
+                                <input id="email" type="email" name="email"
+                                       class="<?= (isset($this->errors['email'])) ? 'input-error' : '' ?>"
+                                       value="<?= htmlspecialchars($this->account->email); ?>"
+                                       required>
+                                <?php if (isset($this->errors['email'])): ?>
+                                    <span class="error-msg" role="alert">
+                                        <?= $this->errors['email'] ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <div class="btns-left">
+                                <a class="btn-account-cancel" href="<?= URL ?>account" role="button">Cancelar</a>
+                            </div>
+                            <button type="submit" class="btn-account-save">
+                                Guardar Cambios
+                            </button>
+                        </div>
+
+                    </form>
+                </div> 
+            </section>
         </div>
+    </main>
 
-
-    </div>
-
-    <!-- /.container -->
-
-    <?php require_once 'template/partials/footer.partial.php' ?>
-    <?php require_once 'template/layouts/javascript.layout.php' ?>
-
+    <footer class="footer">
+        <?php require_once 'template/partials/footer.partial.php'?>
+    </footer>
 </body>
 
 </html>

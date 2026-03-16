@@ -78,6 +78,9 @@ INSERT INTO roles (name, description) VALUES
 ('Organizador', 'Puede crear y gestionar eventos'),
 ('Corredor', 'Puede inscribirse en carreras y ver resultados');
 
+INSERT INTO users (id, name, email, password) 
+VALUES (1, 'Admin', 'admin@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1');
+
 -- Carreras
 INSERT INTO Eventos (id, nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagenUrl, organizador_id)
 VALUES 

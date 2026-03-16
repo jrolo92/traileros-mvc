@@ -17,10 +17,26 @@
             </nav>
 
             <?php if (isset($_SESSION['user_id'])): ?>
-                <a href="<?= URL ?>account" class="btn-user">
-                    <i class="fas fa-user-circle"></i> 
-                    <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'Mi Perfil') ?></span>
-                </a>
+                <div class="user-dropdown">
+                    <button class="btn-user">
+                        <i class="fas fa-user-circle"></i> 
+                        <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'Mi Perfil') ?></span>
+                        <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 5px;"></i>
+                    </button>
+                    
+                    <div class="dropdown-content">
+                        <a href="<?= URL ?>account">
+                            <i class="fas fa-id-card"></i> Mi Perfil
+                        </a>
+                        <a href="<?= URL ?>account/edit">
+                            <i class="fas fa-user-edit"></i> Editar Datos
+                        </a>
+                        <hr>
+                        <a href="<?= URL ?>auth/logout" class="logout-link">
+                            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
             <?php else: ?>
                 <a href="<?= URL ?>auth/login" class="btn-login-header">Iniciar Sesión</a>
             <?php endif; ?>

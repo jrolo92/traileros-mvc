@@ -39,6 +39,8 @@
         </div>
 
         <div class="carreras-grid">
+
+
             <?php foreach ($this->carreras as $carrera): ?>
                 <article class="carrera-card" onclick="window.location='<?php echo URL ?>carrera/show/<?php echo $carrera['id'] ?>'">
                     <div class="card-horizontal">

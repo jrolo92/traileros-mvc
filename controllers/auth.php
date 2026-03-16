@@ -65,7 +65,7 @@
             // Obtengo los datos del  modelo para mostrar en la vista
             
             // Creo la propiedad  title para la vista
-            $this->view->title = "Autenticación de usuarios";
+            $this->view->title = "Iniciar Sesión - Traileros";
 
             // Llama a la vista para renderizar la página
             $this->view->render('auth/login/index');
@@ -234,7 +234,7 @@
             // Obtengo los datos del  modelo para mostrar en la vista
             
             // Creo la propiedad  title para la vista
-            $this->view->title = "Registro de usuarios";
+            $this->view->title = "Registrarse - Traileros";
 
             // Llama a la vista para renderizar la página
             $this->view->render('auth/register/index');

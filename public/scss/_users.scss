@@ -1,0 +1,191 @@
+/* Estilos para la tabla administrativa */
+.admin-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px; // Crea el efecto de filas separadas
+    margin-top: 10px;
+
+    thead th {
+        padding: 12px 15px;
+        color: #777;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #eee;
+    }
+
+    tbody tr {
+        background: #fff;
+        transition: transform 0.2s;
+        
+        &:hover {
+            background-color: #f9fdfb;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+            color: #444;
+        }
+    }
+}
+
+/* Badges de Rol */
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+
+    &.admin { background: #fee2e2; color: #dc2626; }
+    &.organizador { background: #fef3c7; color: #d97706; }
+    &.corredor { background: #ecfdf5; color: #059669; }
+}
+
+/* Botones de acción minimalistas */
+.admin-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+
+        &.view-btn { background: #f0f4f8; color: #2980b9; }
+        &.edit-btn { background: #fff9db; color: #f39c12; }
+        &.delete-btn { background: #fff5f5; color: #e74c3c; }
+
+        &:hover:not(.disabled) {
+            transform: translateY(-2px);
+            filter: brightness(0.9);
+        }
+
+        &.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+    }
+}
+
+.admin-table-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.admin-nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    margin-bottom: 10px;
+    gap: 20px;
+    flex-wrap: wrap;
+
+    .nav-actions-left {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    // Enlaces de navegación
+    .nav-brand-link, .nav-action-link, .nav-dropbtn {
+        text-decoration: none;
+        color: #555;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: color 0.3s;
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &:hover:not(.disabled) {
+            color: $primary-green;
+        }
+        
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    // Buscador Estilizado
+    .nav-search-form {
+        .search-wrapper {
+            display: flex;
+            background: #f4f4f4;
+            border-radius: 20px;
+            padding: 5px 15px;
+            border: 1px solid #eee;
+            transition: all 0.3s;
+
+            &:focus-within {
+                background: #fff;
+                border-color: $primary-green;
+                box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+            }
+
+            input {
+                border: none;
+                background: transparent;
+                padding: 5px;
+                outline: none;
+                font-size: 0.85rem;
+                width: 180px;
+            }
+
+            button {
+                border: none;
+                background: transparent;
+                color: #888;
+                cursor: pointer;
+                &:hover { color: $primary-green; }
+            }
+        }
+    }
+
+    // Estilo básico para el Dropdown
+    .nav-dropdown {
+        position: relative;
+        display: inline-block;
+
+        .nav-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 140px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
+            z-index: 10;
+            border-radius: 8px;
+            overflow: hidden;
+            top: 100%;
+
+            a {
+                color: #444;
+                padding: 10px 15px;
+                text-decoration: none;
+                display: block;
+                font-size: 0.85rem;
+                &:hover { background-color: #f8f9fa; color: $primary-green; }
+            }
+        }
+
+        &:hover .nav-dropdown-content { display: block; }
+    }
+}

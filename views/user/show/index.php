@@ -5,10 +5,9 @@
     <title><?= $this->title ?> </title>
 </head>
 <body>
-    <?php require_once("template/partials/menu.auth.partial.php") ?>
+    <?php require_once("template/partials/header.partial.php") ?>
 
     <div class="container">
-        <br><br><br><br>
         <main>
             <legend>Detalles del Usuario</legend>
             <div class="mb-3">

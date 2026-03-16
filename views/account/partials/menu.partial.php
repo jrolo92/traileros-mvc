@@ -1,20 +1,35 @@
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-    <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link " href="<?= URL ?>account">Mostrar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="<?= URL ?>account/edit">Editar</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="<?= URL ?>account/password">Cambiar Password</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link " href="<?= URL ?>account/delete/<?= $_SESSION['csrf_token'] ?>" onclick="return confirm('Confimar eliminación de su cuenta')">Eliminar</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<ul class="account-nav-list">
+    <li>
+        <a href="<?= URL ?>account" class="<?= ($this->title == 'Mi Cuenta') ? 'active' : '' ?>">
+            <i class="fas fa-id-card"></i> Datos
+        </a>
+    </li>
+    <li>
+        <a href="<?= URL ?>account/inscripciones">
+            <i class="fas fa-running"></i> Mis Carreras
+        </a>
+    </li>
+    <li>
+        <a href="<?= URL ?>account/resultados">
+            <i class="fas fa-trophy"></i> Resultados
+        </a>
+    </li>
+    <li>
+        <a href="<?= URL ?>account/password">
+            <i class="fas fa-key"></i> Seguridad
+        </a>
+    </li>
+    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
+        <li>
+            <a href="<?= URL ?>user" class="<?= (isset($_GET['url']) && strpos($_GET['url'], 'user') !== false) ? 'active' : '' ?>">
+                <i class="fas fa-users-cog"></i> Panel de Usuarios
+            </a>
+        </li>
+    <?php endif; ?>
+    
+    <li>
+        <a href="<?= URL ?>auth/logout">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </a>
+    </li>
+</ul>
