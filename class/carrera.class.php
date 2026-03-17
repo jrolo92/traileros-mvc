@@ -14,7 +14,7 @@ class class_carrera {
     public $desnivel;
     public $dificultad;
     public $descripcion;
-    public $imagenUrl;
+    public $imagen;
     public $organizador_id;
 
     public function __construct(
@@ -26,7 +26,7 @@ class class_carrera {
         $desnivel = null,
         $dificultad = null,
         $descripcion = null,
-        $imagenUrl = null,
+        $imagen = null,
         $organizador_id = null
     ) {
         $this->id = $id;
@@ -37,7 +37,7 @@ class class_carrera {
         $this->desnivel = $desnivel;
         $this->dificultad = $dificultad;
         $this->descripcion = $descripcion;
-        $this->imagenUrl = $imagenUrl;
+        $this->imagen = $imagen;
         $this->organizador_id = $organizador_id;
     }
 }

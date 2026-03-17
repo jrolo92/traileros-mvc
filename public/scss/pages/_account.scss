@@ -116,24 +116,6 @@
     }
 }
 
-.form-actions {
-    border-top: 1px solid #eee;
-    padding-top: 25px;
-    
-    .btn-secondary {
-        display: inline-block;
-        padding: 10px 25px;
-        background: #eee;
-        color: #666;
-        text-decoration: none;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: background 0.2s;
-
-        &:hover { background: #ddd; }
-    }
-}
-
 .account-page {
     background-color: #f8fafb;
     padding: 40px 0;
@@ -187,26 +169,6 @@
     }
 }
 
-.btn-account-delete {
-    background-color: #e74c3c;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    text-decoration: none; 
-    display: inline-flex;       
-    align-items: center;
-    gap: 8px;
-    width: fit-content;
-
-    &:hover {
-        background-color: #c0392b;
-    }
-}
-
 .section-header-flex {
     grid-column: 1 / -1; 
     display: flex;
@@ -222,23 +184,7 @@
     }
 }
 
-.btn-edit-inline {
-    background-color: #f0f7f4; // Un verde muy suave
-    color: $primary-green;
-    padding: 6px 12px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    border: 1px solid rgba($primary-green, 0.2);
 
-    &:hover {
-        background-color: $primary-green;
-        color: white;
-        transform: translateY(-2px);
-    }
-}
 
 .danger-zone-inline {
     grid-column: 1 / -1;
@@ -363,52 +309,6 @@
     .btns-left {
         display: flex;
         gap: 10px;
-    }
-
-    // Estilo base para botones
-    .btn-account-cancel, 
-    .btn-account-save {
-        padding: 10px 25px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        text-decoration: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    // Botón Cancelar (Gris)
-    .btn-account-cancel {
-        background-color: #f1f3f5;
-        color: #495057;
-        border: 1px solid #dee2e6;
-
-        &:hover {
-            background-color: #e9ecef;
-            color: #212529;
-            transform: translateY(-1px);
-        }
-    }
-
-    // Botón Guardar (Verde Principal)
-    .btn-account-save {
-        background-color: $primary-green; // Tu variable
-        color: white;
-        box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
-
-        &:hover {
-            background-color: darken($primary-green, 5%);
-            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
-            transform: translateY(-2px);
-        }
-
-        &:active {
-            transform: translateY(0);
-        }
     }
 }
 

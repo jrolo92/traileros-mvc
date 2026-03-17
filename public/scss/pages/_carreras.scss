@@ -1,11 +1,11 @@
-// --- Contenedor Principal ---
+// Contenedor Principal 
 .carreras-container {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
 
-// --- Toolbar: Buscador + Select ---
+// Toolbar: Buscador + Select
 .carreras-toolbar {
     display: flex;
     justify-content: space-between;
@@ -117,11 +117,11 @@
     }
 }
 
-// --- Grid de Carreras (2 columnas) ---
+// Grid de Carreras (2 columnas)
 .carreras-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); // Dos columnas iguales
-    gap: 25px; // Espacio entre tarjetas
+    gap: 25px;
     
     @media (max-width: 1024px) {
         // En tablets y pantallas no muy anchas, pasamos a 1 columna
@@ -129,7 +129,7 @@
     }
 }
 
-// --- Card Horizontal Estilizada ---
+// tarjeta Horizontal 
 .carrera-card {
     background: #fff;
     border-radius: 15px;
@@ -154,7 +154,7 @@
     }
 
     .card-img-container {
-        flex: 0 0 40%; // Ancho de la imagen dentro de la card
+        flex: 0 0 40%; // Ancho de la imagen dentro de la tarjeta
         background-size: cover;
         background-position: center;
         position: relative;
@@ -202,6 +202,7 @@
 
         .tech-specs {
             display: flex;
+            justify-content: center;
             gap: 15px;
             margin-bottom: 10px;
             flex-wrap: wrap;
@@ -226,26 +227,78 @@
     }
 }
 
-// --- Botón flotante (Estilo FAB) ---
-.btn-float-add {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: $primary-green; // Ahora es verde para ser coherente
-    color: $white;
-    padding: 15px 25px;
-    border-radius: 50px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    z-index: 99;
+.pagination-container {
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: 10px;
-    transition: $transition;
-    
-    &:hover { 
-        background: darken($primary-green, 5%); 
-        transform: scale(1.05);
+    margin: 50px 0px 20px;
+
+    .page-numbers {
+        display: flex;
+        gap: 8px;      
+    }
+
+    // Estilo base para todos los enlaces (números y flechas)
+    .page-link, .page-number {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        background-color: #fff;
+        color: #777; // Gris neutro en lugar de azul
+        border: 1px solid #eee;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    // Estilo específico de las flechas (un poco más redondas o con sombra)
+    .page-link {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%; // Flechas circulares quedan muy minimalistas
+        
+        i {
+            font-size: 0.8rem;
+        }
+
+        &:hover {
+            color: $primary-green;
+            border-color: $primary-green;
+            background-color: rgba($primary-green, 0.05); // Un toque de fondo verde muy suave
+            transform: translateY(-2px);
+        }
+
+        // Estilo para cuando la flecha está desactivada (ej: estás en la pág 1)
+        &.disabled {
+            color: #ccc;
+            border-color: #f5f5f5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+
+    // Estilo de los números
+    .page-number {
+        min-width: 40px;
+        height: 40px;
+        padding: 0 12px;
+        border-radius: 8px;
+
+        
+
+        &.active {
+            background-color: $primary-green;
+            color: white;
+            border-color: $primary-green;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba($primary-green, 0.2);
+        }
+
+        &:hover:not(.active) {
+            border-color: #ddd;
+            color: #333;
+            background-color: #fafafa;
+        }
     }
 }

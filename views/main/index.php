@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?> </title>
@@ -28,7 +28,7 @@
                 <div class="grid-carreras">
                     <?php foreach ($this->carreras as $carrera): ?>
                         <article class="carrera-card" onclick="window.location='<?php echo URL ?>carrera/show/<?php echo $carrera['id'] ?>'">
-                            <div class="card-image" style="background-image: url('<?php echo URL . ($carrera['imagenUrl'] ?? 'public/img/default.jpg') ?>');">
+                            <div class="card-image" style="background-image: url('<?php echo URL . 'public/assets/img/carreras/' . ($carrera['imagen'] ?? 'public/img/default.jpg') ?>');">
                                 <span class="badge <?php echo ($carrera['distancia'] > 42) ? 'ultra' : 'trail' ?>">
                                     <?php echo ($carrera['distancia'] > 42) ? 'Ultra' : 'Trail' ?>
                                 </span>

@@ -31,6 +31,9 @@
                         <a href="<?= URL ?>account/edit">
                             <i class="fas fa-user-edit"></i> Editar Datos
                         </a>
+                        <a class="nav-link" href="<?= URL ?>ayuda">
+                            <i class="fas fa-question-circle"></i> Acerca de
+                        </a>
                         <hr>
                         <a href="<?= URL ?>auth/logout" class="logout-link">
                             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión

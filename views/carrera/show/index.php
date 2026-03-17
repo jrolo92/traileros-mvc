@@ -14,10 +14,16 @@
             <div class="carrera-detail-grid">
                 
                 <div class="carrera-media">
-                    <img src="<?= URL . $this->carrera['imagenUrl'] ?>" alt="<?= $this->carrera['nombre'] ?>" class="img-fluid detail-img">
+                    <img src="<?= URL . 'public/assets/img/carreras/' . $this->carrera['imagen'] ?>" alt="<?= $this->carrera['nombre'] ?>" class="img-fluid detail-img">
                 </div>
 
                 <div class="carrera-info-panel">
+                    <div class="back-navigation">
+                        <a href="<?= $_SERVER['HTTP_REFERER'] ?? URL . 'carrera' ?>" class="btn-back">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Volver</span>
+                        </a>
+                    </div>
                     <header class="detail-header">
                         <span class="dificultad-badge <?= strtolower($this->carrera['dificultad']) ?>">
                             <?= $this->carrera['dificultad'] ?>
@@ -61,13 +67,13 @@
 
                     <section class="carrera-actions">
                         <?php if(isset($_SESSION['role_id'])): ?>
-                            <a href="<?= URL ?>inscripcion/form/<?= $this->carrera['id'] ?>" class="btn-action btn-enroll">
+                            <a href="<?= URL ?>inscripcion/form/<?= $this->carrera['id'] ?>" class="btn-primary">
                                 <i class="fas fa-edit"></i> Inscribirme ahora
                             </a>
                         <?php else: ?>
                             <div class="login-alert">
-                                <p>Para participar en este evento es necesario estar registrado.</p>
-                                <a href="<?= URL ?>login" class="btn-outline">Iniciar Sesión / Registro</a>
+                                <p>Para participar en este evento es necesario estar registrado.</p><br>
+                                <a href="<?= URL ?>login" class="btn-primary">Iniciar Sesión / Registro</a>
                             </div>
                         <?php endif; ?>
 
@@ -75,12 +81,17 @@
                             <div class="admin-controls">
                                 <h4>Gestión de Carrera</h4>
                                 <div class="admin-buttons">
-                                    <a href="<?= URL ?>carrera/edit/<?= $this->carrera['id'] ?>" class="btn-action btn-edit">
+                                    <a href="<?= URL ?>carrera/edit/<?= $this->carrera['id'] ?>" class="btn-secondary">
                                         <i class="fas fa-tools"></i> Editar
                                     </a>
-                                    <button onclick="confirmDelete(<?= $this->carrera['id'] ?>)" class="btn-action btn-delete">
-                                        <i class="fas fa-trash"></i> Eliminar
-                                    </button>
+                                    <form method="POST" action="<?= URL ?>carrera/delete/<?= $this->carrera['id'] ?>" style="display:inline;">
+                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                        
+                                        <button type="submit" class="btn-account-delete" 
+                                                onclick="return confirm('¿Estás seguro de que deseas eliminar la carrera <?= htmlspecialchars($this->carrera['nombre']) ?>?')">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         <?php endif; ?>

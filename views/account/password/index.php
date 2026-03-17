@@ -86,7 +86,7 @@
         </div>
     </main>
 
-    <footer>
+    <footer class="footer">
         <?php require_once 'template/partials/footer.partial.php'?>
     </footer>
 

@@ -1,6 +1,12 @@
-  <div class="container">
-    <span class="text-muted">
-        © 2026 <strong>TRAILEROS</strong>
-    </span>
-    <!-- <span class="version-tag">v1.0.4</span> -->
-  </div>
+<div class="footer-container">
+        <div class="footer-info">
+            <span class="copyright">&copy; <?= date('Y') ?> <strong>TRAILEROS</strong></span>
+        </div>
+        
+        <nav class="footer-links">
+            <a href="<?= URL ?>ayuda" class="footer-link">Acerca de</a>
+            <a href="https://github.com/jrolo92" target="_blank" class="footer-icon">
+                <i class="fab fa-github"></i>
+            </a>
+        </nav>
+    </div>

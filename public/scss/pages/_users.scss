@@ -45,39 +45,7 @@
     &.corredor { background: #ecfdf5; color: #059669; }
 }
 
-/* Botones de acción minimalistas */
-.admin-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
 
-    .action-btn {
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 6px;
-        text-decoration: none;
-        transition: all 0.2s;
-        border: none;
-        cursor: pointer;
-
-        &.view-btn { background: #f0f4f8; color: #2980b9; }
-        &.edit-btn { background: #fff9db; color: #f39c12; }
-        &.delete-btn { background: #fff5f5; color: #e74c3c; }
-
-        &:hover:not(.disabled) {
-            transform: translateY(-2px);
-            filter: brightness(0.9);
-        }
-
-        &.disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-    }
-}
 
 .admin-table-footer {
     padding: 20px;

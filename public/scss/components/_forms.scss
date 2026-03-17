@@ -1,0 +1,97 @@
+.form-page-container {
+    padding: 60px 20px;
+    background: #f8f9fa;
+    min-height: calc(100vh - 150px);
+    display: flex;
+    justify-content: center;
+}
+
+.form-card {
+    background: white;
+    width: 100%;
+    max-width: 700px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    padding: 40px;
+
+    .form-card-header {
+        text-align: center;
+        margin-bottom: 35px;
+        i { font-size: 2.5rem; color: $primary-green; margin-bottom: 10px; }
+        h2 { font-weight: 700; color: #333; margin: 0; }
+        p { color: #888; font-size: 0.9rem; }
+    }
+}
+
+.custom-form {
+    .form-group {
+        margin-bottom: 20px;
+        label { display: block; font-weight: 600; font-size: 0.85rem; color: #555; margin-bottom: 8px; }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            &:focus { border-color: $primary-green; outline: none; box-shadow: 0 0 0 3px rgba($primary-green, 0.1); }
+        }
+        
+        &.readonly-group .fake-input {
+            background: #f4f4f4;
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: #777;
+            font-size: 0.95rem;
+        }
+    }
+
+    .form-row {
+        display: flex;
+        gap: 20px;
+        .col { flex: 1; }
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+
+        .main-buttons {
+            display: flex;
+            gap: 10px;
+        }
+    }
+}
+
+.error-text { color: $error-color; font-size: 0.8rem; margin-top: 5px; display: block; }
+.input-error { border-color: $error-color !important; }
+
+.file-input-wrapper {
+    margin-top: 5px;
+    
+    .custom-file-input {
+        width: 100%;
+        padding: 10px;
+        background: #f9f9f9;
+        border: 1px dashed #ccc; // Estilo "zona de carga"
+        border-radius: 8px;
+        cursor: pointer;
+        
+        &::file-selector-button {
+            background: $primary-green;
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 4px;
+            margin-right: 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            &:hover { background: darken($primary-green, 10%); }
+        }
+    }
+}

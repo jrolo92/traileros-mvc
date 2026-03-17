@@ -72,7 +72,7 @@ class Carrera extends Controller {
         Descripción: Procesa el envío del formulario de nueva carrera
     */
     public function create() {
-        // sec_session_start();
+        
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['create']);
 
@@ -80,7 +80,7 @@ class Carrera extends Controller {
             $this->handleError();
         }
 
-        // Saneamiento de datos
+        // 1. Saneamiento de datos de texto
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $fecha = filter_var($_POST['fecha'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $ubicacion = filter_var($_POST['ubicacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -88,28 +88,80 @@ class Carrera extends Controller {
         $desnivel = filter_var($_POST['desnivel'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
         $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $imagenUrl = filter_var($_POST['imagenUrl'] ?? 'assets/images/default.jpg', FILTER_SANITIZE_URL);
-        $organizador_id = filter_var($_POST['organizador_id'] ?? $_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
+        $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
-        $carrera = new class_carrera(null, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $imagenUrl, $organizador_id);
-
-        // Validación
+        // 2. Lógica de subida de Imagen
+        $nombreImagen = 'default.jpg'; // Imagen por defecto
         $error = [];
+
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
+            if ($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+                
+                $fileTmpPath = $_FILES['imagen']['tmp_name'];
+                $fileName = $_FILES['imagen']['name'];
+                $fileSize = $_FILES['imagen']['size'];
+                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+                
+                $fileNameCmps = explode(".", $fileName);
+                $fileExtension = strtolower(end($fileNameCmps));
+
+                // Validar extensión
+                if (in_array($fileExtension, $allowedExtensions)) {
+                    // Validar tamaño (2MB)
+                    if ($fileSize <= 2 * 1024 * 1024) {
+                        
+                        // Generar nombre único
+                        $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
+                        
+                        // RUTA CORREGIDA: Incluyendo 'assets' como confirmamos en el test
+                        $uploadFileDir = 'public/assets/img/carreras/';
+                        
+                        // Crear directorio si no existe (por seguridad)
+                        if (!is_dir($uploadFileDir)) {
+                            mkdir($uploadFileDir, 0777, true);
+                        }
+
+                        $dest_path = $uploadFileDir . $nuevoNombreImagen;
+
+                        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                            $nombreImagen = $nuevoNombreImagen;
+                        } else {
+                            $error['imagen'] = "Error al mover el archivo al servidor.";
+                        }
+                    } else {
+                        $error['imagen'] = "La imagen excede el máximo de 2MB.";
+                    }
+                } else {
+                    $error['imagen'] = "Formato no permitido (JPG, PNG, WEBP).";
+                }
+            } else {
+                $error['imagen'] = "Error en la subida del archivo.";
+            }
+        }
+
+        // 3. Crear objeto con el nombre de la imagen procesado
+        $carrera = new class_carrera(null, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $nombreImagen, $organizador_id);
+
+        // 4. Validaciones de negocio
         if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
         if(empty($fecha)) $error['fecha'] = "La fecha es obligatoria";
         if($distancia <= 0) $error['distancia'] = "La distancia debe ser positiva";
 
+        // Si hay errores, redirigir
         if(!empty($error)){
             $_SESSION['errors'] = $error;
-            $_SESSION['carrera'] = $carrera;
+            $_SESSION['carrera'] = (array) $carrera; // Lo pasamos como array por si tu vista lo espera así
             header('Location: ' . URL . 'carrera/new');
             exit();
         }
 
+        // 5. Guardar en BD
         if ($this->model->create($carrera)) {
-            $_SESSION['notify'] = "Carrera publicada correctamente";
+            $_SESSION['notify'] = "¡Carrera publicada correctamente!";
             header('Location: ' . URL . 'carrera');
             exit();
+        } else {
+            $this->handleError();
         }
     }
 
@@ -128,7 +180,15 @@ class Carrera extends Controller {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
         
-        $this->view->carrera = $this->model->read($id);
+        $carrera = $this->model->read($id);
+
+        if (!$carrera) {
+            // SI NO EXISTE: llamamos al método error
+            $this->errorNotFound($id);
+        }
+
+        $this->view->carrera = $carrera;
+
         $this->view->id = $id;
 
         if (isset($_SESSION['errors'])) {
@@ -148,31 +208,99 @@ class Carrera extends Controller {
         Método: update
         Descripción: Actualiza los datos de la carrera
     */
+    /*
+        Método: update
+        Descripción: Actualiza los datos de una carrera existente
+    */
     public function update($params) {
-        // sec_session_start();
+        
         $this->requireLogin();
+        
         $this->requirePrivilege($GLOBALS['carrera']['update']);
 
+        $id = (int) $params[0];
+
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            header('location:' . URL . 'error');
+            $this->handleError();
+        }
+
+        // 1. Saneamiento de datos
+        $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $fecha = filter_var($_POST['fecha'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $ubicacion = filter_var($_POST['ubicacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $distancia = filter_var($_POST['distancia'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $desnivel = filter_var($_POST['desnivel'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+        $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
+
+        // 2. Gestión de la Imagen (La clave del Update)
+        // Por defecto, tomamos el nombre que viene del campo oculto
+        $nombreImagen = $_POST['imagen_actual'] ?? 'default.jpg';
+        $error = [];
+
+        // ¿Se ha seleccionado un archivo nuevo?
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+            
+            $fileTmpPath = $_FILES['imagen']['tmp_name'];
+            $fileName = $_FILES['imagen']['name'];
+            $fileSize = $_FILES['imagen']['size'];
+            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+            
+            $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+            if (in_array($fileExtension, $allowedExtensions)) {
+                if ($fileSize <= 2 * 1024 * 1024) {
+                    
+                    $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
+                    $uploadFileDir = 'public/assets/img/carreras/';
+                    $dest_path = $uploadFileDir . $nuevoNombreImagen;
+
+                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                        
+                        // Si se subió la nueva, borramos la vieja físicamente (si no es la default)
+                        if ($nombreImagen !== 'default.jpg') {
+                            $oldFile = $uploadFileDir . $nombreImagen;
+                            if (file_exists($oldFile)) {
+                                unlink($oldFile);
+                            }
+                        }
+                        
+                        // Actualizamos la variable con el nuevo nombre para la BD
+                        $nombreImagen = $nuevoNombreImagen;
+
+                    } else {
+                        $error['imagen'] = "Error al mover la nueva imagen.";
+                    }
+                } else {
+                    $error['imagen'] = "La nueva imagen es demasiado grande.";
+                }
+            } else {
+                $error['imagen'] = "Formato de imagen no permitido.";
+            }
+        }
+
+        // 3. Crear objeto para validación y persistencia
+        $carrera = new class_carrera($id, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $nombreImagen, $organizador_id);
+
+        // 4. Validaciones
+        if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
+        if(empty($fecha)) $error['fecha'] = "La fecha es obligatoria";
+
+        if(!empty($error)){
+            $_SESSION['errors'] = $error;
+            header('Location: ' . URL . 'carrera/edit/' . $id);
             exit();
         }
 
-        $id = (int) $params[0];
-        $carrera_orig = $this->model->read($id);
-
-        $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        // ... (resto de filtros igual que en create)
-        
-        $carrera_act = new class_carrera($id, $nombre, $_POST['fecha'], $_POST['ubicacion'], $_POST['distancia'], $_POST['desnivel'], $_POST['dificultad'], $_POST['descripcion'], $_POST['imagenUrl'], $_POST['organizador_id']);
-
-        // Detección de cambios simplificada
-        if ($this->model->update($carrera_act, $id)) {
-            $_SESSION['notify'] = "Carrera actualizada con éxito";
+        // 5. Actualizar en BD
+        if ($this->model->update($carrera)) {
+            $_SESSION['notify'] = "¡Carrera actualizada correctamente!";
+            header('Location: ' . URL . 'carrera');
+            exit();
+        } else {
+            $this->handleError();
         }
-
-        header('Location: ' . URL . 'carrera');
-        exit();
     }
 
     /*
@@ -186,6 +314,12 @@ class Carrera extends Controller {
 
         $id = (int) $params[0];
         $carrera = $this->model->read($id);
+
+        if (!$carrera) {
+            // SI NO EXISTE: Cargamos el metodo de error no encontrado.
+            $this->errorNotFound($id);
+        }
+
         $this->view->carrera = $carrera;
         if ($carrera && isset($carrera['nombre'])) {
             $this->view->title = $carrera['nombre'] . " - Traileros";
@@ -200,17 +334,40 @@ class Carrera extends Controller {
         Descripción: Elimina un evento
     */
     public function delete($params) {
-        // sec_session_start();
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['delete']);
 
-        if(!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])){
-            $this->handleError();
+        // 1. Validar que la petición sea POST y el CSRF sea correcto
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || 
+            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            $this->handleError(); // O redirigir con un mensaje de error
+            exit();
         }
 
         $id = (int) $params[0];
-        $this->model->delete($id);
-        $_SESSION['notify'] = "Evento eliminado definitivamente";
+
+        // 2. Obtener datos para borrar la imagen
+        $carrera = $this->model->read($id);
+
+        if ($carrera) {
+            // Accedemos como array o objeto según devuelva tu método read()
+            // Si read() devuelve un array: $carrera['imagen']
+            // Si read() devuelve un objeto: $carrera->imagen
+            $imagen = is_array($carrera) ? $carrera['imagen'] : $carrera->imagen;
+
+            if ($imagen !== 'default.jpg') {
+                $ruta = 'public/assets/img/carreras/' . $imagen;
+                if (file_exists($ruta)) {
+                    unlink($ruta);
+                }
+            }
+
+            // 3. Borrar de la base de datos
+            if ($this->model->delete($id)) {
+                $_SESSION['notify'] = "Carrera eliminada permanentemente.";
+            }
+        }
+
         header('Location: ' . URL . 'carrera');
         exit();
     }
@@ -221,7 +378,7 @@ class Carrera extends Controller {
         Parámetros: $param (id del criterio de ordenación)
     */
     public function order($param) {
-        // sec_session_start();
+
         // $this->requireLogin();
 
         // Capa gestión rol de usuario (usamos el permiso de order)
@@ -276,7 +433,7 @@ class Carrera extends Controller {
         Descripción: Permite a un corredor inscribirse en la carrera
     */
     public function inscribir($params) {
-        // sec_session_start();
+
         $this->requireLogin();
         
         $evento_id = (int) $params[0];
@@ -294,7 +451,6 @@ class Carrera extends Controller {
     }
 
     /* --- Métodos privados de seguridad --- */
-
     private function requirePrivilege($allowedRoles){
         if (!in_array($_SESSION['role_id'], $allowedRoles)){
             $_SESSION['notify'] = "No tienes permisos para realizar esta acción";
@@ -314,5 +470,14 @@ class Carrera extends Controller {
     private function handleError() {
         header('location:' . URL . 'error');
         exit();
+    }
+
+    // Método de error not found
+    private function errorNotFound($id) {
+        $this->view->tipo = "404";
+        $this->view->titulo = "Recurso no encontrado";
+        $this->view->mensaje = "Lo sentimos, el elemento con ID $id no existe.";
+        $this->view->render('error/index');
+        exit;
     }
 }

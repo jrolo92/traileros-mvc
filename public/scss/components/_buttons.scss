@@ -1,0 +1,242 @@
+   .btn-account-save {
+        background-color: $primary-green;
+        color: white;
+        box-shadow: 0 4px 6px rgba(46, 204, 113, 0.2);
+
+        &:hover {
+            background-color: darken($primary-green, 5%);
+            box-shadow: 0 6px 12px rgba(46, 204, 113, 0.3);
+            transform: translateY(-2px);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    .btn-primary {
+        background: $primary-green;
+        color: $white;
+        padding: 1rem 2.5rem;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: bold;
+        transition: $transition;
+        display: flex;
+        justify-content:center;
+        align-items: center;
+        margin: 15px auto 0;
+        width: 50%;
+
+        &:hover {
+            background: darken($primary-green, 10%);
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+    
+    .btn-secondary {
+        display: inline-block;
+        padding: 10px 25px;
+        background: #eee;
+        color: #666;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+
+        &:hover { background: #ddd; }
+    }
+
+    // Botón flotante 
+    .btn-flotante {
+        position: fixed;
+        bottom: 100px;
+        right: 30px;
+        background: $primary-green;
+        color: $white;
+        padding: 15px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 99;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: $transition;
+        
+        &:hover { 
+            background: darken($primary-green, 5%); 
+            transform: scale(1.05);
+        }
+    }
+
+    .btn-card {
+        display: block;
+        text-align: center;
+        padding: 12px;
+        background: #f1f1f1;
+        color: #333;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: $primary-green;
+            color: #ffffff;
+        }
+    }
+
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 12px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        width: 80%;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-enroll { background: $primary-green; color: white; font-size: 1.1rem; }
+
+    .btn-edit-inline {
+        background-color: #f0f7f4; 
+        color: $primary-green;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: 1px solid rgba($primary-green, 0.2);
+
+        &:hover {
+            background-color: $primary-green;
+            color: white;
+            transform: translateY(-2px);
+        }
+    }
+
+    .btn-account-delete {
+        background-color: #e74c3c;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        text-decoration: none; 
+        display: inline-flex;       
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: fit-content;
+        max-width: 150px;
+        align-self: center;
+
+        &:hover {
+            background-color: #c0392b;
+        }
+    }
+
+    .btn-account-cancel, 
+    .btn-account-save {
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-account-cancel {
+        background-color: #f1f3f5;
+        color: #495057;
+        border: 1px solid #dee2e6;
+
+        &:hover {
+            background-color: #e9ecef;
+            color: #212529;
+            transform: translateY(-1px);
+        }
+    }
+
+    .form-buttons {
+        display: flex;
+        gap: 15px;
+
+        button, .btn-register {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+
+            &:active { transform: scale(0.98); }
+        }
+
+        .btn-submit {
+            background: $primary-green;
+            color: white;
+            border: none;
+        }
+
+        .btn-register {
+            background: #f8f9fa;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+    }
+
+    /* Botones de acción minimalistas */
+    .admin-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+
+            &.view-btn { background: #f0f4f8; color: #2980b9; }
+            &.edit-btn { background: #fff9db; color: #f39c12; }
+            &.delete-btn { background: #fff5f5; color: #e74c3c; }
+
+            &:hover:not(.disabled) {
+                transform: translateY(-2px);
+                filter: brightness(0.9);
+            }
+
+            &.disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+        }
+    }

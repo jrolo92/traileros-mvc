@@ -21,7 +21,7 @@ class carreraModel extends Model {
                         e.distancia,
                         e.desnivel,
                         e.dificultad,
-                        e.imagenUrl,
+                        e.imagen,
                         u.name AS organizador
                     FROM Eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id
@@ -78,9 +78,9 @@ class carreraModel extends Model {
     public function create(class_carrera $carrera) {
         try {
             $sql = "INSERT INTO Eventos 
-                    (nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagenUrl, organizador_id)
+                    (nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagen, organizador_id)
                     VALUES
-                    (:nombre, :fecha, :ubicacion, :distancia, :desnivel, :dificultad, :descripcion, :imagenUrl, :organizador_id)";
+                    (:nombre, :fecha, :ubicacion, :distancia, :desnivel, :dificultad, :descripcion, :imagen, :organizador_id)";
 
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
@@ -92,7 +92,7 @@ class carreraModel extends Model {
             $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
-            $stmt->bindParam(':imagenUrl',      $carrera->imagenUrl, PDO::PARAM_STR);
+            $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
             $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
 
             $stmt->execute();
@@ -145,7 +145,7 @@ class carreraModel extends Model {
                         desnivel = :desnivel,
                         dificultad = :dificultad,
                         descripcion = :descripcion,
-                        imagenUrl = :imagenUrl,
+                        imagen = :imagen,
                         organizador_id = :organizador_id
                     WHERE id = :id 
                     LIMIT 1";
@@ -160,7 +160,7 @@ class carreraModel extends Model {
             $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
-            $stmt->bindParam(':imagenUrl',      $carrera->imagenUrl, PDO::PARAM_STR);
+            $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
             $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
             $stmt->bindParam(':id',             $id, PDO::PARAM_INT);
 
@@ -201,7 +201,7 @@ class carreraModel extends Model {
                         e.distancia, 
                         e.desnivel, 
                         e.dificultad, 
-                        e.imagenUrl,
+                        e.imagen,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
@@ -241,7 +241,7 @@ class carreraModel extends Model {
 
         try {
             $sql = "SELECT 
-                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad, e.imagenUrl,
+                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad, e.imagen,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id

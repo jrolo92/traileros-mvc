@@ -1,0 +1,32 @@
+.back-navigation {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #666; 
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 8px;
+
+        i {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        &:hover {
+            color: $primary-green;
+            background: rgba($primary-green, 0.05);
+
+            i {
+                transform: translateX(-5px); // La flechita se mueve a la izquierda
+            }
+        }
+    }
+}

@@ -1,12 +1,22 @@
-@import 'base';
-@import 'cards';
-@import 'carreras';
-@import 'main';
-@import 'sidebar';
-@import 'header';
-@import 'footer';
-@import 'detalle-carrera';
-@import 'login';
-@import 'account';
-@import 'users';
-@import 'alerts';
+// Base
+@import 'base/base';
+
+// Componentes
+@import 'components/buttons';
+@import 'components/cards';
+@import 'components/forms';
+@import 'components/alerts';
+@import 'components/navigation';
+@import 'components/sidebar';
+
+// Layout
+@import 'layout/main';
+@import 'layout/header';
+@import 'layout/footer';
+
+// Páginas
+@import 'pages/carreras';
+@import 'pages/detalle-carrera';
+@import 'pages/login';
+@import 'pages/account';
+@import 'pages/users';

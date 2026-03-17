@@ -7,123 +7,119 @@
 </head>
 
 <body>
-    <?php require_once("template/partials/header.partial.php") ?>
+    <?php require_once 'template/partials/header.partial.php'; ?>
 
-    <div class="container">
-        <br><br><br><br>
+    <main class="form-page-container">
+        <div class="form-card">
 
-        <?php require_once("template/partials/mensaje.partial.php") ?>
+            <header class="form-card-header">
+                <i class="fas fa-edit"></i>
+                <h2><?= $this->title ?></h2>
+                <p>Modifica los datos de la carrera seleccionada</p>
+            </header>
 
-        <?php require_once("template/partials/error.partial.php") ?>
+            <?php require_once 'template/partials/mensaje.partial.php'; ?>
+            <?php require_once 'template/partials/error.partial.php'; ?>
 
-        <main>
-            <legend><?= $this->title ?></legend>
-
-            <form action="<?= URL ?>carrera/update/<?= $this->id ?>" method="POST">
-
+            <form action="<?= URL ?>carrera/update/<?= $this->id ?>" method="POST" class="custom-form">
+                
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                
+                <!-- Campo oculto por si no se modifica la imagen que se envíe la que ya estaba -->
+                <input type="hidden" name="imagen_actual" value="<?= $this->carrera['imagen'] ?>">
 
-                <div class="mb-3">
-                    <label for="nombre" class="form-label">Nombre de la Carrera:</label>
-                    <input type="text" class="form-control <?= (isset($this->errors['nombre'])) ? 'is-invalid' : null ?>" 
-                        name="nombre" value="<?= htmlspecialchars($this->carrera->nombre) ?>">
-                    <span class="form-text text-danger">
-                        <?= $this->errors['nombre'] ?? null ?>
-                    </span>
+                <div class="form-group">
+                    <label for="nombre">Nombre de la Carrera</label>
+                    <input type="text" name="nombre" 
+                           class="<?= (isset($this->errors['nombre'])) ? 'input-error' : '' ?>"
+                           value="<?= htmlspecialchars($this->carrera['nombre'] ?? '') ?>">
+                    <?php if (isset($this->errors['nombre'])): ?>
+                        <small class="error-text"><?= $this->errors['nombre'] ?></small>
+                    <?php endif; ?>
                 </div>
 
-                <div class="mb-3">
-                    <label for="ubicacion" class="form-label">Ubicación:</label>
-                    <input type="text" class="form-control <?= (isset($this->errors['ubicacion'])) ? 'is-invalid' : null ?>" 
-                        name="ubicacion" value="<?= htmlspecialchars($this->carrera->ubicacion) ?>">
-                    <span class="form-text text-danger">
-                        <?= $this->errors['ubicacion'] ?? null ?>
-                    </span>
+                <div class="form-group">
+                    <label for="ubicacion">Ciudad / Ubicación</label>
+                    <input type="text" name="ubicacion" 
+                           class="<?= (isset($this->errors['ubicacion'])) ? 'input-error' : '' ?>"
+                           value="<?= htmlspecialchars($this->carrera['ubicacion'] ?? '') ?>">
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="distancia" class="form-label">Distancia (km):</label>
-                        <input type="number" step="0.01" class="form-control <?= (isset($this->errors['distancia'])) ? 'is-invalid' : null ?>" 
-                            name="distancia" value="<?= htmlspecialchars($this->carrera->distancia) ?>">
-                        <span class="form-text text-danger">
-                            <?= $this->errors['distancia'] ?? null ?>
-                        </span>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label for="distancia">Distancia (km)</label>
+                        <input type="number" step="0.01" name="distancia" 
+                               value="<?= htmlspecialchars($this->carrera['distancia'] ?? '') ?>">
                     </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label for="desnivel" class="form-label">Desnivel (m+):</label>
-                        <input type="number" class="form-control <?= (isset($this->errors['desnivel'])) ? 'is-invalid' : null ?>" 
-                            name="desnivel" value="<?= htmlspecialchars($this->carrera->desnivel) ?>">
-                        <span class="form-text text-danger">
-                            <?= $this->errors['desnivel'] ?? null ?>
-                        </span>
+                    <div class="form-group col">
+                        <label for="desnivel">Desnivel (m+)</label>
+                        <input type="number" name="desnivel" 
+                               value="<?= htmlspecialchars($this->carrera['desnivel'] ?? '') ?>">
                     </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="fecha" class="form-label">Fecha:</label>
-                    <input type="date" class="form-control <?= (isset($this->errors['fecha'])) ? 'is-invalid' : null ?>" 
-                        name="fecha" value="<?= htmlspecialchars($this->carrera->fecha) ?>">
-                    <span class="form-text text-danger">
-                        <?= $this->errors['fecha'] ?? null ?>
-                    </span>
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label for="fecha">Fecha del Evento</label>
+                        <input type="date" name="fecha" value="<?= htmlspecialchars($this->carrera['fecha'] ?? '') ?>">
+                    </div>
+                    <div class="form-group col">
+                        <label for="dificultad">Dificultad</label>
+                        <select name="dificultad">
+                            <?php foreach (['Baja', 'Media', 'Alta', 'Muy Alta'] as $nivel): ?>
+                                <option value="<?= $nivel ?>" <?= (($this->carrera['dificultad'] ?? '') == $nivel) ? 'selected' : '' ?>>
+                                    <?= $nivel ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="dificultad" class="form-label">Dificultad:</label>
-                    <select class="form-select <?= (isset($this->errors['dificultad'])) ? 'is-invalid' : null ?>" name="dificultad">
-                        <?php 
-                            $niveles = ['Baja', 'Media', 'Alta', 'Muy Alta'];
-                            foreach ($niveles as $nivel): 
-                        ?>
-                            <option value="<?= $nivel ?>" <?= ($this->carrera->dificultad == $nivel) ? 'selected' : '' ?>>
-                                <?= $nivel ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    <span class="form-text text-danger">
-                        <?= $this->errors['dificultad'] ?? null ?>
-                    </span>
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea name="descripcion" rows="4"><?= htmlspecialchars($this->carrera['descripcion'] ?? '') ?></textarea>
                 </div>
 
-                <div class="mb-3">
-                    <label for="descripcion" class="form-label">Descripción:</label>
-                    <textarea class="form-control <?= (isset($this->errors['descripcion'])) ? 'is-invalid' : null ?>" 
-                        name="descripcion" rows="3"><?= htmlspecialchars($this->carrera->descripcion) ?></textarea>
-                    <span class="form-text text-danger">
-                        <?= $this->errors['descripcion'] ?? null ?>
-                    </span>
+                <div class="form-group">
+                    <label>Imagen actual</label>
+                    <div class="current-image-preview mb-3">
+                        <img src="<?= URL . 'public/assets/img/carreras/' . $this->carrera['imagen'] ?>" 
+                            alt="Vista previa" 
+                            style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
+                    </div>
+
+                    <label for="imagen">Cambiar imagen (opcional)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
+                        <small class="text-muted">Deja este campo vacío si no quieres cambiar la imagen actual.</small>
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label for="imagenUrl" class="form-label">URL Imagen:</label>
-                    <input type="text" class="form-control <?= (isset($this->errors['imagenUrl'])) ? 'is-invalid' : null ?>" 
-                        name="imagenUrl" value="<?= htmlspecialchars($this->carrera->imagenUrl) ?>">
-                    <span class="form-text text-danger">
-                        <?= $this->errors['imagenUrl'] ?? null ?>
-                    </span>
+                <div class="form-group readonly-group">
+                    <label>Organizador</label>
+                    <div class="fake-input"><?= htmlspecialchars($_SESSION['user_name']) ?></div>
+                    <input type="hidden" name="organizador_id" value="<?= $this->carrera['organizador_id'] ?? '' ?>">
                 </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Organizador (Solo lectura):</label>
-                    <input type="text" class="form-control" value="<?= htmlspecialchars($_SESSION['user_name']) ?>" disabled>
-                    <input type="hidden" name="organizador_id" value="<?= $this->carrera->organizador_id ?>">
+                <div class="form-actions">
+                    <a href="<?= URL ?>carrera" class="btn-account-cancel" onclick="return confirm('¿Cancelar actualización?')">
+                        Cancelar
+                    </a>
+                    <div class="main-buttons">
+                        <button type="reset" class="btn-account-cancel" onclick="return confirm('¿Limpiar cambios?')">
+                            Limpiar
+                        </button>
+                        <button type="submit" class="btn-account-save">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </div>
                 </div>
-
-                <a class="btn btn-secondary" href="<?= URL ?>carrera" role="button"
-                    onclick="return confirm('Confirma cancelar actualización')">Cancelar</a>
-                <button type="reset" class="btn btn-secondary" onclick="return confirm('Confirma reseteo artículo')">Limpiar</button>
-                <button type="submit" class="btn btn-primary">Actualizar Carrera</button>
             </form>
+        </div>
+    </main>
 
-            <br><br><br>
-        </main>
-    </div>
-
-    <footer>
-        <?php require_once 'template/partials/footer.partial.php' ?>
+    <footer class="footer">
+        <?php require_once 'template/partials/footer.partial.php'; ?>
     </footer>
-
 </body>
 </html>

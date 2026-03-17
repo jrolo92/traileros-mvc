@@ -99,36 +99,6 @@ $card-radius: 15px;
     }
 }
 
-.form-buttons {
-    display: flex;
-    gap: 15px;
-
-    button, .btn-register {
-        flex: 1;
-        padding: 12px;
-        border-radius: 8px;
-        font-weight: 700;
-        text-align: center;
-        text-decoration: none;
-        cursor: pointer;
-        transition: transform 0.2s;
-
-        &:active { transform: scale(0.98); }
-    }
-
-    .btn-submit {
-        background: $primary-green;
-        color: white;
-        border: none;
-    }
-
-    .btn-register {
-        background: #f8f9fa;
-        color: #555;
-        border: 1px solid #ddd;
-    }
-}
-
 // Responsive: Móvil
 @media (max-width: 768px) {
     .login-card {
