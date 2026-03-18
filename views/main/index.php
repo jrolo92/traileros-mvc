@@ -10,6 +10,16 @@
 
         <?php require_once 'template/partials/header.partial.php'; ?>
 
+        <!-- Alert primera vez inicio sesión -->
+        <?php if (isset($_SESSION['profile_incomplete'])): ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>¡Hola <?= $_SESSION['user_name'] ?>!</strong> Para poder inscribirte en carreras, necesitamos que completes tu perfil deportivo.
+                <a href="<?= URL ?>user/edit" class="btn btn-sm btn-outline-dark ms-3">Completar ahora</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php unset($_SESSION['profile_incomplete']); // Para que no salga cada vez que refresque ?>
+        <?php endif; ?>
+
         <section class="hero">
             <div class="hero-content">
                 <h1>DESAFÍA TUS LÍMITES</h1>

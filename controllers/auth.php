@@ -169,7 +169,7 @@
         $_SESSION['role_id'] = $this->model->get_id_role_user($user->id);
         $_SESSION['role_name'] = $this->model->get_name_role_user($_SESSION['role_id']);
 
-         // Generar mensaje de inicio de sesión
+        // Generar mensaje de inicio de sesión
         $_SESSION['notify'] = "Usuario ". $user->name. " ha iniciado sesión.";
 
         // Redirigir a la vista de login

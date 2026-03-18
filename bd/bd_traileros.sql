@@ -3,11 +3,36 @@ CREATE DATABASE IF NOT EXISTS traileros;
 USE traileros;
 
 -- 2. Tablas de Gestión de Usuarios y Roles
-CREATE TABLE IF NOT EXISTS users(
+CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50),
-    email VARCHAR(50) UNIQUE,
-    password CHAR(60),
+    
+    -- Credenciales y sistema 
+    name VARCHAR(50) NOT NULL,
+    email VARCHAR(50) UNIQUE NOT NULL,
+    password CHAR(60) NOT NULL,
+    avatar VARCHAR(255) DEFAULT 'default-avatar.png',
+    
+    -- Datos Personales
+    apellidos VARCHAR(100),
+    sexo ENUM('H', 'M', 'Otro'),
+    fecha_nacimiento DATE,
+    dni VARCHAR(12) UNIQUE,
+    
+    -- Datos de Contacto
+    telefono VARCHAR(15),
+    telefono_emergencia VARCHAR(15),
+    direccion VARCHAR(255),
+    poblacion VARCHAR(100),
+    provincia VARCHAR(50),
+    codigo_postal VARCHAR(10),
+    pais VARCHAR(50) DEFAULT 'España',
+    
+    -- Datos Deportivos
+    club VARCHAR(100),
+    talla_camiseta ENUM('XS', 'S', 'M', 'L', 'XL', 'XXL'),
+    federado BOOLEAN DEFAULT FALSE,
+    num_licencia VARCHAR(50),
+    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     update_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -78,8 +103,9 @@ INSERT INTO roles (name, description) VALUES
 ('Organizador', 'Puede crear y gestionar eventos'),
 ('Corredor', 'Puede inscribirse en carreras y ver resultados');
 
-INSERT INTO users (id, name, email, password) 
-VALUES (1, 'Admin', 'admin@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1');
+INSERT INTO users (id, name, email, password) VALUES 
+(1, 'Admin', 'admin@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1'),
+(2, 'Javi', 'javi@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1');
 
 -- Carreras
 INSERT INTO Eventos (id, nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagenUrl, organizador_id)

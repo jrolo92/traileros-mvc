@@ -94,11 +94,47 @@
                 $db = $this->db->connect();
                 $db->beginTransaction();
 
-                $sql = "UPDATE users SET name = :name, email = :email WHERE id = :id";
+                $sql = "UPDATE users SET 
+                            name = :name, 
+                            email = :email, 
+                            avatar = :avatar,
+                            apellidos = :apellidos,
+                            sexo = :sexo,
+                            fecha_nacimiento = :fecha_nac,
+                            dni = :dni,
+                            telefono = :tlf,
+                            telefono_emergencia = :tlf_emg,
+                            direccion = :direccion,
+                            poblacion = :poblacion,
+                            provincia = :provincia,
+                            codigo_postal = :cp,
+                            pais = :pais,
+                            club = :club,
+                            talla_camiseta = :talla,
+                            federado = :federado,
+                            num_licencia = :num_licencia
+                        WHERE id = :id";
                 $stmt = $db->prepare($sql);
                 $stmt->execute([
                     ':name'  => $user->nombre,
                     ':email' => $user->email,
+                    ':avatar' => $user->avatar,
+                    ':apellidos' => $user->apellidos,
+                    ':sexo' => $user->sexo,
+                    ':fecha_nac' => $user->fecha_nac,
+                    ':dni' => $user->dni,
+                    ':tlf' => $user->tlf,
+                    ':tlf_emg' => $user->tlf_emg,
+                    ':direccion' => $user->direccion,
+                    ':poblacion' => $user->poblacion,
+                    ':provincia' => $user->provincia,
+                    ':cp' => $user->cp,
+                    ':pais' => $user->pais,
+                    ':club' => $user->club,
+                    ':talla' => $user->talla,
+                    ':federado' => $user->es_federado,
+                    ':num_licencia' => $user->num_licencia,
+
                     ':id'    => $id
                 ]);
 
@@ -125,7 +161,28 @@
         */
         public function read(int $id) {
             try {
-                $sql = "SELECT id, name AS nombre, email FROM users WHERE id = :id LIMIT 1";
+                $sql = "SELECT 
+                            id, 
+                            name AS nombre, 
+                            email, 
+                            avatar, 
+                            apellidos, 
+                            sexo, 
+                            fecha_nacimiento AS fecha_nac, 
+                            dni, 
+                            telefono AS tlf, 
+                            telefono_emergencia AS tlf_emg, 
+                            direccion, 
+                            poblacion, 
+                            provincia, 
+                            codigo_postal AS cp, 
+                            pais, 
+                            club, 
+                            talla_camiseta AS talla, 
+                            federado AS es_federado, 
+                            num_licencia 
+                        FROM users WHERE id = :id LIMIT 1";
+
                 $db = $this->db->connect();
                 $stmt = $db->prepare($sql);
                 $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -168,7 +225,7 @@
 
         /*
             Método: search($term)
-            Descripción: Busca usuarios que coincidan con el término en nombre, email o rol
+            Descripción: Busca usuarios que coincidan con el término en id, nombre, email o rol
             Parámetros: 
                 - $term: término de búsqueda
             Devuelve:
@@ -181,15 +238,19 @@
                 $sql = "SELECT 
                             u.id,
                             u.name AS nombre,
+                            u.apellidos,
+                            u.dni, 
                             u.email,
                             r.name AS rol
                         FROM users u
                         LEFT JOIN roles_users ru ON u.id = ru.user_id
                         LEFT JOIN roles r ON ru.role_id = r.id
                         WHERE CONCAT_WS(' ', 
-                                u.name, 
+                                u.name,
+                                u.apellidos,
+                                u.dni, 
                                 u.email, 
-                                r.name
+                                r.name,
                             ) LIKE :term
                         ORDER BY u.id ASC";
 
