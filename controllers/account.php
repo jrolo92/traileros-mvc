@@ -11,6 +11,9 @@ class Account extends Controller
             sec_session_start();
         }
 
+        // Cargamos el modelo de usuarios
+        $this->loadModel('user');
+
     }
 
     /*
@@ -22,8 +25,6 @@ class Account extends Controller
     */
     public function render()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -55,7 +56,7 @@ class Account extends Controller
         }
 
 
-        # Obtenemos los detalles completos del usuario
+        // Obtenemos los detalles completos del usuario
         $this->view->account = $this->model->getUserId($_SESSION['user_id']);
 
         // Creo la propiedad title de la vista
@@ -151,8 +152,6 @@ class Account extends Controller
     */
     public function update()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         // comprobar si hay usuario logueado
         $this->requireLogin();
@@ -163,8 +162,23 @@ class Account extends Controller
         }
 
         // Saneamos los detalles del formulario
-        $name = filter_var($_POST['name'] ??= null, FILTER_SANITIZE_SPECIAL_CHARS);
-        $email = filter_var($_POST['email'] ??= null, FILTER_SANITIZE_EMAIL);
+        $name = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $apellidos = filter_var($_POST['apellidos'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
+        $dni = filter_var($_POST['dni'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $sexo = $_POST['sexo'] ?? null;
+        $fecha_nac = $_POST['fecha_nac'] ?? null;
+        $direccion = filter_var($_POST['direccion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $poblacion = filter_var($_POST['poblacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $provincia = filter_var($_POST['provincia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $cp = filter_var($_POST['cp'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $pais = filter_var($_POST['pais'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $tlf = filter_var($_POST['tlf'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $tlf_emg = filter_var($_POST['tlf_emg'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $club = filter_var($_POST['club'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $talla = $_POST['talla'] ?? null;
+        $es_federado = isset($_POST['es_federado']) ? (int)$_POST['es_federado'] : 0;
+        $num_licencia = filter_var($_POST['num_licencia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
 
         // Obtengo los detalles del usuario
         $account = $this->model->getUserId($_SESSION['user_id']);

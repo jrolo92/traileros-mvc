@@ -25,9 +25,6 @@
         */
         function render() {
 
-        // Iniciar o continuar sesión
-            // sec_session_start();
-
             // Capa de validación de sesión
             // Si el usuario no está autenticado
             $this->requireLogin();
@@ -46,10 +43,9 @@
                 unset($_SESSION['notify']);
             }
                         
-            // Obtengo los datos del  modelo para mostrar en la vista
-            
+            // Obtengo los datos del  modelo para mostrar en la vista      
             // Creo la propiedad  title para la vista
-            $this->view->title = "Tabla Usuarios de GesLibros";
+            $this->view->title = "Gestión de Usuarios - Traileros";
 
             // Obtengo los datos del modelo
             $this->view->users = $this->model->get();
@@ -63,7 +59,7 @@
             Descripción: Muestra el formulario para crear un nuevo usuario
         */
         function new() {
-            // sec_session_start();
+
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['new']);
 
@@ -95,7 +91,7 @@
             Descripción: Recibe datos para insertar nuevo usuario y su rol
         */
         public function create() {
-            // sec_session_start();
+
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['create']);
 
@@ -110,7 +106,7 @@
             $password_confirm = $_POST['password_confirm'] ?? '';
             $role_id = filter_var($_POST['role_id'] ?? '', FILTER_SANITIZE_NUMBER_INT);
 
-            $user = new class_user(null, $nombre, $email, $password, $role_id);
+            $user = new class_user(null, $nombre, $email, $password);
             $error = [];
 
             // Validaciones
@@ -142,8 +138,10 @@
             }
 
             // Cifrado de contraseña
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
-            $user->password = $password_hash;
+            $user->password = password_hash($password, PASSWORD_DEFAULT);
+
+            // Avatar
+            $user->avatar = 'default-avatar.png';
 
             // Insertar usuario y obtener ID
             $user_id = $this->model->create($user, $role_id);
@@ -160,7 +158,7 @@
             Método: edit
         */
         public function edit($params) {
-            // sec_session_start();
+  
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['edit']);
 
@@ -176,12 +174,13 @@
             if (isset($_SESSION['errors'])) {
                 $this->view->errors = $_SESSION['errors'];
                 unset($_SESSION['errors']);
+                // Cargamos el objeto que intentó guardar para que no se pierdan los datos
                 $this->view->user = $_SESSION['user'];
                 unset($_SESSION['user']);
                 $this->view->error = "Errores en el formulario";
             }
 
-            $this->view->title = "Formulario Editar Usuario";
+            $this->view->title = "Editar Usuario - Traileros";
             $this->view->roles = $this->model->get_roles();
             
             // Obtener el rol actual del usuario
@@ -199,27 +198,67 @@
             $this->requirePrivilege($GLOBALS['user']['update']);
 
             if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-                header('location:' . URL . 'error');
-                exit();
+                $this->handleError();
             }
 
             $id = (int) $params[0];
+            $user_db = $this->model->read($id);
+
+            // Saneamiento de los campos
             $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
             $role_id = filter_var($_POST['role_id'] ?? '', FILTER_SANITIZE_NUMBER_INT);
+            $apellidos = filter_var($_POST['apellidos'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $sexo = $_POST['sexo'] ?? null;
+            $fecha_nac = $_POST['fecha_nac'] ?? null;
+            $dni = filter_var($_POST['dni'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $tlf = filter_var($_POST['tlf'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $tlf_emg = filter_var($_POST['tlf_emg'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $direccion = filter_var($_POST['direccion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $poblacion = filter_var($_POST['poblacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $provincia = filter_var($_POST['provincia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $cp = filter_var($_POST['cp'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $pais = filter_var($_POST['pais'] ?? 'España', FILTER_SANITIZE_SPECIAL_CHARS);
+            $club = filter_var($_POST['club'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $talla = $_POST['talla'] ?? null;
+            $num_licencia = filter_var($_POST['num_licencia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            // Checkbox: si no llega es 0, si llega es 1
+            $es_federado = isset($_POST['es_federado']) ? 1 : 0;
 
-            $user_act = new class_user($id, $nombre, $email);
-            $user_db = $this->model->read($id);
-            $current_role_id = $this->model->get_user_role_id($id);
+            // Gestión del avatar
+            $avatar = $user_db->avatar; // Por defecto mantenemos el actual
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['avatar']['tmp_name'];
+                $fileName = $_FILES['avatar']['name'];
+                $extension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+                $newFileName = md5(time() . $nombre) . '.' . $extension;
+                $uploadFileDir = 'public/assets/img/avatars/';
+
+                if (move_uploaded_file($fileTmpPath, $uploadFileDir . $newFileName)) {
+                    // Borrar el anterior si no es el default
+                    if ($avatar !== 'default-avatar.png' && file_exists($uploadFileDir . $avatar)) {
+                        unlink($uploadFileDir . $avatar);
+                    }
+                    $avatar = $newFileName;
+                }
+            }
+
+            $user_act = new class_user
+                ($id, $nombre, $email, null, $avatar, $apellidos, $sexo, $fecha_nac, 
+                $dni, $tlf, $tlf_emg, $direccion, $poblacion, $provincia, $cp, 
+                $pais, $club, $talla, $es_federado, $num_licencia);
 
             $error = [];
             $cambios = false;
 
-            // Validación Nombre
-            if($nombre != $user_db->nombre){
+            // Comprobación de cambios
+            if($nombre != $user_db->nombre || $email != $user_db->email || $avatar != $user_db->avatar || 
+               $dni != $user_db->dni || $club != $user_db->club || $es_federado != $user_db->es_federado) {
                 $cambios = true;
-                if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
             }
+
+            // Validación Nombre
+            if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
 
             // Validación Email
             if($email != $user_db->email){
@@ -232,7 +271,7 @@
             }
 
             // Validación Rol
-            if($role_id != $current_role_id){
+            if($role_id != $this->model->get_user_role_id($id)){
                 $cambios = true;
             }
 
@@ -243,8 +282,8 @@
                 exit();
             }
 
-            if (!$cambios) {
-                $_SESSION['notify'] = "No se han realizado cambios";
+            if (!$cambios && !isset($_FILES['avatar'])) {
+                $_SESSION['notify'] = "No se han detectado cambios en el Usuario";
                 header('Location: ' . URL . 'user');
                 exit();
             }
@@ -291,9 +330,6 @@
         */
         public function show($params) {
 
-            // Iniciar o continuar sesión
-            // sec_session_start();
-
             // Capa de validación de sesión
             $this->requireLogin();
 
@@ -318,7 +354,7 @@
             $this->view->user->rol = $this->model->get_user_role_name($id);
 
             // Título de la página
-            $this->view->title = "Consultar Usuario - GesLibros";
+            $this->view->title = "Consultar Usuario - Traileros";
 
             // Renderizar la vista correspondiente
             $this->view->render('user/show/index');
@@ -421,5 +457,11 @@
             }
         }
 
+        private function handleError() {
+            header('location:' . URL . 'error');
+            exit();
+        }
     }
+
+    
 ?>

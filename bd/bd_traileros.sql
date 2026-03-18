@@ -107,6 +107,9 @@ INSERT INTO users (id, name, email, password) VALUES
 (1, 'Admin', 'admin@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1'),
 (2, 'Javi', 'javi@traileros.com', '*84AAC12F54AB666ECFC2A83C676908C8BBC381B1');
 
+INSERT INTO roles_users (user_id, role_id) VALUES (1, 1), (2, 3);
+
+
 -- Carreras
 INSERT INTO Eventos (id, nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagenUrl, organizador_id)
 VALUES 

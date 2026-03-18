@@ -21,7 +21,7 @@ class carreraModel extends Model {
                         e.distancia,
                         e.desnivel,
                         e.dificultad,
-                        e.imagen,
+                        e.imagenUrl AS imagen,
                         u.name AS organizador
                     FROM Eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id

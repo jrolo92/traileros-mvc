@@ -13,14 +13,21 @@
         public function get() {
             try {
                 $sql = "SELECT 
-                            u.id,
-                            u.name AS nombre,
-                            u.email,
-                            r.name AS rol
-                        FROM users u
-                        LEFT JOIN roles_users ru ON u.id = ru.user_id
-                        LEFT JOIN roles r ON ru.role_id = r.id
-                        ORDER BY u.id ASC";
+                    u.id,
+                    u.name AS nombre,
+                    u.email,
+                    u.apellidos,
+                    u.dni,
+                    u.telefono AS tlf,
+                    u.club,
+                    u.federado AS es_federado,
+                    u.created_at, 
+                    u.updated_at,
+                    r.name AS rol
+                FROM users u
+                LEFT JOIN roles_users ru ON u.id = ru.user_id
+                LEFT JOIN roles r ON ru.role_id = r.id
+                ORDER BY u.id";
 
                 $db = $this->db->connect();
                 $stmt = $db->prepare($sql);
@@ -180,7 +187,9 @@
                             club, 
                             talla_camiseta AS talla, 
                             federado AS es_federado, 
-                            num_licencia 
+                            num_licencia,
+                            created_at, 
+                            updated_at
                         FROM users WHERE id = :id LIMIT 1";
 
                 $db = $this->db->connect();

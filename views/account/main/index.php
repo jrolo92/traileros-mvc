@@ -17,7 +17,7 @@
                     <i class="fas fa-user-circle"></i>
                     <div>
                         <h2><?= $this->title ?></h2>
-                        <p>Gestiona los datos de tu cuenta y participaciones</p>
+                        <p>Gestiona tus datos personales y deportivos</p>
                     </div>
                 </div>
                 
@@ -44,10 +44,86 @@
                     </div>
 
                     <div class="form-group">
+                        <label>Apellidos</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->apellidos); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
                         <label>Email</label>
                         <input type="email" value="<?= htmlspecialchars($this->account->email); ?>" disabled>
                     </div>
+
+                    <div class="form-group">
+                        <label>DNI</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->dni ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sexo</label>
+                        <input type="text" value="<?= ucfirst($this->account->sexo ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Fecha de Nacimiento</label>
+                        <input type="text" value="<?= $this->account->fecha_nac ?? '-'; ?>" disabled>
+                    </div>
+
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Dirección</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->direccion ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Población</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->poblacion ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Provincia</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->provincia ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->cp ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>País</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->pais ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->tlf ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Teléfono Emergencia (SOS)</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->tlf_emg ?? '-'); ?>" disabled style="color: #e74c3c; font-weight: bold;">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Club</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->club ?? 'Independiente'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Talla Camiseta</label>
+                        <input type="text" value="<?= strtoupper($this->account->talla ?? '-'); ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Federado</label>
+                        <input type="text" value="<?= ($this->account->es_federado) ? 'Sí' : 'No'; ?>" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nº Licencia Federativa</label>
+                        <input type="text" value="<?= htmlspecialchars($this->account->num_licencia ?? '-'); ?>" disabled>
+                    </div>
                 </div>
+                
 
                 <div class="form-grid">
                     <h3 class="form-section-title">Eliminar Cuenta</h3>

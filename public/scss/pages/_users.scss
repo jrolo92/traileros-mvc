@@ -45,8 +45,6 @@
     &.corredor { background: #ecfdf5; color: #059669; }
 }
 
-
-
 .admin-table-footer {
     padding: 20px;
     border-top: 1px solid #eee;
@@ -157,3 +155,12 @@
         &:hover .nav-dropdown-content { display: block; }
     }
 }
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+}
+

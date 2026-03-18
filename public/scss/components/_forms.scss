@@ -95,3 +95,55 @@
         }
     }
 }
+
+/* Estilo unificado para inputs y selects */
+.form-control, 
+.form-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #2f3640;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+/* Específico para el select para quitar la flecha por defecto y poner una custom */
+.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%237f8c8d' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 16px;
+    padding-right: 40px; /* Espacio para la flecha */
+    cursor: pointer;
+}
+
+/* Efectos de Focus (cuando el usuario hace clic) */
+.form-control:focus, 
+.form-select:focus {
+    border-color: #27ae60; /* El verde de tu botón Guardar */
+    box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+    background-color: #f9fffb;
+}
+
+/* Estilo para el estado de error/inválido */
+.form-select.is-invalid {
+    border-color: #e74c3c;
+    background-color: #fffaf9;
+}
+
+/* Ajuste para que los labels se vean bien encima del select */
+.form-group label {
+    display: block;
+    font-weight: 700;
+    color: #888;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}

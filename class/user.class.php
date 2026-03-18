@@ -1,9 +1,8 @@
 <?php
 
     /*
-    clase: class_user
-    descripción: clase para gestionar los usuarios
-
+        clase: class_user
+        descripción: clase para gestionar los usuarios
     */
 
     class class_user {
@@ -35,6 +34,9 @@
         public $talla;
         public $es_federado;
         public $num_licencia;
+
+        public $created_at;
+        public $updated_at;
 
         public $role_id;
     
@@ -69,6 +71,9 @@
             $es_federado = null,
             $num_licencia = null,
 
+            $created_at = null,
+            $updated_at = null,
+
             $role_id = null
         ) {
             $this->id = $id;
@@ -100,8 +105,10 @@
             $this->es_federado = $es_federado;
             $this->num_licencia = $num_licencia;
 
+            $this->created_at = $created_at;
+            $this->updated_at = $updated_at;
+
             $this->role_id = $role_id;
         }
     }
-
 ?>

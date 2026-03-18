@@ -1,5 +1,6 @@
 .account-container {
     min-height: calc(100vh - 140px);
+    min-width: 80%;
     background-color: #f4f7f6;
     padding: 60px 20px;
     display: flex;
@@ -8,8 +9,8 @@
 
 .account-card {
     background: #fff;
-    width: 100%;
-    max-width: 900px;
+    width: 90%;
+    
     border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
     overflow: hidden;
