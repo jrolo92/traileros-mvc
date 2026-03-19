@@ -15,6 +15,28 @@ p, h1, h3, span {
   text-align: center;
 }
 
+/* Animación para el H1: Aparece (Fade In) y sube ligeramente */
+@keyframes fadeInUpH1 {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* Empieza 20px más abajo */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* Termina en su posición original */
+  }
+}
+/* Animación para el P: Aparece (Fade In) con un retraso y sube ligeramente */
+@keyframes fadeInUpP {
+  from {
+    opacity: 0;
+    transform: translateY(15px); /* Empieza un poco menos abajo para suavidad */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .btn-account-save {
   background-color: #2d5a27;
   color: white;
@@ -715,14 +737,36 @@ p, h1, h3, span {
   justify-content: center;
   text-align: center;
   color: #ffffff;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 .hero .hero-content h1 {
   font-size: clamp(2rem, 8vw, 4rem);
   letter-spacing: 4px;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
+  opacity: 0; /* Empezamos ocultos para que la animación funcione */
+  animation-name: fadeInUpH1;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-out; /* Empieza rápido, termina lento */
+  animation-fill-mode: forwards; /* Se queda con los estilos finales (opacity: 1) */
+}
+.hero .hero-content p {
+  opacity: 0; /* Empezamos ocultos */
+  animation-name: fadeInUpP;
+  animation-duration: 1.2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0.5s; /* IMPORTANTE: Espera 0.5s antes de empezar */
+  animation-fill-mode: forwards;
 }
 
+@media (max-width: 768px) {
+  .hero {
+    background-attachment: scroll;
+  }
+}
 /* Sección de Próximos Eventos */
 .carreras-section {
   padding: 40px 0;
@@ -817,7 +861,7 @@ p, h1, h3, span {
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 8px 12px;
+  padding: 5px 15px;
   border-radius: 5px;
   font-family: inherit;
 }
@@ -1953,6 +1997,44 @@ p, h1, h3, span {
     width: 100%;
   }
 }
+/* Contenedor principal del uploader de avatar */
+/* El label ahora hereda de avatar-circle, solo añadimos el puntero */
+.avatar-label {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.avatar-label:hover {
+  transform: scale(1.05); /* Efecto de "púlsame" */
+}
+
+/* Ajustamos el overlay para que sea un círculo perfecto sobre la imagen */
+.avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0; /* Oculto por defecto */
+  transition: opacity 0.3s ease;
+  border-radius: 50%; /* ¡Importante! */
+}
+
+.avatar-label:hover .avatar-overlay {
+  opacity: 1; /* Aparece al pasar el ratón */
+}
+
+.avatar-overlay i {
+  font-size: 1.5rem;
+  color: white !important; /* Forzamos el blanco para el icono de la cámara */
+}
+
 /* Estilos para la tabla administrativa */
 .admin-table {
   width: 100%;
@@ -2111,4 +2193,41 @@ p, h1, h3, span {
   -webkit-overflow-scrolling: touch;
   border-radius: 8px;
   box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
-}/*# sourceMappingURL=style.css.map */
+}
+
+/* Clase base para todos los avatares circulares de la web */
+.avatar-circle {
+  border-radius: 50%;
+  overflow: hidden; /* ¡La clave del éxito! */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+/* La imagen dentro de cualquier círculo de avatar */
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  display: block;
+}
+
+/* El icono dentro de cualquier círculo de avatar */
+.avatar-circle i {
+  color: #666;
+  line-height: 1; /* Evita desplazamientos extraños del icono */
+}
+
+/* Variantes de tamaño */
+.size-sm {
+  width: 30px;
+  height: 30px;
+} /* Para el Header */
+.size-md {
+  width: 80px;
+  height: 80px;
+} /* Para el Perfil *//*# sourceMappingURL=style.css.map */

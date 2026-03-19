@@ -58,9 +58,10 @@
                 <label>DNI</label>
                 <div class="info-value-box"><?= htmlspecialchars($this->user->dni ?? '-') ?></div>
             </div>
+            <?php $opciones_sexo = ['H'    => 'Masculino', 'M'    => 'Femenino', 'Otro' => 'Otro'];?>
             <div class="form-group">
                 <label>Sexo</label>
-                <div class="info-value-box"><?= ucfirst($this->user->sexo ?? '-') ?></div>
+                <div class="info-value-box"><?= ucfirst($opciones_sexo[$this->user->sexo] ?? '-') ?></div>
             </div>
             <div class="form-group">
                 <label>Fecha Nacimiento</label>

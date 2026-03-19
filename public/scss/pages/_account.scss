@@ -355,3 +355,41 @@
         }
     }
 }
+
+/* Contenedor principal del uploader de avatar */
+/* El label ahora hereda de avatar-circle, solo añadimos el puntero */
+.avatar-label {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.avatar-label:hover {
+    transform: scale(1.05); /* Efecto de "púlsame" */
+}
+
+/* Ajustamos el overlay para que sea un círculo perfecto sobre la imagen */
+.avatar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo negro semitransparente */
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.3s ease;
+    border-radius: 50%; /* ¡Importante! */
+}
+
+.avatar-label:hover .avatar-overlay {
+    opacity: 1; /* Aparece al pasar el ratón */
+}
+
+.avatar-overlay i {
+    font-size: 1.5rem;
+    color: white !important; /* Forzamos el blanco para el icono de la cámara */
+}

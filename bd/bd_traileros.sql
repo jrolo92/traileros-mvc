@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Eventos (
     desnivel INT,
     dificultad VARCHAR(20),
     descripcion TEXT,
-    imagenUrl VARCHAR(255),
+    imagen VARCHAR(255),
     organizador_id INT UNSIGNED NOT NULL,
     FOREIGN KEY (organizador_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -111,7 +111,7 @@ INSERT INTO roles_users (user_id, role_id) VALUES (1, 1), (2, 3);
 
 
 -- Carreras
-INSERT INTO Eventos (id, nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagenUrl, organizador_id)
+INSERT INTO Eventos (id, nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagen, organizador_id)
 VALUES 
 (1, 'Gran Vuelta Valle del Genal', '2025-10-25', 'Pujerra, Málaga', 55.00, 2900, 'Alta', 'Recorrido circular de 55 km por el Alto Valle del Genal con 2900 m de desnivel positivo.', 'genal.jpg', 1),
 (2, 'CXM La Toleta', '2025-11-23', 'Puerto Serrano, Cádiz', 29.00, 1650, 'Media', 'Carrera por montaña que recorre los parajes naturales de Puerto Serrano.', 'cxm-toleta.jpg', 1),

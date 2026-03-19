@@ -2,11 +2,21 @@
     height: 100vh;
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
                 url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920') center/cover;
+    
+    // Centrado del contenido
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     color: $white;
+
+    // Centrado de la imagen
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    // Parallax
+    background-attachment: fixed;
 
     .hero-content {
         h1 {
@@ -14,8 +24,31 @@
             letter-spacing: 4px;
             margin-bottom: 1.5rem;
             text-transform: uppercase;
+
+            // Animaciones
+            opacity: 0; /* Empezamos ocultos para que la animación funcione */
+            animation-name: fadeInUpH1;
+            animation-duration: 1.2s;
+            animation-timing-function: ease-out; /* Empieza rápido, termina lento */
+            animation-fill-mode: forwards; /* Se queda con los estilos finales (opacity: 1) */
+        }
+
+        p {
+            opacity: 0; /* Empezamos ocultos */
+            animation-name: fadeInUpP;
+            animation-duration: 1.2s; 
+            animation-timing-function: ease-out;
+            animation-delay: 0.5s; /* IMPORTANTE: Espera 0.5s antes de empezar */
+            animation-fill-mode: forwards;
         }
         
+    }
+}
+
+// En pantallas pequeñas vamos a eliminar el parallax
+@media (max-width: 768px) {
+    .hero {
+        background-attachment: scroll;
     }
 }
 

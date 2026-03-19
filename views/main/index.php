@@ -32,7 +32,8 @@
             <div class="container">
                 <div class="section-header">
                     <h2 class="section-title">Próximos Eventos</h2>
-                    <p>No te pierdas las competiciones más exigentes de la temporada</p>
+                    <!-- <p>No te pierdas las competiciones más exigentes de la temporada</p> -->
+                    <p>Siente la montaña bajo tus pies</p>
                 </div>
 
                 <div class="grid-carreras">

@@ -19,7 +19,14 @@
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="user-dropdown">
                     <button class="btn-user">
-                        <i class="fas fa-user-circle"></i> 
+                        <div class="avatar-circle size-sm">
+                            <?php if (!empty($_SESSION['user_avatar']) && file_exists($_SESSION['user_avatar'])): ?>
+                                <img src="<?= URL . $_SESSION['user_avatar'] . '?t=' . time() ?>" alt="Avatar">
+                            <?php else: ?>
+                                <i class="fas fa-user-circle" style="font-size: 1.2rem;"></i>
+                            <?php endif; ?>
+                        </div>
+
                         <span><?= htmlspecialchars($_SESSION['user_name'] ?? 'Mi Perfil') ?></span>
                         <i class="fas fa-chevron-down" style="font-size: 0.7rem; margin-left: 5px;"></i>
                     </button>

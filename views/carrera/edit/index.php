@@ -88,7 +88,7 @@
                             style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
                     </div>
 
-                    <label for="imagen">Cambiar imagen (opcional)</label>
+                    <label for="imagen">Cambiar imagen</label>
                     <div class="file-input-wrapper">
                         <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
                         <small class="text-muted">Deja este campo vacío si no quieres cambiar la imagen actual.</small>

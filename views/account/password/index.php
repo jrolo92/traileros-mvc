@@ -16,7 +16,13 @@
 
             <header class="account-header">
                 <div class="user-info-main">
-                    <i class="fas fa-user-circle"></i>
+                    <div class="avatar-circle size-md">
+                        <?php if (!empty($_SESSION['user_avatar']) && file_exists($_SESSION['user_avatar'])): ?>
+                            <img src="<?= URL . $_SESSION['user_avatar'] ?>" alt="Perfil">
+                        <?php else: ?>
+                            <i class="fas fa-user-circle" style="font-size: 4rem;"></i>
+                        <?php endif; ?>
+                    </div>
                     <div>
                         <h2><?= $this->title ?></h2>
                         <p>Configuración de Seguridad</p>

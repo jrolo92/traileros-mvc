@@ -1,0 +1,23 @@
+/* Animación para el H1: Aparece (Fade In) y sube ligeramente */
+@keyframes fadeInUpH1 {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Empieza 20px más abajo */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Termina en su posición original */
+    }
+}
+
+/* Animación para el P: Aparece (Fade In) con un retraso y sube ligeramente */
+@keyframes fadeInUpP {
+    from {
+        opacity: 0;
+        transform: translateY(15px); /* Empieza un poco menos abajo para suavidad */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

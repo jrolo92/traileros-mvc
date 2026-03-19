@@ -332,6 +332,52 @@
         }
 
         /*
+            método: update_pass($password, $id)
+
+            descripción: actualiza la contraseña del usuario
+
+            @param: 
+
+                - password: contraseña del usuario
+                - id: id del usuario
+
+        */
+        public function update_pass($password, $id)
+        {
+
+            try {
+
+                // encriptar password
+                $password = password_hash($password, PASSWORD_DEFAULT);
+
+                // sentencia sql
+                $sql = "UPDATE Users SET password = :password WHERE id = :id";
+
+                // conectamos con la base de datos
+                $db = $this->db->connect();
+
+                // ejecuto prepare
+                $stmt = $db->prepare($sql);
+
+                // vinculamos parámetros
+                $stmt->bindParam(':password', $password, PDO::PARAM_STR, 255);
+                $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+                // ejecutamos
+                $stmt->execute();
+
+                // Devuelvo objeto usuario
+                return $stmt->rowCount();
+
+            } catch (PDOException $e) {
+
+                // error base de datos
+                $this->handleError($e); 
+                
+            }
+        }
+
+        /*
             Método: get_user_role_id()
             Obtiene el rol actual del usuario (para marcar 'selected' en el combo)
         */
@@ -394,8 +440,15 @@
         }
 
         /*
-            Validaciones (Siguiendo tu estilo de ISBN)
+            método: validate_unique_email()
+
+            descripción: comprueba si un email ya existe en la base de datos, 
+            devuelve verdadero si es un valor único
+            
+            @param: email del usuario
+
         */
+
         public function validate_unique_email($email, $id = null) {
             try {
                 if ($id) {
@@ -418,6 +471,47 @@
             }
         }
 
+        /*
+            método: validate_unique_name()
+
+            Valida el name de usuario, devuelve verdadero si el  nombre no existe en la base de datos
+
+
+            @param: name del usuario
+        */
+        public function validate_unique_name($name)
+        {
+
+            try {
+
+                // sentencia sql
+                $sql = "SELECT * FROM Users WHERE name = :name"; 
+
+
+                // conectamos con la base de datos
+                $db = $this->db->connect();
+
+                // ejecuto prepare
+                $stmt = $db->prepare($sql);
+
+                // vinculamos parámetros
+                $stmt->bindParam(':name', $name, PDO::PARAM_STR, 50);
+
+                // ejecutamos
+                $stmt->execute();
+
+                if ($stmt->rowCount() > 0) {
+                    return FALSE;
+                } 
+
+                return TRUE;
+
+            } catch (PDOException $e) {
+
+                // error base de datos
+                $this->handleError($e); 
+            }
+        }
 
         /*
             Comprueba si un rol existe en la base de datos
@@ -451,10 +545,23 @@
                 return $pdoSt->fetchColumn() > 0;
 
             } catch (PDOException $e) {
-                error_log("Error en validate_id_user_exists: " . $e->getMessage());
-                return false;
+                $this->handleError($e);
             }
         }
+
+        // Método para actualizar la foto de perfil
+        public function updateAvatar($id, $path) {
+        try {
+            $sql = "UPDATE users SET avatar = :avatar WHERE id = :id";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':avatar', $path, PDO::PARAM_STR);
+            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
+}
 
         /*
             Método: handleError

@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-actions" style="justify-content: center; border: none;">
-                <a href="<?= URL ?>carrera" class="btn-account-save" style="background-color: #3498db;">
+                <a href="<?= URL ?>main" class="btn-account-save" style="background-color: #3498db;">
                     Volver
                 </a>
             </div>

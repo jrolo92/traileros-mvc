@@ -17,7 +17,13 @@
 
             <header class="account-header">
                 <div class="user-info-main">
-                    <i class="fas fa-exclamation-triangle" style="color: #e74c3c;"></i>
+                    <div class="avatar-circle size-md">
+                        <?php if (!empty($_SESSION['user_avatar']) && file_exists($_SESSION['user_avatar'])): ?>
+                            <img src="<?= URL . $_SESSION['user_avatar'] ?>" alt="Perfil">
+                        <?php else: ?>
+                            <i class="fas fa-user-circle" style="font-size: 4rem;"></i>
+                        <?php endif; ?>
+                    </div>
                     <div>
                         <h2><?= $this->title ?></h2>
                         <p>Esta acción es irreversible. Se borrarán todos tus datos.</p>
@@ -51,7 +57,7 @@
                             
                             <div class="form-group">
                                 <label>Nombre de usuario</label>
-                                <input type="text" value="<?= htmlspecialchars($this->account->name); ?>" disabled>
+                                <input type="text" value="<?= htmlspecialchars($this->account->nombre); ?>" disabled>
                             </div>
 
                             <div class="form-group">
@@ -66,7 +72,7 @@
                                 <a class="btn-account-cancel" href="<?= URL ?>account">Cancelar y volver</a>
                             </div>
 
-                            <button type="submit" class="btn-account-delete">Confirmar Eliminar Cuenta</button>
+                            <button type="submit" class="btn-account-delete">Eliminar Cuenta</button>
                         </div>
                     </form>
                 </div>

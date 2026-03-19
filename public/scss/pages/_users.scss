@@ -164,3 +164,32 @@
     box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
 }
 
+/* Clase base para todos los avatares circulares de la web */
+.avatar-circle {
+    border-radius: 50%;
+    overflow: hidden; /* ¡La clave del éxito! */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 1px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+}
+
+/* La imagen dentro de cualquier círculo de avatar */
+.avatar-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* El icono dentro de cualquier círculo de avatar */
+.avatar-circle i {
+    color: #666;
+    line-height: 1; /* Evita desplazamientos extraños del icono */
+}
+
+/* Variantes de tamaño */
+.size-sm { width: 30px; height: 30px; } /* Para el Header */
+.size-md { width: 80px; height: 80px; } /* Para el Perfil */

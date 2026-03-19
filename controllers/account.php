@@ -11,8 +11,8 @@ class Account extends Controller
             sec_session_start();
         }
 
-        // Cargamos el modelo de usuarios
-        $this->loadModel('user');
+        // Dejamos que el Framework cargue el modelo 'account' a su manera.
+        $this->loadModel('account');
 
     }
 
@@ -55,9 +55,8 @@ class Account extends Controller
             unset($_SESSION['error']);
         }
 
-
         // Obtenemos los detalles completos del usuario
-        $this->view->account = $this->model->getUserId($_SESSION['user_id']);
+        $this->view->account = $this->model->read($_SESSION['user_id']);
 
         // Creo la propiedad title de la vista
         $this->view->title = $_SESSION['user_name'] . " - Traileros";
@@ -112,7 +111,7 @@ class Account extends Controller
         $id = $_SESSION['user_id'];
 
         // Obtenemos los detalles completos del usuario
-        $this->view->account = $this->model->getUserId($id);
+        $this->view->account = $this->model->read($id);
 
         // Capa no validación del formulario
         if (isset($_SESSION['errors'])) {
@@ -153,7 +152,7 @@ class Account extends Controller
     public function update()
     {
 
-        // comprobar si hay usuario logueado
+        // Comprobar si hay usuario logueado
         $this->requireLogin();
 
         // Validación token CSRF
@@ -162,7 +161,7 @@ class Account extends Controller
         }
 
         // Saneamos los detalles del formulario
-        $name = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $apellidos = filter_var($_POST['apellidos'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $email = filter_var($_POST['email'] ?? '', FILTER_SANITIZE_EMAIL);
         $dni = filter_var($_POST['dni'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -181,33 +180,33 @@ class Account extends Controller
         $num_licencia = filter_var($_POST['num_licencia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
 
         // Obtengo los detalles del usuario
-        $account = $this->model->getUserId($_SESSION['user_id']);
+        $account_actual = $this->model->read($_SESSION['user_id']);
 
-        // validación de los datos del formulario
+        // Validación de los datos del formulario
         $errors = [];
 
-        // validación name
+        // Validación name
         // antes de validar compruebo se ha modificado
-        if ($name != $account->name) {
-            if (empty($name)) {
+        if ($nombre != $account_actual->nombre) {
+            if (empty($nombre)) {
                 $errors['name'] = 'El nombre es obligatorio';
-            } else if (strlen($name) < 5) {
-                $error['name'] = 'El nombre debe tener al menos 5 caracteres';
-            } else if (strlen($name) > 20) {
+            } else if (strlen($nombre) < 5) {
+                $errors['name'] = 'El nombre debe tener al menos 5 caracteres';
+            } else if (strlen($nombre) > 20) {
                 $errors['name'] = 'El nombre debe tener como máximo 20 caracteres';
-            } else if (!$this->model->validateUniqueName($name)) {
+            } else if (!$this->model->validate_unique_name($nombre)) {
                 $errors['name'] = 'Nombre usuario existente';
             }
         }
 
         // validación email
         // antes de validar compruebo se ha modificado
-        if ($email != $account->email) {
+        if ($email != $account_actual->email) {
             if (empty($email)) {
                 $errors['email'] = 'El email es obligatorio';
             } else if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $errors['email'] = 'El email no es válido';
-            } else if (!$this->model->validateUniqueEmail($email)) {
+            } else if (!$this->model->validate_unique_email($email, $_SESSION['user_id'])) {
                 $errors['email'] = 'Email existente';
             }
         }
@@ -218,24 +217,50 @@ class Account extends Controller
             $_SESSION['errors'] = $errors;
 
             // Creo la variable de sesión perfil
-            $_SESSION['account'] = (object) [
-                'name' => $name,
-                'email' => $email
-            ];
+            $_SESSION['account'] = (object) $_POST;
 
             // Redirecciono al formulario de edición
             header('location:' . URL . 'account/edit');
             exit();
         }
 
+        $role_id = $this->model->get_user_role_id($_SESSION['user_id']);
+
+        // Creamos el objeto user con los datos recogidos del formulario
+        $user_updated = new class_user(
+            $_SESSION['user_id'],      // id
+            $nombre,                   // nombre
+            $email,                    // email
+            $account_actual->password, // password (mantenemos el hash actual)
+            $account_actual->avatar,   // avatar (mantenemos el actual)
+            $apellidos,                // apellidos
+            $sexo,                     // sexo
+            $fecha_nac,                // fecha_nac
+            $dni,                      // dni
+            $tlf,                      // tlf
+            $tlf_emg,                  // tlf_emg
+            $direccion,                // direccion
+            $poblacion,                // poblacion
+            $provincia,                // provincia
+            $cp,                       // cp
+            $pais,                     // pais
+            $club,                     // club
+            $talla,                    // talla
+            $es_federado,              // es_federado
+            $num_licencia,             // num_licencia
+            $account_actual->created_at, // created_at
+            null,                      // updated_at (lo pondrá la BD)
+            $role_id   // role_id 
+        );
+
         // Actualizo los datos del usuario
-        $this->model->update($name, $email, $_SESSION['user_id']);
+        $this->model->update($user_updated, $_SESSION['user_id'], $role_id);
 
         // Actualizo el posible nuevo nombre del usuario
-        $_SESSION['user_name'] = $name;
+        $_SESSION['user_name'] = $nombre;
 
         // Genero mensaje de éxito
-        $_SESSION['notify'] = 'Cuenta actualizada correctamente';
+        $_SESSION['notify'] = 'Perfil actualizado correctamente';
 
         // Redirecciono a la vista principal de perfil
         header('location:' . URL . 'account');
@@ -332,7 +357,7 @@ class Account extends Controller
         $confirm_password = filter_var($_POST['confirm_password'] ??= null, FILTER_SANITIZE_SPECIAL_CHARS);
 
         // Obtengo los detalles del usuario
-        $account = $this->model->getUserId($_SESSION['user_id']);
+        $account = $this->model->read($_SESSION['user_id']);
 
         // validación de los datos del formulario
         $errors = [];
@@ -364,7 +389,7 @@ class Account extends Controller
         }
 
         // Actualizo password del usuario
-        $this->model->updatePass($new_password, $_SESSION['user_id']);
+        $this->model->update_pass($new_password, $_SESSION['user_id']);
 
         // Genero mensaje de éxito
         $_SESSION['notify'] = 'Password actualizado correctamente';
@@ -399,7 +424,7 @@ class Account extends Controller
         }
 
          # Obtenemos los detalles completos del usuario
-        $this->view->account = $this->model->getUserId($_SESSION['user_id']);
+        $this->view->account = $this->model->read($_SESSION['user_id']);
 
         // Creo la propiedad title de la vista
         $this->view->title = "Eliminar Cuenta";
@@ -452,6 +477,65 @@ class Account extends Controller
             $_SESSION['notify'] = "Debes iniciar sesión para acceder al sistema";
             header('Location: ' . URL . 'auth/login');
             exit();
+        }
+    }
+
+    public function uploadAvatar()
+    {
+        // 1. Verificamos que sea una petición POST y llegue el archivo
+        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['avatar'])) {
+            
+            $file = $_FILES['avatar'];
+            $userID = $_SESSION['user_id'];
+            
+            // 2. Validaciones de seguridad (Formato)
+            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!in_array($file['type'], $allowedTypes)) {
+                echo json_encode(['success' => false, 'error' => 'Formato no permitido (Solo JPG, PNG, WEBP)']);
+                return;
+            }
+
+            // 3. Definir nombre y ruta
+            $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+            $fileName = 'avatar_' . $userID . '_' . time() . '.' . $extension;
+            $uploadDir = 'public/assets/img/avatars/';
+            
+            // Crear la carpeta si no existe
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+
+            $uploadPath = $uploadDir . $fileName;
+
+            $oldAvatar = $_SESSION['user_avatar'] ?? null;
+
+            // 4. Mover el archivo de la carpeta temporal a la carpeta final
+            if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+
+                // Si ya existe un archivo de imagen previo, lo borramos
+                if ($oldAvatar && file_exists($oldAvatar)) {
+                    // Opcional: Evita borrar una imagen por defecto si la tuvieras
+                    if (strpos($oldAvatar, 'default-avatar') === false) {
+                        unlink($oldAvatar);
+                    }
+                }
+                
+                // 5. Llamar al modelo para guardar la ruta en la BD
+                // (Asegúrate de que el método en el modelo se llame exactamente updateAvatar)
+                $this->model->updateAvatar($userID, $uploadPath);
+                
+                // 6. Actualizar la sesión para que el cambio sea instantáneo en toda la web
+                $_SESSION['user_avatar'] = $uploadPath;
+
+                echo json_encode([
+                    'success' => true, 
+                    'newImageUrl' => URL . $uploadPath
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'error' => 'No se pudo guardar el archivo en el servidor']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Petición no válida']);
         }
     }
 
