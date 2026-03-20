@@ -14,7 +14,7 @@
             parent::__construct();
             // Iniciamos sesión una sola vez para todos los métodos de este controlador
             if (session_status() == PHP_SESSION_NONE) {
-                sec_session_start();
+                sec_session_start(true);
             }
         }
 

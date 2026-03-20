@@ -57,9 +57,12 @@ class Carrera extends Controller {
         if (isset($_SESSION['errors'])){
             $this->view->errors = $_SESSION['errors'];
             unset($_SESSION['errors']);
-            $this->view->carrera = $_SESSION['carrera'];
+            $this->view->carrera = (object) $_SESSION['carrera'];
             unset($_SESSION['carrera']);
             $this->view->error = "Errores en el formulario";
+        } else {
+            // Si no hay errores, creamos el objeto vacío desde la clase
+            $this->view->carrera = new class_carrera();
         }
 
         $this->view->title = "Añadir Evento - Traileros";
@@ -107,8 +110,8 @@ class Carrera extends Controller {
 
                 // Validar extensión
                 if (in_array($fileExtension, $allowedExtensions)) {
-                    // Validar tamaño (2MB)
-                    if ($fileSize <= 2 * 1024 * 1024) {
+                    // Validar tamaño (5MB)
+                    if ($fileSize <= 5 * 1024 * 1024) {
                         
                         // Generar nombre único
                         $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
@@ -129,7 +132,7 @@ class Carrera extends Controller {
                             $error['imagen'] = "Error al mover el archivo al servidor.";
                         }
                     } else {
-                        $error['imagen'] = "La imagen excede el máximo de 2MB.";
+                        $error['imagen'] = "La imagen excede el máximo de 5MB.";
                     }
                 } else {
                     $error['imagen'] = "Formato no permitido (JPG, PNG, WEBP).";
@@ -150,7 +153,7 @@ class Carrera extends Controller {
         // Si hay errores, redirigir
         if(!empty($error)){
             $_SESSION['errors'] = $error;
-            $_SESSION['carrera'] = (array) $carrera; // Lo pasamos como array por si tu vista lo espera así
+            $_SESSION['carrera'] = $carrera;
             header('Location: ' . URL . 'carrera/new');
             exit();
         }
@@ -194,7 +197,7 @@ class Carrera extends Controller {
         if (isset($_SESSION['errors'])) {
             $this->view->errors = $_SESSION['errors'];
             unset($_SESSION['errors']);
-            $this->view->carrera = $_SESSION['carrera'];
+            $this->view->carrera = (object) $_SESSION['carrera'];
             unset($_SESSION['carrera']);
             $this->view->error = "Errores en el formulario";
         }
@@ -204,10 +207,6 @@ class Carrera extends Controller {
         $this->view->render('carrera/edit/index');
     }
 
-    /*
-        Método: update
-        Descripción: Actualiza los datos de la carrera
-    */
     /*
         Método: update
         Descripción: Actualiza los datos de una carrera existente
@@ -250,7 +249,7 @@ class Carrera extends Controller {
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
             if (in_array($fileExtension, $allowedExtensions)) {
-                if ($fileSize <= 2 * 1024 * 1024) {
+                if ($fileSize <= 5 * 1024 * 1024) {
                     
                     $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
                     $uploadFileDir = 'public/assets/img/carreras/';
@@ -289,12 +288,13 @@ class Carrera extends Controller {
 
         if(!empty($error)){
             $_SESSION['errors'] = $error;
+            $_SESSION['carrera'] = $carrera;
             header('Location: ' . URL . 'carrera/edit/' . $id);
             exit();
         }
 
         // 5. Actualizar en BD
-        if ($this->model->update($carrera)) {
+        if ($this->model->update($carrera, $carrera->id)) {
             $_SESSION['notify'] = "¡Carrera actualizada correctamente!";
             header('Location: ' . URL . 'carrera');
             exit();

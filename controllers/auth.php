@@ -11,7 +11,7 @@
             parent ::__construct(); 
             // Iniciamos sesión una sola vez para todos los métodos de este controlador
             if (session_status() == PHP_SESSION_NONE) {
-                sec_session_start();
+                sec_session_start(true);
             }
         }
 
@@ -164,6 +164,7 @@
         $_SESSION['user_id'] = $user->id;
         $_SESSION['user_name'] = $user->name;
         $_SESSION['user_email'] = $user->email;
+        $_SESSION['user_avatar'] = !empty($user->avatar) ? $user->avatar : null;;
 
         // Obtengo los datos del rol del usuario
         $_SESSION['role_id'] = $this->model->get_id_role_user($user->id);

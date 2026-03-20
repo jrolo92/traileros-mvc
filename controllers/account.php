@@ -11,7 +11,7 @@ class Account extends Controller
             sec_session_start();
         }
 
-        // Dejamos que el Framework cargue el modelo 'account' a su manera.
+        // Dejamos que el Framework cargue el modelo.
         $this->loadModel('account');
 
     }
@@ -521,7 +521,6 @@ class Account extends Controller
                 }
                 
                 // 5. Llamar al modelo para guardar la ruta en la BD
-                // (Asegúrate de que el método en el modelo se llame exactamente updateAvatar)
                 $this->model->updateAvatar($userID, $uploadPath);
                 
                 // 6. Actualizar la sesión para que el cambio sea instantáneo en toda la web

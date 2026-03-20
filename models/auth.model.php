@@ -23,7 +23,7 @@ class authModel extends Model {
     public function get_user_email($email) {
         try {
         // Generamos select 
-        $sql = "SELECT id, name, email, password FROM users WHERE email = :email LIMIT 1";
+        $sql = "SELECT id, name, email, password, avatar FROM users WHERE email = :email LIMIT 1";
         // Conectar con la base de datos
         $geslibros = $this->db->connect();
         // Preparar la consulta obteniendo el objeto PDOStatement

@@ -79,7 +79,7 @@
                     <label for="imagen">Imagen del Evento</label>
                     <div class="file-input-wrapper">
                         <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
-                        <small class="form-text text-muted">Formatos admitidos: JPG, PNG. Máx 2MB.</small>
+                        <small class="form-text text-muted">Formatos admitidos: JPG, PNG. Máx 5MB.</small>
                     </div>
                     <?php if (isset($this->errors['imagen'])): ?>
                         <small class="error-text"><?= $this->errors['imagen'] ?></small>
