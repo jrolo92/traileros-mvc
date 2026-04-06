@@ -5,7 +5,7 @@
     z-index: 1100;
     background: $primary-green;
     border: none;
-    color: $white;
+    color: var(--bg-card);
     padding: 12px 15px;
     border-radius: 8px;
     cursor: pointer;
@@ -14,11 +14,11 @@
 
 .sidebar {
     position: fixed;
-    left: -$sidebar-width;
+    left: $sidebar-width;
     top: 0;
     width: $sidebar-width;
     height: 100%;
-    background: $dark-grey;
+    background: var(--text-main);
     z-index: 1000;
     transition: $transition;
     padding: 1.5rem;
@@ -32,7 +32,7 @@
         align-items: center;
         height: 60px;
         margin-bottom: 2rem;
-        border-bottom: 1px solid #333;
+        border-bottom: 1px solid var(--border-color);
 
         h2 {
             margin: 0;
@@ -52,7 +52,7 @@
             margin: 1.2rem 0;
             
             a {
-                color: $white;
+                color: var(--bg-card);
                 text-decoration: none;
                 font-size: 1.1rem;
                 display: flex;

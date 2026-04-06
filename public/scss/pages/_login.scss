@@ -14,7 +14,7 @@ $card-radius: 15px;
     display: flex; // <--- ESTO pone la imagen al lado del formulario
     width: 100%;
     max-width: 950px;
-    background: #fff;
+    background: var(--bg-card);
     border-radius: $card-radius;
     overflow: hidden;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -23,7 +23,7 @@ $card-radius: 15px;
     // Lado de la imagen
     .login-visual {
         flex: 1.1; // Un poco más ancho que el formulario
-        background: linear-gradient(rgba($header-bg, 0.5), rgba($header-bg, 0.5)), 
+        background: linear-gradient(rgba(17, 17, 17, 0.5), rgba(17, 17, 17, 0.5)), 
                     url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000');
         background-size: cover;
         background-position: center;
@@ -52,7 +52,7 @@ $card-radius: 15px;
         .login-header h2 {
             font-size: 2rem;
             font-weight: 800;
-            color: $header-bg;
+            color: var(--header-bg);
             margin-bottom: 30px;
         }
     }

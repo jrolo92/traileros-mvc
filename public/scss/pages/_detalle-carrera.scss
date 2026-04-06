@@ -127,7 +127,7 @@
     width: 80%;
     max-width: 700px;
     text-align: center;
-    color: #fff; // Blanco puro para el texto
+    color: var(--bg-card); 
     padding: 20px 0;
     font-size: 1.1rem;
     font-weight: 300;
@@ -137,7 +137,7 @@
     position: absolute;
     top: 20px;
     right: 35px;
-    color: #ffffff;
+    color: var(--header-text);
     font-size: 45px;
     font-weight: 200;
     transition: 0.3s;

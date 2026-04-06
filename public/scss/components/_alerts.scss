@@ -49,8 +49,8 @@
     &.alert-error {
         background-color: #fff5f5;
         color: $error-color;
-        border-color: #feb2b2;
-        border-left: 5px solid #fc8181;
+        border-color: lighten ($error-color, 10%);
+        border-left: 5px solid $error-color;
     }
 
     // Variación: NOTIFICACIÓN / MENSAJE

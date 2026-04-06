@@ -16,7 +16,7 @@
     }
 
     tbody tr {
-        background: #fff;
+        background: var(--bg-card);
         transition: transform 0.2s;
         
         &:hover {
@@ -70,7 +70,7 @@
     // Enlaces de navegación
     .nav-brand-link, .nav-action-link, .nav-dropbtn {
         text-decoration: none;
-        color: #555;
+        color: var(--text-sec);
         font-size: 0.9rem;
         font-weight: 600;
         transition: color 0.3s;
@@ -95,14 +95,14 @@
     .nav-search-form {
         .search-wrapper {
             display: flex;
-            background: #f4f4f4;
+            background: var(--bg-body);
             border-radius: 20px;
             padding: 5px 15px;
             border: 1px solid #eee;
             transition: all 0.3s;
 
             &:focus-within {
-                background: #fff;
+                background: var(--bg-card);
                 border-color: $primary-green;
                 box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
             }

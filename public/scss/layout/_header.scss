@@ -1,6 +1,6 @@
 .main-header {
-    background-color: $header-bg;
-    color: $header-text;
+    background-color: var(--header-bg);
+    color: var(--header-text);
     height: 70px;
     display: flex;
     align-items: center;
@@ -24,7 +24,7 @@
 
     .header-nav {
         a {
-            color: rgba($header-text, 0.8);
+            color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
@@ -43,8 +43,8 @@
 
     .btn-login-header {
         text-decoration: none;
-        color: $header-text;
-        border: 1px solid rgba(255,255,255,0.3);
+        color: var(--header-text);
+        border: 1px solid var(--border-color);
         padding: 8px 20px;
         border-radius: 5px;
         font-size: 0.9rem;
@@ -52,14 +52,14 @@
 
         &:hover {
             background: $primary-green;
-            color: $header-text;
-            border-color: $white;
+            color: var(--header-text);
+            border-color: var(--border-color);
         }
     }
 
     .btn-user {
-        background-color: $header-bg;
-        color: $white;
+        background-color: var(--header-bg);
+        color: var(--header-text);
         text-decoration: none;
         display: flex;
         align-items: center;
@@ -94,12 +94,12 @@
         gap: 12px;
         font-weight: 800;
         font-size: 1.4rem;
-        color: #fff;
+        color: var(--header-text);
         text-decoration: none;
 
         i {
             font-size: 1.8rem;
-            color: $header-text; 
+            color: var(--header-text); 
 
         }
         
@@ -125,7 +125,7 @@
     position: absolute;
     top: 100%;
     right: 0;
-    background-color: #fff;
+    background-color: var(--bg-card);
     min-width: 180px;
     box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
     border-radius: 8px;
@@ -138,7 +138,7 @@
     transition: all 0.3s ease;
 
     a {
-        color: #333;
+        color: var(--text-main);
         padding: 12px 16px;
         text-decoration: none;
         display: flex;
@@ -150,7 +150,7 @@
         i { width: 16px; color: #777; }
 
         &:hover {
-            background-color: #f8fafb;
+            // background-color: #f8fafb;
             color: $primary-green;
             i { color: $primary-green; }
         }
@@ -158,7 +158,7 @@
         &.logout-link {
             color: #e74c3c;
             &:hover {
-                background-color: #fff5f5;
+                // background-color: #fff5f5;
                 i { color: #e74c3c; }
             }
         }
@@ -167,6 +167,7 @@
     hr {
         margin: 5px 0;
         border: 0;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color);
     }
+
 }

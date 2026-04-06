@@ -16,7 +16,7 @@
 
     .btn-primary {
         background: $primary-green;
-        color: $white;
+        color: var(--bg-card);
         padding: 1rem 2.5rem;
         text-decoration: none;
         border-radius: 50px;
@@ -57,7 +57,7 @@
         bottom: 100px;
         right: 30px;
         background: $primary-green;
-        color: $white;
+        color: var(--bg-card);
         padding: 15px 25px;
         border-radius: 50px;
         text-decoration: none;
@@ -80,7 +80,7 @@
         text-align: center;
         padding: 12px;
         background: #f1f1f1;
-        color: #333;
+        color: var(--text-sec);
         text-decoration: none;
         border-radius: 8px;
         font-weight: 600;
@@ -88,7 +88,7 @@
 
         &:hover {
             background: $primary-green;
-            color: #ffffff;
+            color: var(--bg-card);
         }
     }
 
@@ -168,7 +168,7 @@
     .btn-account-cancel {
         background-color: #f1f3f5;
         color: #495057;
-        border: 1px solid #dee2e6;
+        border: 1px solid var(--border-color);
 
         &:hover {
             background-color: #e9ecef;
@@ -202,8 +202,8 @@
 
         .btn-register {
             background: #f8f9fa;
-            color: #555;
-            border: 1px solid #ddd;
+            color: var(--text-sec);
+            border: 1px solid var(--border-color);
         }
     }
 

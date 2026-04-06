@@ -1,8 +1,8 @@
 .footer {
-    background-color: #ffffff;
+    background-color: var(--input-bg);
     padding: 30px 0;
     margin-top: 0px;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--border-color);
     color: #888;
     font-size: 0.85rem;
 
@@ -28,7 +28,7 @@
         gap: 10px;
 
         strong {
-            color: #333;
+            color: var(--text-main);
             letter-spacing: 1px;
         }
 
@@ -83,7 +83,7 @@
             transition: transform 0.3s ease, color 0.3s ease;
 
             &:hover {
-                color: #333;
+                color: var(--text-sec);
                 transform: translateY(-2px);
             }
         }

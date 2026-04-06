@@ -21,7 +21,7 @@
             <?php require_once 'template/partials/mensaje.partial.php'; ?>
             <?php require_once 'template/partials/error.partial.php'; ?>
 
-            <form action="<?= URL ?>carrera/update/<?= $this->id ?>" method="POST" class="custom-form">
+            <form action="<?= URL ?>carrera/update/<?= $this->id ?>" method="POST" enctype="multipart/form-data" class="custom-form">
                 
                 <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 

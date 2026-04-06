@@ -126,7 +126,7 @@ class Carrera extends Controller {
 
                         $dest_path = $uploadFileDir . $nuevoNombreImagen;
 
-                        if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                        if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {
                             $nombreImagen = $nuevoNombreImagen;
                         } else {
                             $error['imagen'] = "Error al mover el archivo al servidor.";
@@ -255,7 +255,7 @@ class Carrera extends Controller {
                     $uploadFileDir = 'public/assets/img/carreras/';
                     $dest_path = $uploadFileDir . $nuevoNombreImagen;
 
-                    if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                    if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {
                         
                         // Si se subió la nueva, borramos la vieja físicamente (si no es la default)
                         if ($nombreImagen !== 'default.jpg') {
@@ -465,6 +465,48 @@ class Carrera extends Controller {
             header('Location: ' . URL . 'auth/login');
             exit();
         }
+    }
+
+    private function resizeImage($tmp_name, $destination, $targetWidth, $targetHeight = null) {
+        // Obtener metadatos de la imagen
+        list ($width, $height, $type) = getimagesize($tmp_name);
+
+        // Calcular alto proporcional si no se define altura
+        if ($targetHeight === null) {
+            $ratio = $width / $height;
+            $targetHeight = (int) round ($targetWidth / $ratio);
+        }
+
+        // Crear lienzo vacío
+        $newImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        // cargar imagen original según su tipo
+        switch ($type){
+            case IMAGETYPE_JPEG: $source = imagecreatefromjpeg($tmp_name); break;
+            case IMAGETYPE_PNG: $source = imagecreatefrompng($tmp_name); break;
+            case IMAGETYPE_WEBP: $source = imagecreatefromwebp($tmp_name); break;
+            default: return false;
+        }
+
+        // Mantener transparencias en PNG/WEBP
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+
+        // Redimensionar realizando una copia de la original
+        imagecopyresampled($newImage, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        switch ($type) {
+            case IMAGETYPE_JPEG: imagejpeg($newImage, $destination, 80); break;
+            case IMAGETYPE_PNG: imagepng($newImage, $destination, 8); break;
+            case IMAGETYPE_WEBP: imagewebp($newImage, $destination, 80); break;
+        }
+
+        // Liberar memoria
+        imagedestroy($newImage);
+        imagedestroy($source);
+
+        return true;
     }
 
     private function handleError() {

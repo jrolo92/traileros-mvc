@@ -38,6 +38,10 @@
                         <a href="<?= URL ?>account/edit">
                             <i class="fas fa-user-edit"></i> Editar Datos
                         </a>
+                        <a href="#" id="theme-toggle" class="theme-switch-item">
+                            <i class="fas fa-moon" id="theme-icon"></i> 
+                            <span>Modo Oscuro</span>
+                        </a>
                         <a class="nav-link" href="<?= URL ?>ayuda">
                             <i class="fas fa-question-circle"></i> Acerca de
                         </a>

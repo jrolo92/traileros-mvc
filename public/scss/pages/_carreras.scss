@@ -52,7 +52,7 @@
         position: relative;
 
         .dropdown-button {
-            background: #fff;
+            background: var(--bg-card);;
             border: 1px solid #ddd;
             padding: 12px 20px;
             border-radius: 10px;
@@ -74,7 +74,7 @@
             position: absolute;
             top: calc(100% + 8px);
             right: 0;
-            background: #fff;
+            background: var(--bg-card);;
             min-width: 200px;
             border-radius: 10px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -86,7 +86,7 @@
             li a {
                 display: block;
                 padding: 10px 20px;
-                color: #555;
+                color: var(--text-sec);
                 text-decoration: none;
                 font-size: 0.95rem;
                 transition: background 0.2s;
@@ -131,7 +131,7 @@
 
 // tarjeta Horizontal 
 .carrera-card {
-    background: #fff;
+    background: var(--bg-card);;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     overflow: hidden;
@@ -245,7 +245,7 @@
         align-items: center;
         justify-content: center;
         text-decoration: none;
-        background-color: #fff;
+        background-color: var(--bg-card);;
         color: #777; // Gris neutro en lugar de azul
         border: 1px solid #eee;
         transition: all 0.3s ease;
@@ -297,7 +297,7 @@
 
         &:hover:not(.active) {
             border-color: #ddd;
-            color: #333;
+            color: var(--text-sec);
             background-color: #fafafa;
         }
     }

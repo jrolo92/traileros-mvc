@@ -487,8 +487,29 @@ class Account extends Controller
             
             $file = $_FILES['avatar'];
             $userID = $_SESSION['user_id'];
+
+            // comprobación de errores nativos de subida en php
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+            $phpErrors = [
+                UPLOAD_ERR_INI_SIZE   => 'El archivo es demasiado grande para la configuración del servidor.',
+                UPLOAD_ERR_FORM_SIZE  => 'El archivo excede el límite permitido por el formulario.',
+                UPLOAD_ERR_PARTIAL    => 'La subida se interrumpió, intenta de nuevo.',
+                UPLOAD_ERR_NO_FILE    => 'No se ha seleccionado ningún archivo.',
+                UPLOAD_ERR_NO_TMP_DIR => 'Error del servidor: falta carpeta temporal.',
+                UPLOAD_ERR_CANT_WRITE => 'Error del servidor: no se pudo escribir en el disco.',
+            ];
+            $errorMsg = $phpErrors[$file['error']] ?? 'Error desconocido en la subida.';
+            echo json_encode(['success' => false, 'error' => $errorMsg]);
+            return;
+        }
             
-            // 2. Validaciones de seguridad (Formato)
+            // 2. Validaciones de seguridad
+            $maxSize = 2 * 1024 * 1024;
+            if ($file['size'] > $maxSize){
+                echo json_encode(['success' => false, 'error' => 'El archivo excede el límite de 2MB']);
+                return;
+            }
+
             $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
             if (!in_array($file['type'], $allowedTypes)) {
                 echo json_encode(['success' => false, 'error' => 'Formato no permitido (Solo JPG, PNG, WEBP)']);
@@ -510,12 +531,12 @@ class Account extends Controller
             $oldAvatar = $_SESSION['user_avatar'] ?? null;
 
             // 4. Mover el archivo de la carpeta temporal a la carpeta final
-            if (move_uploaded_file($file['tmp_name'], $uploadPath)) {
+            if ($this->resizeImage($file['tmp_name'], $uploadPath, 400, 400)) {
 
                 // Si ya existe un archivo de imagen previo, lo borramos
                 if ($oldAvatar && file_exists($oldAvatar)) {
-                    // Opcional: Evita borrar una imagen por defecto si la tuvieras
-                    if (strpos($oldAvatar, 'default-avatar') === false) {
+                    // Evitamos borrar imágenes por defecto
+                    if (strpos($oldAvatar, 'default') === false) {
                         unlink($oldAvatar);
                     }
                 }
@@ -536,6 +557,48 @@ class Account extends Controller
         } else {
             echo json_encode(['success' => false, 'error' => 'Petición no válida']);
         }
+    }
+
+    private function resizeImage($tmp_name, $destination, $targetWidth, $targetHeight = null) {
+        // Obtener metadatos de la imagen
+        list ($width, $height, $type) = getimagesize($tmp_name);
+
+        // Calcular alto proporcional si no se define altura
+        if ($targetHeight === null) {
+            $ratio = $width / $height;
+            $targetHeight = $targetWidth / $ratio;
+        }
+
+        // Crear lienzo vacío
+        $newImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+        // cargar imagen original según su tipo
+        switch ($type){
+            case IMAGETYPE_JPEG: $source = imagecreatefromjpeg($tmp_name); break;
+            case IMAGETYPE_PNG: $source = imagecreatefrompng($tmp_name); break;
+            case IMAGETYPE_WEBP: $source = imagecreatefromwebp($tmp_name); break;
+            default: return false;
+        }
+
+        // Mantener transparencias en PNG/WEBP
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
+
+        // Redimensionar realizando una copia de la original
+        imagecopyresampled($newImage, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+        // Guardar la imagen redimensionada
+        switch ($type) {
+            case IMAGETYPE_JPEG: imagejpeg($newImage, $destination, 80); break;
+            case IMAGETYPE_PNG: imagepng($newImage, $destination, 8); break;
+            case IMAGETYPE_WEBP: imagewebp($newImage, $destination, 80); break;
+        }
+
+        // Liberar memoria
+        imagedestroy($newImage);
+        imagedestroy($source);
+
+        return true;
     }
 
     /*

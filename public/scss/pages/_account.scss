@@ -1,14 +1,14 @@
 .account-container {
     min-height: calc(100vh - 140px);
     min-width: 80%;
-    background-color: #f4f7f6;
+    background-color: var(--bg-body);
     padding: 60px 20px;
     display: flex;
     justify-content: center;
 }
 
 .account-card {
-    background: #fff;
+    background: var(--bg-card);
     width: 90%;
     
     border-radius: 15px;
@@ -16,8 +16,8 @@
     overflow: hidden;
 
     .account-header {
-        background: #333; // O tu $header-bg
-        color: white;
+        background: var(--header-bg); 
+        color: var(--header-text);
         padding: 30px 40px;
 
         .user-info-main {
@@ -37,11 +37,11 @@
 .account-menu {
     display: flex;
     gap: 10px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid var(--border-color);
     padding-top: 15px;
 
     a {
-        color: #fff;
+        color: var(--bg-card);
         text-decoration: none;
         padding: 8px 16px;
         border-radius: 20px;
@@ -51,7 +51,7 @@
 
         &:hover, &.active {
             background: $primary-green;
-            color: #fff;
+            color: var(--header-text);
         }
     }
 }
@@ -69,7 +69,7 @@
         grid-column: 1 / -1; // Esto hace que el H3 ocupe todo el ancho (las 2 columnas)
         margin: 10px 0;
         font-size: 1.1rem;
-        color: #333;
+        color: var(--text-main);
         border-bottom: 2px solid $primary-green; // Una línea sutil para separar
         padding-bottom: 5px;
         font-weight: 700;
@@ -81,12 +81,12 @@
         flex-direction: column;
 
         h3 {
-            color: #555;
+            color: var(--text-main);
         }
         
         label {
             font-weight: 700;
-            color: #555;
+            color: var(--text-main);
             margin-bottom: 8px;
             font-size: 0.85rem;
             text-transform: uppercase;
@@ -94,8 +94,8 @@
 
         input {
             padding: 12px;
-            border: 1px solid #eee;
-            background: #f9f9f9; 
+            border: 1px solid var(--border-color);
+            background: var(--bg-body); 
             border-radius: 8px;
             color: #777;
             cursor: text;
@@ -104,12 +104,12 @@
             &:focus {
                 border-color: $primary-green;
                 outline: none;
-                background: #fff;
+                background: var(--bg-card);
             }
 
             // Cuando el input esté deshabilitado, mostramos el cursor de prohibido
             &:disabled {
-                background: #f9f9f9;
+                background: var(--bg-body);
                 color: #777;
                 cursor: not-allowed;
             }
@@ -132,43 +132,43 @@
     padding: 0 20px;
 }
 
-// Sidebar (Menú Lateral)
-.account-sidebar {
-    background: #fff;
-    border-radius: 15px;
-    padding: 30px 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    height: fit-content;
+// // Sidebar (Menú Lateral)
+// .account-sidebar {
+//     background: var(--bg-card);
+//     border-radius: 15px;
+//     padding: 30px 0;
+//     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+//     height: fit-content;
 
-    .user-brief {
-        text-align: center;
-        padding-bottom: 25px;
-        border-bottom: 1px solid #eee;
-        margin-bottom: 20px;
+//     .user-brief {
+//         text-align: center;
+//         padding-bottom: 25px;
+//         border-bottom: 1px solid var(--border-color);
+//         margin-bottom: 20px;
 
-        .avatar-circle {
-            width: 80px;
-            height: 80px;
-            background: $primary-green;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0 auto 15px;
-        }
+//         .avatar-circle {
+//             width: 80px;
+//             height: 80px;
+//             background: $primary-green;
+//             color: white;
+//             border-radius: 50%;
+//             display: flex;
+//             align-items: center;
+//             justify-content: center;
+//             font-size: 2rem;
+//             font-weight: 700;
+//             margin: 0 auto 15px;
+//         }
 
-        h3 { font-size: 1.1rem; margin: 0; color: #333; }
-        .role-badge { 
-            font-size: 0.75rem; 
-            color: $primary-green; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-        }
-    }
-}
+//         h3 { font-size: 1.1rem; margin: 0; color: #333; }
+//         .role-badge { 
+//             font-size: 0.75rem; 
+//             color: $primary-green; 
+//             font-weight: 700; 
+//             text-transform: uppercase; 
+//         }
+//     }
+// }
 
 .section-header-flex {
     grid-column: 1 / -1; 
@@ -178,10 +178,12 @@
     border-bottom: 2px solid $primary-green;
     margin-bottom: 15px;
     padding-bottom: 5px;
+    color: var(--text-main);
 
     .form-section-title {
         border-bottom: none !important;
         margin: 0;
+        
     }
 }
 
@@ -192,22 +194,22 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #fff5f5;
+    background: var(--bg-card);
     padding: 15px;
     border-radius: 8px;
-    border: 1px dashed #feb2b2;
+    border: 1px dashed lighten($error-color, 20%);
 
     p {
         margin: 0;
         font-size: 0.9rem;
-        color: #c53030;
+        color: $error-color;
     }
 }
 
 .alert-danger-custom {
     background-color: #fff5f5;
-    border-left: 4px solid #e74c3c;
-    color: #c0392b;
+    border-left: 4px solid $error-color;
+    color: $error-color;
     padding: 15px;
     border-radius: 4px;
     font-size: 0.9rem;
@@ -261,18 +263,18 @@
             }
 
             &.active {
-                background: #fff; // Fondo blanco para que parezca una pestaña
+                background: var(--bg-card);
                 color: $primary-green;
-                border-bottom: 3px solid $primary-green; // El borde ahora es visible abajo
+                border-bottom: 3px solid $primary-green; 
                 font-weight: 700;
                 i { color: $primary-green; }
             }
 
             &.delete-link:hover {
-                color: #e74c3c;
+                color: $error-color;
                 background: #fff5f5;
-                border-bottom-color: #e74c3c;
-                i { color: #e74c3c; }
+                border-bottom-color: $error-color;
+                i { color: $error-color; }
             }
         }
     }
@@ -302,7 +304,7 @@
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--bg-card);
     padding-top: 25px;
     margin-top: 20px;
     gap: 10px;

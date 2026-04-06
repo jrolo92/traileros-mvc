@@ -5,5 +5,14 @@
 	<!-- Cargar iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
+        // fetch de upload-avatar.js
         const RUTA_URL = '<?= URL ?>';
+        
+        // Tema --> Bloque de ejecución inmediata para evitar el flash blanco
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
     </script>
+
+    <script src="<?= URL ?>public/js/theme-logic.js" defer></script>

@@ -18,7 +18,7 @@
         text-align: center;
         margin-bottom: 35px;
         i { font-size: 2.5rem; color: $primary-green; margin-bottom: 10px; }
-        h2 { font-weight: 700; color: #333; margin: 0; }
+        h2 { font-weight: 700; color: var(--text-sec); margin: 0; }
         p { color: #888; font-size: 0.9rem; }
     }
 }
@@ -26,12 +26,12 @@
 .custom-form {
     .form-group {
         margin-bottom: 20px;
-        label { display: block; font-weight: 600; font-size: 0.85rem; color: #555; margin-bottom: 8px; }
+        label { display: block; font-weight: 600; font-size: 0.85rem; color: var(--text-sec); margin-bottom: 8px; }
         
         input, select, textarea {
             width: 100%;
             padding: 12px 15px;
-            border: 1px solid #ddd;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 0.95rem;
             transition: all 0.3s;
@@ -39,7 +39,7 @@
         }
         
         &.readonly-group .fake-input {
-            background: #f4f4f4;
+            background: var(--bg-body);
             padding: 12px 15px;
             border-radius: 8px;
             color: #777;
@@ -59,7 +59,7 @@
         align-items: center;
         margin-top: 30px;
         padding-top: 20px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color);
 
         .main-buttons {
             display: flex;
@@ -78,7 +78,7 @@
         width: 100%;
         padding: 10px;
         background: #f9f9f9;
-        border: 1px dashed #ccc; // Estilo "zona de carga"
+        border: 1px dashed var(--border-color);
         border-radius: 8px;
         cursor: pointer;
         
@@ -102,9 +102,9 @@
     width: 100%;
     padding: 10px 12px;
     font-size: 0.95rem;
-    border: 1px solid #dcdde1;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--bg-card);
     color: #2f3640;
     transition: all 0.3s ease;
     outline: none;
@@ -126,14 +126,14 @@
 /* Efectos de Focus (cuando el usuario hace clic) */
 .form-control:focus, 
 .form-select:focus {
-    border-color: #27ae60; /* El verde de tu botón Guardar */
+    border-color: $primary-green;
     box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
     background-color: #f9fffb;
 }
 
 /* Estilo para el estado de error/inválido */
 .form-select.is-invalid {
-    border-color: #e74c3c;
+    border-color: lighten($error-color, 10%);
     background-color: #fffaf9;
 }
 

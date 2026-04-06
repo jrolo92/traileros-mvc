@@ -5,7 +5,7 @@
     padding: 2rem;
 
     .card {
-        background: $white;
+        background: var(--bg-card);
         border-radius: 15px;
         overflow: hidden;
         box-shadow: 0 5px 15px rgba(0,0,0,0.08);
@@ -35,7 +35,7 @@
 
 /* Tarjeta de Próximas Carreras (Main) */
 .carrera-card {
-    background: #ffffff;
+    background: var(--bg-card);
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
@@ -63,7 +63,7 @@
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
-            color: #ffffff;
+            color: var(--bg-card);
             
             &.ultra { background: #e74c3c; } // Rojo para ultras
             &.trail { background: $primary-green; }
@@ -85,7 +85,7 @@
         h3 { 
             margin: 10px 0; 
             font-size: 1.25rem; 
-            color: #333; 
+            color: var(--text-sec); 
             line-height: 1.4; 
         }
 
@@ -101,13 +101,13 @@
             display: flex;
             justify-content: space-between;
             padding: 15px 0;
-            border-top: 1px solid #eeeeee;
+            border-top: 1px solid var(--border-color);
             margin-top: auto; // Empuja las stats al fondo
             margin-bottom: 15px;
             
             span { 
                 font-size: 0.85rem; 
-                color: #555; 
+                color: var(--text-sec); 
                 font-weight: 500; 
                 display: flex;
                 align-items: center;

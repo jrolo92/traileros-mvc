@@ -8,7 +8,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: $white;
+    color: var(--bg-body);
 
     // Centrado de la imagen
     background-position: center;
@@ -55,7 +55,7 @@
 /* Sección de Próximos Eventos */
 .carreras-section {
     padding: 40px 0;
-    background-color: #f9f9f9;
+    background-color: var(--bg-body);
 
     .section-header {
         text-align: center;
@@ -63,7 +63,7 @@
         
         .section-title { 
             font-size: 2.5rem; 
-            color: #333; 
+            color: var(--text-sec); 
             margin-bottom: 10px; 
         }
         

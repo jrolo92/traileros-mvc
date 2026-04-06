@@ -52,14 +52,54 @@ document.getElementById('avatarInput').addEventListener('change', function() {
                 // Restauramos el icono de la cámara
                 overlay.innerHTML = '<i class="fas fa-camera"></i>';
                 overlay.style.opacity = '';
-                alert('¡Foto de perfil actualizada!');
+                showNotification('¡Foto de perfil actualizada!');
             } else {
-                alert('Error: ' + data.error);
+                showNotification('Error: ' + data.error);
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error al subir la imagen');
+            showNotification('Error al subir la imagen');
         });
     }
 });
+
+function showNotification(mensaje) {
+    const toast = document.createElement('div');
+    toast.innerText = mensaje;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #28a745;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 8px;
+        z-index: 9999;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-weight: bold;
+        transition: opacity 0.5s ease, transform 0.5s ease;
+        opacity: 0;
+        transform: translateY(20px);
+    `;
+    document.body.appendChild(toast);
+
+    // Animación de entrada
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 100);
+
+    // Animación de cierre tras 3 segundos
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.remove();
+            }
+        }, 400);
+    }, 3000);
+    
+}
