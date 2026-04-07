@@ -1,5 +1,35 @@
 // Color principal
 $primary-green: #2d5a27;
+$white: #ffffff;
+
+// Definición de temas
+:root {
+    // Tema Claro
+    color-scheme: light;
+    --bg-body: #f4f4f4;
+    --bg-card: #ffffff;
+    --text-main: #1a1a1a; 
+    --header-bg: #131313;  
+    --header-text: #ffffff; 
+    --border-color: #dddddd;
+    --text-sec: #333;
+    --footer-bg: #f1f1f1;
+    --hero-text: #f4f4f4;
+}
+
+[data-theme="dark"] {
+    // Tema Oscuro
+    color-scheme: dark;
+    --bg-body: #171717;  
+    --bg-card: #1e1e1e;      
+    --text-main: #f4f4f4;    
+    --header-bg: #131313;    
+    --header-text: #ffffff;
+    --border-color: #333333;
+    --text-sec: #888;
+    --footer-bg: #131313;
+    --hero-text: #888;
+}
 
 // Colores para alertas
 $notify-color: #2d5a27;
@@ -10,29 +40,6 @@ $transition: all 0.3s ease;
 
 // Fuente
 $font-main: 'Inter', sans-serif;
-
-// Definición de temas
-:root {
-    // Tema Claro 
-    --bg-body: #f4f4f4; // $light-grey: #f4f4f4;
-    --bg-card: #ffffff; // $white: #ffffff;
-    --text-main: #1a1a1a; // $dark-grey: #1a1a1a;
-    --header-bg: #051601;  // $header-bg: #111;
-    --header-text: #ffffff; // $header-text: #fff;
-    --border-color: #dddddd;
-    --text-sec: #333;
-}
-
-[data-theme="dark"] {
-    // Tema Oscuro
-    --bg-body: #101010;  
-    --bg-card: #1e1e1e;      
-    --text-main: #f4f4f4;    
-    --header-bg: #051601;    
-    --header-text: #ffffff;
-    --border-color: #333333;
-    --text-sec: #888;
-}
 
 // Reset
 * {
@@ -47,6 +54,4 @@ body {
     overflow-x: hidden;
 }
 
-p, h1, h3, span {
-    text-align: center;
-}
+

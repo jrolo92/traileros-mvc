@@ -8,7 +8,7 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    color: var(--bg-body);
+    color: var(--hero-text);
 
     // Centrado de la imagen
     background-position: center;
@@ -26,19 +26,19 @@
             text-transform: uppercase;
 
             // Animaciones
-            opacity: 0; /* Empezamos ocultos para que la animación funcione */
+            opacity: 0; 
             animation-name: fadeInUpH1;
             animation-duration: 1.2s;
-            animation-timing-function: ease-out; /* Empieza rápido, termina lento */
-            animation-fill-mode: forwards; /* Se queda con los estilos finales (opacity: 1) */
+            animation-timing-function: ease-out; // Empieza rápido, termina lento 
+            animation-fill-mode: forwards; // Se queda con los estilos finales (opacity: 1) 
         }
 
         p {
-            opacity: 0; /* Empezamos ocultos */
+            opacity: 0; 
             animation-name: fadeInUpP;
             animation-duration: 1.2s; 
             animation-timing-function: ease-out;
-            animation-delay: 0.5s; /* IMPORTANTE: Espera 0.5s antes de empezar */
+            animation-delay: 0.5s; 
             animation-fill-mode: forwards;
         }
         

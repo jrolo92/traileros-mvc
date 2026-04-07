@@ -1,22 +1,28 @@
 @charset "UTF-8";
 :root {
+  color-scheme: light;
   --bg-body: #f4f4f4;
   --bg-card: #ffffff;
   --text-main: #1a1a1a;
-  --header-bg: #051601;
+  --header-bg: #131313;
   --header-text: #ffffff;
   --border-color: #dddddd;
   --text-sec: #333;
+  --footer-bg: #f1f1f1;
+  --hero-text: #f4f4f4;
 }
 
 [data-theme=dark] {
-  --bg-body: #101010;
+  color-scheme: dark;
+  --bg-body: #171717;
   --bg-card: #1e1e1e;
   --text-main: #f4f4f4;
-  --header-bg: #051601;
+  --header-bg: #131313;
   --header-text: #ffffff;
   --border-color: #333333;
   --text-sec: #888;
+  --footer-bg: #131313;
+  --hero-text: #888;
 }
 
 * {
@@ -29,10 +35,6 @@
 body {
   background-color: var(--bg-body);
   overflow-x: hidden;
-}
-
-p, h1, h3, span {
-  text-align: center;
 }
 
 /* Animación para el H1: Aparece (Fade In) y sube ligeramente */
@@ -112,7 +114,7 @@ p, h1, h3, span {
   bottom: 100px;
   right: 30px;
   background: #2d5a27;
-  color: var(--bg-card);
+  color: #ffffff;
   padding: 15px 25px;
   border-radius: 50px;
   text-decoration: none;
@@ -236,28 +238,25 @@ p, h1, h3, span {
   display: flex;
   gap: 15px;
 }
-.form-buttons button, .form-buttons .btn-register {
+.form-buttons button, .form-buttons .btn-register, .form-buttons .btn-submit {
   flex: 1;
   padding: 12px;
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: normal;
+  box-sizing: border-box;
+  display: inline-block;
   border-radius: 8px;
-  font-weight: 700;
   text-align: center;
   text-decoration: none;
   cursor: pointer;
   transition: transform 0.2s;
-}
-.form-buttons button:active, .form-buttons .btn-register:active {
-  transform: scale(0.98);
-}
-.form-buttons .btn-submit {
   background: #2d5a27;
   color: white;
   border: none;
 }
-.form-buttons .btn-register {
-  background: #f8f9fa;
-  color: var(--text-sec);
-  border: 1px solid var(--border-color);
+.form-buttons button:active, .form-buttons .btn-register:active, .form-buttons .btn-submit:active {
+  transform: scale(0.98);
 }
 
 /* Botones de acción minimalistas */
@@ -688,7 +687,7 @@ p, h1, h3, span {
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--bg-body);
+  color: var(--hero-text);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -699,18 +698,18 @@ p, h1, h3, span {
   letter-spacing: 4px;
   margin-bottom: 1.5rem;
   text-transform: uppercase;
-  opacity: 0; /* Empezamos ocultos para que la animación funcione */
+  opacity: 0;
   animation-name: fadeInUpH1;
   animation-duration: 1.2s;
-  animation-timing-function: ease-out; /* Empieza rápido, termina lento */
-  animation-fill-mode: forwards; /* Se queda con los estilos finales (opacity: 1) */
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
 }
 .hero .hero-content p {
-  opacity: 0; /* Empezamos ocultos */
+  opacity: 0;
   animation-name: fadeInUpP;
   animation-duration: 1.2s;
   animation-timing-function: ease-out;
-  animation-delay: 0.5s; /* IMPORTANTE: Espera 0.5s antes de empezar */
+  animation-delay: 0.5s;
   animation-fill-mode: forwards;
 }
 
@@ -862,18 +861,18 @@ p, h1, h3, span {
   top: 100%;
   right: 0;
   background-color: var(--bg-card);
-  min-width: 180px;
+  min-width: 200px;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   z-index: 1000;
-  padding-top: 10px;
+  padding: 10px 0;
   background-clip: content-box;
   overflow: hidden;
   opacity: 0;
   transform: translateY(10px);
   transition: all 0.3s ease;
 }
-.dropdown-content a {
+.dropdown-content a, .dropdown-content .theme-switch-item {
   color: var(--text-main);
   padding: 12px 16px;
   text-decoration: none;
@@ -881,17 +880,23 @@ p, h1, h3, span {
   align-items: center;
   gap: 10px;
   font-size: 0.9rem;
-  transition: background 0.2s;
+  transition: all 0.2s;
+  cursor: pointer;
 }
-.dropdown-content a i {
+.dropdown-content a i, .dropdown-content .theme-switch-item i {
   width: 16px;
   color: #777;
+  transition: color 0.2s;
 }
-.dropdown-content a:hover {
+.dropdown-content a:hover, .dropdown-content .theme-switch-item:hover {
+  background-color: rgba(0, 0, 0, 0.03);
   color: #2d5a27;
 }
-.dropdown-content a:hover i {
+.dropdown-content a:hover i, .dropdown-content .theme-switch-item:hover i {
   color: #2d5a27;
+}
+.dropdown-content .theme-switch-item span {
+  flex-grow: 1;
 }
 .dropdown-content a.logout-link {
   color: #e74c3c;
@@ -905,8 +910,49 @@ p, h1, h3, span {
   border-top: 1px solid var(--border-color);
 }
 
+/* --- ESTILOS DEL SWITCH (TOGGLE) --- */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  pointer-events: none;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.switch .slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 18px;
+}
+.switch .slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+.switch input:checked + .slider {
+  background-color: #2d5a27;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
 .footer {
-  background-color: var(--input-bg);
+  background-color: var(--footer-bg);
   padding: 30px 0;
   margin-top: 0px;
   border-top: 1px solid var(--border-color);
@@ -1014,7 +1060,7 @@ p, h1, h3, span {
 .carreras-toolbar .carreras-search .search-wrapper input {
   width: 100%;
   padding: 12px 15px 12px 45px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-family: inherit;
   font-size: 0.95rem;
@@ -1030,13 +1076,13 @@ p, h1, h3, span {
 }
 .carreras-toolbar .carreras-dropdown .dropdown-button {
   background: var(--bg-card);
-  border: 1px solid #ddd;
+  border: 1px solid transparent;
   padding: 12px 20px;
   border-radius: 10px;
   cursor: pointer;
   font-family: inherit;
   font-weight: 600;
-  color: #444;
+  color: var(--text-main);
   display: flex;
   align-items: center;
   gap: 12px;
@@ -1221,7 +1267,7 @@ p, h1, h3, span {
   text-decoration: none;
   background-color: var(--bg-card);
   color: #777;
-  border: 1px solid #eee;
+  border: 1px solid transparent;
   transition: all 0.3s ease;
   font-size: 0.9rem;
 }
@@ -1314,7 +1360,7 @@ p, h1, h3, span {
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
   margin-bottom: 30px;
-  background: #f8f9fa;
+  background: var(--bg-card);
   padding: 20px;
   border-radius: 15px;
 }
@@ -1337,6 +1383,9 @@ p, h1, h3, span {
   font-weight: bold;
   font-size: 1rem;
 }
+.carrera-info-panel .stats-grid .stat-item .stat-text {
+  color: var(--text-main);
+}
 .carrera-info-panel .description {
   margin-bottom: 30px;
   line-height: 1.6;
@@ -1356,10 +1405,6 @@ p, h1, h3, span {
   color: #999;
   text-transform: uppercase;
   margin-bottom: 15px;
-}
-.carrera-info-panel .admin-controls .admin-buttons {
-  display: flex;
-  gap: 10px;
 }
 .carrera-info-panel .btn-edit {
   background: #ffc107;
@@ -1384,6 +1429,9 @@ p, h1, h3, span {
 }
 .carrera-info-panel .dificultad-badge.baja {
   background: #198754;
+}
+.carrera-info-panel .organizador-info {
+  color: var(--text-main);
 }
 
 /* MODAL LIGHTBOX OPTIMIZADO */
@@ -1470,12 +1518,42 @@ p, h1, h3, span {
 }
 .admin-buttons {
   display: flex;
-  gap: 15px;
-  margin-top: 15px;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-bottom: 10px;
 }
-.admin-buttons .btn-account-save, .admin-buttons .btn-account-delete {
-  flex: 1;
+.admin-buttons .btn-secondary,
+.admin-buttons .btn-account-delete {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+  font-family: inherit;
+  line-height: 1.2;
+  height: 42px;
+}
+.admin-buttons .btn-secondary {
+  background-color: var(--border-color);
+  color: var(--text-main);
+}
+.admin-buttons .btn-secondary:hover {
+  background-color: var(--text-muted);
+}
+.admin-buttons .btn-account-delete {
+  background-color: #c53030;
+  color: white;
+}
+.admin-buttons .btn-account-delete:hover {
+  background-color: rgb(155.9918367347, 38.0081632653, 38.0081632653);
 }
 
 .carrera-actions {
@@ -1490,7 +1568,7 @@ p, h1, h3, span {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f4f7f6;
+  background-color: var(--bg-body);
 }
 
 .login-card {
@@ -1541,7 +1619,7 @@ p, h1, h3, span {
 .login-card .login-content .login-header h2 {
   font-size: 2rem;
   font-weight: 800;
-  color: var(--header-bg);
+  color: var(--text-main);
   margin-bottom: 30px;
 }
 
@@ -1552,7 +1630,7 @@ p, h1, h3, span {
   display: block;
   margin-bottom: 8px;
   font-weight: 600;
-  color: #444;
+  color: var(--text-main);
 }
 .login-form .input-group input {
   width: 100%;
@@ -1572,6 +1650,9 @@ p, h1, h3, span {
   align-items: center;
   margin-bottom: 30px;
   font-size: 0.9rem;
+}
+.form-actions-extra .checkbox-container {
+  color: var(--text-main);
 }
 .form-actions-extra .forgot-link {
   color: #2d5a27;
@@ -1607,7 +1688,7 @@ p, h1, h3, span {
   overflow: hidden;
 }
 .account-card .account-header {
-  background: var(--header-bg);
+  background: rgb(27.2093023256, 54.4186046512, 23.5813953488);
   color: var(--header-text);
   padding: 30px 40px;
 }
@@ -1686,7 +1767,7 @@ p, h1, h3, span {
 .account-content .form-group input {
   padding: 12px;
   border: 1px solid var(--border-color);
-  background: var(--bg-body);
+  background: var(--bg-card);
   border-radius: 8px;
   color: #777;
   cursor: text;
@@ -1701,6 +1782,21 @@ p, h1, h3, span {
   background: var(--bg-body);
   color: #777;
   cursor: not-allowed;
+}
+.account-content .form-group .form-select {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: 8px;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+.account-content .form-group .form-select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  padding: 10px;
 }
 
 .account-page {
@@ -2019,7 +2115,7 @@ p, h1, h3, span {
 }
 .admin-nav-bar .nav-brand-link, .admin-nav-bar .nav-action-link, .admin-nav-bar .nav-dropbtn {
   text-decoration: none;
-  color: var(--text-sec);
+  color: var(--header-text);
   font-size: 0.9rem;
   font-weight: 600;
   transition: color 0.3s;
@@ -2039,10 +2135,9 @@ p, h1, h3, span {
 }
 .admin-nav-bar .nav-search-form .search-wrapper {
   display: flex;
-  background: var(--bg-body);
   border-radius: 20px;
   padding: 5px 15px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   transition: all 0.3s;
 }
 .admin-nav-bar .nav-search-form .search-wrapper:focus-within {
@@ -2140,4 +2235,118 @@ p, h1, h3, span {
 .size-md {
   width: 80px;
   height: 80px;
-} /* Para el Perfil *//*# sourceMappingURL=style.css.map */
+} /* Para el Perfil */
+/* Estructura de Edición de Usuario */
+.profile-details-wrapper {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 40px;
+  margin-top: 20px;
+}
+@media (max-width: 768px) {
+  .profile-details-wrapper {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profile-sidebar .avatar-container {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+.profile-sidebar .avatar-container .avatar-edit {
+  width: 180px;
+  height: 180px;
+  border: 5px solid var(--border-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+.profile-sidebar .form-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+.profile-sidebar .form-group label {
+  font-size: 0.75rem;
+  color: #888;
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 5px;
+}
+.profile-sidebar .form-group .form-control {
+  font-size: 0.8rem;
+  background-color: var(--bg-card);
+}
+.profile-sidebar .form-group .form-select {
+  background-color: var(--bg-card);
+}
+.profile-sidebar .form-group input {
+  background-color: var(--bg-card);
+}
+
+.profile-info-content .info-group {
+  margin-bottom: 35px;
+}
+.profile-info-content .form-section-title {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  color: var(--primary-green);
+}
+
+/* Pie del formulario */
+.form-actions {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+.form-actions .btn-save {
+  cursor: pointer;
+  border: none;
+  padding: 10px 25px;
+  background: #27ae60;
+  color: #fff;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+.form-actions .btn-save:hover {
+  background: #219150;
+}
+.form-actions .btn-cancel {
+  text-decoration: none;
+  padding: 10px 25px;
+  background: #eee;
+  color: #333;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+.form-actions .btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+/* Estilo para el input de archivo */
+input[type=file].form-control {
+  padding: 6px;
+  cursor: pointer;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+}
+input[type=file].form-control::-webkit-file-upload-button {
+  background: #2d5a27;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  -webkit-transition: background 0.3s;
+  transition: background 0.3s;
+}
+input[type=file].form-control::-webkit-file-upload-button:hover {
+  background: rgb(27.2093023256, 54.4186046512, 23.5813953488);
+}/*# sourceMappingURL=style.css.map */

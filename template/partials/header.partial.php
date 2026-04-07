@@ -35,13 +35,14 @@
                         <a href="<?= URL ?>account">
                             <i class="fas fa-id-card"></i> Mi Perfil
                         </a>
-                        <a href="<?= URL ?>account/edit">
-                            <i class="fas fa-user-edit"></i> Editar Datos
-                        </a>
-                        <a href="#" id="theme-toggle" class="theme-switch-item">
+                        <div class="theme-switch-item" id="theme-row">
                             <i class="fas fa-moon" id="theme-icon"></i> 
                             <span>Modo Oscuro</span>
-                        </a>
+                            <label class="switch">
+                                <input type="checkbox" id="theme-toggle">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
                         <a class="nav-link" href="<?= URL ?>ayuda">
                             <i class="fas fa-question-circle"></i> Acerca de
                         </a>

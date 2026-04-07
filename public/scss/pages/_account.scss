@@ -16,7 +16,7 @@
     overflow: hidden;
 
     .account-header {
-        background: var(--header-bg); 
+        background: darken($primary-green, 10%); 
         color: var(--header-text);
         padding: 30px 40px;
 
@@ -95,7 +95,7 @@
         input {
             padding: 12px;
             border: 1px solid var(--border-color);
-            background: var(--bg-body); 
+            background: var(--bg-card); 
             border-radius: 8px;
             color: #777;
             cursor: text;
@@ -113,6 +113,23 @@
                 color: #777;
                 cursor: not-allowed;
             }
+        }
+
+        .form-select {
+            background-color: var(--bg-card); 
+            color: var(--text-main);          
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            appearance: none; // Esto quita el estilo nativo del sistema en muchos navegadores
+   
+
+            option {
+                background-color: var(--bg-card); 
+                color: var(--text-main);
+                padding: 10px;
+            }
+
         }
     }
 }

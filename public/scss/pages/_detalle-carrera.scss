@@ -42,7 +42,7 @@
         grid-template-columns: repeat(3, 1fr);
         gap: 15px;
         margin-bottom: 30px;
-        background: #f8f9fa;
+        background: var(--bg-card);
         padding: 20px;
         border-radius: 15px;
 
@@ -53,6 +53,9 @@
             i { color: $primary-green; font-size: 1.5rem; }
             .label { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; }
             .value { font-weight: bold; font-size: 1rem; }
+            .stat-text {
+                color: var(--text-main);
+            }
         }
     }
 
@@ -68,7 +71,6 @@
         padding-top: 20px;
         border-top: 1px solid #eee;
         h4 { font-size: 0.9rem; color: #999; text-transform: uppercase; margin-bottom: 15px; }
-        .admin-buttons { display: flex; gap: 10px; }
     }
 
     .btn-edit { background: #ffc107; color: #000; }
@@ -83,6 +85,10 @@
         &.alta { background: #dc3545; }
         &.media { background: #fd7e14; }
         &.baja { background: #198754; }
+    }
+
+    .organizador-info {
+        color: var(--text-main);
     }
 }
 
@@ -158,13 +164,51 @@
 
 
 .admin-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 15px;
-    
-    .btn-account-save, .btn-account-delete {
-        flex: 1; // Para que midan lo mismo
+
+    display: flex;      
+    align-items: center; 
+    gap: 10px;          
+    justify-content: flex-start;
+    margin-bottom: 10px;
+
+    // Estilo base compartido para enlaces y botones
+    .btn-secondary, 
+    .btn-account-delete {
+        display: inline-flex;   
+        align-items: center;
         justify-content: center;
+        gap: 8px;
+        
+        // Dimensiones exactas
+        padding: 10px 20px;      
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: $transition;
+        text-decoration: none; 
+        
+        // Reset de estilos de botón (muy importante para el <button>)
+        border: 1px solid transparent; 
+        font-family: inherit;
+        line-height: 1.2; // Fuerza el mismo alto de línea
+        height: 42px;     // Altura fija para asegurar igualdad total
+    }
+
+    .btn-secondary {
+        background-color: var(--border-color);
+        color: var(--text-main);
+        &:hover {
+            background-color: var(--text-muted);
+        }
+    }
+
+    .btn-account-delete {
+        background-color: $error-color;
+        color: white;
+        &:hover {
+            background-color: darken($error-color, 10%);
+        }
     }
 }
 

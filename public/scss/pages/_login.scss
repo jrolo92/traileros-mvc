@@ -6,12 +6,12 @@ $card-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f4f7f6;
+    background-color: var(--bg-body);
     // padding: 20px;
 }
 
 .login-card {
-    display: flex; // <--- ESTO pone la imagen al lado del formulario
+    display: flex; 
     width: 100%;
     max-width: 950px;
     background: var(--bg-card);
@@ -52,7 +52,7 @@ $card-radius: 15px;
         .login-header h2 {
             font-size: 2rem;
             font-weight: 800;
-            color: var(--header-bg);
+            color: var(--text-main);
             margin-bottom: 30px;
         }
     }
@@ -67,7 +67,7 @@ $card-radius: 15px;
             display: block;
             margin-bottom: 8px;
             font-weight: 600;
-            color: #444;
+            color: var(--text-main);
         }
 
         input {
@@ -91,6 +91,10 @@ $card-radius: 15px;
     align-items: center;
     margin-bottom: 30px;
     font-size: 0.9rem;
+
+    .checkbox-container {
+        color: var(--text-main);
+    }
 
     .forgot-link {
         color: $primary-green;

@@ -145,12 +145,17 @@
                     ':id'    => $id
                 ]);
 
-                // Actualizamos el rol (borrar e insertar o update directo)
-                $sql_role = "UPDATE roles_users SET role_id = :role_id WHERE user_id = :user_id";
-                $stmt_role = $db->prepare($sql_role);
-                $stmt_role->execute([
-                    ':role_id' => $role_id,
-                    ':user_id' => $id
+                // Eliminamos cualquier rol existente para este usuario (corregir los duplicados)
+                $sql_delete_role = "DELETE FROM roles_users WHERE user_id = :user_id";
+                $stmt_delete = $db->prepare($sql_delete_role);
+                $stmt_delete->execute([':user_id' => $id]);
+
+                // Insertamos el nuevo rol asignado
+                $sql_insert_role = "INSERT INTO roles_users (user_id, role_id) VALUES (:user_id, :role_id)";
+                $stmt_insert = $db->prepare($sql_insert_role);
+                $stmt_insert->execute([
+                    ':user_id' => $id,
+                    ':role_id' => $role_id
                 ]);
 
                 $db->commit();
@@ -379,7 +384,7 @@
 
         /*
             Método: get_user_role_id()
-            Obtiene el rol actual del usuario (para marcar 'selected' en el combo)
+            Obtiene el rol actual del usuario
         */
         public function get_user_role_id($user_id) {
             try {

@@ -57,7 +57,7 @@
         bottom: 100px;
         right: 30px;
         background: $primary-green;
-        color: var(--bg-card);
+        color: $white;
         padding: 15px 25px;
         border-radius: 50px;
         text-decoration: none;
@@ -181,29 +181,25 @@
         display: flex;
         gap: 15px;
 
-        button, .btn-register {
+        button, .btn-register, .btn-submit {
             flex: 1;
             padding: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: normal;
+            box-sizing: border-box;
+            display: inline-block;
             border-radius: 8px;
-            font-weight: 700;
+            // font-weight: 700;
             text-align: center;
             text-decoration: none;
             cursor: pointer;
             transition: transform 0.2s;
-
-            &:active { transform: scale(0.98); }
-        }
-
-        .btn-submit {
             background: $primary-green;
             color: white;
             border: none;
-        }
 
-        .btn-register {
-            background: #f8f9fa;
-            color: var(--text-sec);
-            border: 1px solid var(--border-color);
+            &:active { transform: scale(0.98); }
         }
     }
 

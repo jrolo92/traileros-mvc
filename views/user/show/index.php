@@ -29,7 +29,11 @@
 
                     <aside class="profile-sidebar text-center">
                         <div class="avatar-container" style="margin-bottom: 20px;">
-                            <img src="<?php echo URL ?>public/assets/img/avatars/<?php echo $this->user->avatar ?? 'default-avatar.png' ?>"
+                             <?php 
+                                // Definimos la imagen: si existe en el objeto user, la usamos; si no, la de por defecto
+                                $rutaAvatar = !empty($this->user->avatar) ? $this->user->avatar : 'public/assets/img/avatars/default-avatar.png';
+                            ?>
+                            <img src="<?php echo URL . $rutaAvatar . '?t' . time() ?>"
                                  alt="Avatar"
                                  style="width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 5px solid #f4f7f6;">
                         </div>
