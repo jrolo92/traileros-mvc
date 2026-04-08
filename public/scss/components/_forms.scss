@@ -1,13 +1,13 @@
 .form-page-container {
     padding: 60px 20px;
-    background: #f8f9fa;
+    background: var(--bg-body);
     min-height: calc(100vh - 150px);
     display: flex;
     justify-content: center;
 }
 
 .form-card {
-    background: white;
+    background: var(--bg-card);
     width: 100%;
     max-width: 700px;
     border-radius: 16px;
@@ -42,7 +42,7 @@
             background: var(--bg-body);
             padding: 12px 15px;
             border-radius: 8px;
-            color: #777;
+            color: var(--text-main);
             font-size: 0.95rem;
         }
     }
@@ -77,14 +77,14 @@
     .custom-file-input {
         width: 100%;
         padding: 10px;
-        background: #f9f9f9;
+        background: var(--bg-card);
         border: 1px dashed var(--border-color);
         border-radius: 8px;
         cursor: pointer;
         
         &::file-selector-button {
             background: $primary-green;
-            color: white;
+            color: var(--text-main);
             border: none;
             padding: 5px 15px;
             border-radius: 4px;

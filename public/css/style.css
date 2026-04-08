@@ -199,7 +199,6 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  width: -moz-fit-content;
   width: fit-content;
   max-width: 150px;
   align-self: center;
@@ -224,8 +223,8 @@ body {
 }
 
 .btn-account-cancel {
-  background-color: #f1f3f5;
-  color: #495057;
+  background-color: var(--border-color);
+  color: var(--text-main);
   border: 1px solid var(--border-color);
 }
 .btn-account-cancel:hover {
@@ -296,6 +295,46 @@ body {
 .admin-actions .action-btn.disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+.admin-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+.admin-buttons .btn-secondary,
+.admin-buttons .btn-account-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: 1px solid transparent;
+  font-family: inherit;
+  line-height: 1.2;
+  height: 42px;
+}
+.admin-buttons .btn-secondary {
+  background-color: var(--border-color);
+  color: var(--text-main);
+}
+.admin-buttons .btn-secondary:hover {
+  background-color: var(--text-muted);
+}
+.admin-buttons .btn-account-delete {
+  background-color: #c53030;
+  color: white;
+}
+.admin-buttons .btn-account-delete:hover {
+  background-color: rgb(155.9918367347, 38.0081632653, 38.0081632653);
 }
 
 .grid-carreras {
@@ -416,14 +455,14 @@ body {
 
 .form-page-container {
   padding: 60px 20px;
-  background: #f8f9fa;
+  background: var(--bg-body);
   min-height: calc(100vh - 150px);
   display: flex;
   justify-content: center;
 }
 
 .form-card {
-  background: white;
+  background: var(--bg-card);
   width: 100%;
   max-width: 700px;
   border-radius: 16px;
@@ -476,7 +515,7 @@ body {
   background: var(--bg-body);
   padding: 12px 15px;
   border-radius: 8px;
-  color: #777;
+  color: var(--text-main);
   font-size: 0.95rem;
 }
 .custom-form .form-row {
@@ -516,14 +555,14 @@ body {
 .file-input-wrapper .custom-file-input {
   width: 100%;
   padding: 10px;
-  background: #f9f9f9;
+  background: var(--bg-card);
   border: 1px dashed var(--border-color);
   border-radius: 8px;
   cursor: pointer;
 }
 .file-input-wrapper .custom-file-input::file-selector-button {
   background: #2d5a27;
-  color: white;
+  color: var(--text-main);
   border: none;
   padding: 5px 15px;
   border-radius: 4px;
@@ -1331,8 +1370,7 @@ body {
   max-height: 80vh;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   cursor: pointer;
   transition: transform 0.3s ease;
 }
@@ -1516,46 +1554,6 @@ body {
     max-height: 70vh;
   }
 }
-.admin-buttons {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-.admin-buttons .btn-secondary,
-.admin-buttons .btn-account-delete {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 20px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  border: 1px solid transparent;
-  font-family: inherit;
-  line-height: 1.2;
-  height: 42px;
-}
-.admin-buttons .btn-secondary {
-  background-color: var(--border-color);
-  color: var(--text-main);
-}
-.admin-buttons .btn-secondary:hover {
-  background-color: var(--text-muted);
-}
-.admin-buttons .btn-account-delete {
-  background-color: #c53030;
-  color: white;
-}
-.admin-buttons .btn-account-delete:hover {
-  background-color: rgb(155.9918367347, 38.0081632653, 38.0081632653);
-}
-
 .carrera-actions {
   margin-top: 30px;
   display: flex;
@@ -1789,9 +1787,7 @@ body {
   border: 1px solid var(--border-color);
   padding: 12px;
   border-radius: 8px;
-  -webkit-appearance: none;
-     -moz-appearance: none;
-          appearance: none;
+  appearance: none;
 }
 .account-content .form-group .form-select option {
   background-color: var(--bg-card);
@@ -2216,8 +2212,7 @@ body {
 .avatar-circle img {
   width: 100%;
   height: 100%;
-  -o-object-fit: cover;
-     object-fit: cover;
+  object-fit: cover;
   display: block;
 }
 
@@ -2344,9 +2339,8 @@ input[type=file].form-control::-webkit-file-upload-button {
   margin-right: 10px;
   cursor: pointer;
   font-weight: 600;
-  -webkit-transition: background 0.3s;
   transition: background 0.3s;
 }
 input[type=file].form-control::-webkit-file-upload-button:hover {
   background: rgb(27.2093023256, 54.4186046512, 23.5813953488);
-}/*# sourceMappingURL=style.css.map */
+}

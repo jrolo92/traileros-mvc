@@ -166,8 +166,8 @@
     }
 
     .btn-account-cancel {
-        background-color: #f1f3f5;
-        color: #495057;
+        background-color: var(--border-color);
+        color: var(--text-main);
         border: 1px solid var(--border-color);
 
         &:hover {
@@ -236,3 +236,53 @@
             }
         }
     }
+
+// Botones de administración (pagina detalles carrera)
+.admin-buttons {
+
+    display: flex;      
+    align-items: center; 
+    gap: 10px;          
+    justify-content: flex-start;
+    margin-bottom: 10px;
+
+    // Estilo base compartido para enlaces y botones
+    .btn-secondary, 
+    .btn-account-delete {
+        display: inline-flex;   
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        
+        // Dimensiones exactas
+        padding: 10px 20px;      
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: $transition;
+        text-decoration: none; 
+        
+        // Reset de estilos de botón (muy importante para el <button>)
+        border: 1px solid transparent; 
+        font-family: inherit;
+        line-height: 1.2; // Fuerza el mismo alto de línea
+        height: 42px;     // Altura fija para asegurar igualdad total
+    }
+
+    .btn-secondary {
+        background-color: var(--border-color);
+        color: var(--text-main);
+        &:hover {
+            background-color: var(--text-muted);
+        }
+    }
+
+    .btn-account-delete {
+        background-color: $error-color;
+        color: white;
+        &:hover {
+            background-color: darken($error-color, 10%);
+        }
+    }
+}
