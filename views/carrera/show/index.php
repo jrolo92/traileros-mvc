@@ -65,11 +65,43 @@
                         <p>Organizado por: <strong><?= $this->carrera['organizador'] ?></strong></p>
                     </div>
 
+                    <div class="disponibilidad-container">
+                        <div class="disponibilidad-header">
+                            <span><i class="fas fa-users"></i> Plazas disponibles</span>
+                            <span class="plazas-cuenta">
+                                <strong><?= $this->plazas_libres ?></strong> de <?= $this->carrera['cupo_maximo'] ?>
+                            </span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <?php 
+                                // Calculamos el porcentaje de plazas ocupadas
+                                $porcentaje_ocupado = (($this->carrera['cupo_maximo'] - $this->plazas_libres) / $this->carrera['cupo_maximo']) * 100;
+                                // Lógica para decidir la clase
+                                $clase_disponibilidad = '';
+                                if ($this->plazas_libres <= 0) $clase_disponibilidad = 'full';
+                                elseif ($this->plazas_libres <= 10) $clase_disponibilidad = 'danger';
+                                elseif ($this->plazas_libres <= 25) $clase_disponibilidad = 'warning';
+                            ?>
+                            <div class="progress-bar-fill <?= $clase_disponibilidad ?>" style="width: <?= $porcentaje_ocupado ?>%"></div>
+                        </div>
+                        
+                        <?php if ($this->plazas_libres <= 20 && $this->plazas_libres > 0): ?>
+                            <p class="alert-ultimas-plazas">¡Últimas <?= $this->plazas_libres ?> plazas disponibles!</p>
+                        <?php endif; ?>
+                    </div>
+
                     <section class="carrera-actions">
                         <?php if(isset($_SESSION['role_id'])): ?>
-                            <a href="<?= URL ?>inscripcion/form/<?= $this->carrera['id'] ?>" class="btn-primary">
-                                <i class="fas fa-edit"></i> Inscribirme ahora
-                            </a>
+                            <?php if ($this->plazas_libres > 0): ?>
+                                <a href="<?= URL ?>inscripcion/new/<?= $this->carrera['id'] ?>" class="btn-primary">
+                                    <i class="fas fa-edit"></i> Inscribirme ahora
+                                </a>
+                            <?php else: ?>
+                                <div class="sold-out-badge-minimal">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>Inscripciones agotadas para este evento</span>
+                                </div>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="login-alert">
                                 <p>Para participar en este evento es necesario estar registrado.</p><br>

@@ -7,6 +7,7 @@
 
     @media (max-width: 992px) {
         grid-template-columns: 1fr;
+        margin-right: 20px;
     }
 }
 
@@ -19,7 +20,7 @@
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         object-fit: cover;
-        cursor: pointer; // Añadido para feedback visual
+        cursor: pointer;
         transition: transform 0.3s ease;
 
         &:hover {
@@ -29,7 +30,7 @@
 }
 
 .carrera-info-panel {
-    margin-right: 20px;
+    margin: 0 20px;
 
     .detail-header {
         margin-bottom: 25px;
@@ -62,7 +63,7 @@
     .description {
         margin-bottom: 30px;
         line-height: 1.6;
-        color: #444;
+        color: var(--text-sec);
         h3 { margin-bottom: 10px; font-size: 1.25rem; }
     }
     
@@ -162,12 +163,90 @@
     .modal-content { width: 95%; max-height: 70vh; }
 }
 
-
-
-
 .carrera-actions {
     margin-top: 30px;
     display: flex;
     flex-direction: column;
     gap: 20px;
+}
+
+// Disponibilidad plazas
+.disponibilidad-container {
+    margin: 1.5rem 0;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee; 
+}
+
+.disponibilidad-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.plazas-cuenta strong {
+    color: #333;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--text-sec);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 5px rgba(46, 204, 113, 0.3);
+
+    &.warning { box-shadow: 0 0 5px rgba(253, 126, 20, 0.3); }
+    &.danger  { box-shadow: 0 0 5px rgba(248, 79, 95, 0.3); }
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: $primary-green;
+    transition: width 0.5s ease-in-out;
+
+    &.warning {background-color: #fd7e14;}
+    &.danger {background-color: #dc3545; }
+    &.full {background-color: #555;}
+}
+
+.alert-ultimas-plazas {
+    color: #fd7e14;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+    display:flex;
+    text-align: center;
+
+    &::before{
+        content: '●';
+        font-size: 1rem;
+    }
+}
+
+// Plazas agotadas
+.sold-out-badge-minimal {
+    padding: 1.2rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 15px;
+    text-align:center;
+    color: #6c757d;
+
+    i {
+        display:block;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+        opacity: 0.5;
+    }
+
+    span {
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: bold;
+    }
+
 }

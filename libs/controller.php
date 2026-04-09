@@ -13,10 +13,17 @@
             $url = 'models/' . $model . '.model.php';
             if (file_exists($url)) {
 
-                require $url;
+                require_once $url;
 
-                $modelName = $model.'Model';
-                $this->model = new $modelName();
+                $modelName = ucfirst($model).'Model';
+                
+                $objModel = new $modelName();
+        
+                // 1. Esto mantiene la compatibilidad con tus controladores viejos
+                $this->model = $objModel; 
+                
+                // 2. Esto permite que el controlador de Inscripciones reciba el modelo extra
+                return $objModel;
             }
         }
     }

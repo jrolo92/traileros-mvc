@@ -9,4 +9,10 @@ public/
 └── assets/         # Imágenes de las rutas y logos
 
 06/04/2026: Para que funcione el redimensionador de imagenes (mejor rendimiento) hay que descomentar la linea de php.ini --> extension=gd.
-Esto habría que comprobar si sigue funcionando en un hosting (AWS)
+            IMPORTANTE: Esto habría que comprobar si sigue funcionando en un hosting (AWS)
+
+07/04/26 - 08/04/26: Implantanción de modo oscuro.
+
+09/04/2026: Creación de lógica de inscripciones (MVC). 
+            IMPORTANTE: Plantear conveniencia de implantar pasarela de pago (ahora solo hago una simulación).
+            

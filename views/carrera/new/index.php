@@ -76,6 +76,31 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="cupo_maximo">Cupo Máximo de Corredores</label>
+                    <input type="number" 
+                        name="cupo_maximo" 
+                        id="cupo_maximo" 
+                        class="form-control" 
+                        value="<?= $this->carrera->cupo_maximo ?>" 
+                        min="1" 
+                        required>
+                    <small class="text-muted">Número total de dorsales disponibles.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio de Inscripción (€)</label>
+                    <input type="number" 
+                        name="precio" 
+                        id="precio" 
+                        class="form-control" 
+                        value="<?= $this->carrera->precio ?>" 
+                        step="0.01" 
+                        min="0" 
+                        required>
+                    <small class="text-muted">Precio base para la inscripción.</small>
+                </div>
+
+                <div class="form-group">
                     <label for="imagen">Imagen del Evento</label>
                     <div class="file-input-wrapper">
                         <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
@@ -96,7 +121,9 @@
                     <a href="<?= URL ?>carrera" class="btn-account-cancel" onclick="return confirm('¿Cancelar creación?')">Cancelar</a>
                     <div class="main-buttons">
                         <button type="reset" class="btn-account-cancel">Limpiar</button>
-                        <button type="submit" class="btn-account-save">Guardar Carrera</button>
+                        <button type="submit" class="btn-account-save">
+                            <i class="fas fa-save"></i> Guardar Carrera
+                        </button>
                     </div>
                 </div>
             </form>

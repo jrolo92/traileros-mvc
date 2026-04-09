@@ -15,11 +15,6 @@ class Carrera extends Controller {
         Descripción: Renderiza la lista principal de carreras
     */
     function render() {
-        // sec_session_start();
-        // $this->requireLogin();
-
-        // Capa gestión rol de usuario
-        // $this->requirePrivilege($GLOBALS['carrera']['render']);
 
         if(empty($_SESSION['csrf_token'])){
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -91,6 +86,8 @@ class Carrera extends Controller {
         $desnivel = filter_var($_POST['desnivel'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
         $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $cupo_maximo = filter_var($_POST['cupo_maximo'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+        $precio = filter_var($_POST['precio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
         // 2. Lógica de subida de Imagen
@@ -143,12 +140,14 @@ class Carrera extends Controller {
         }
 
         // 3. Crear objeto con el nombre de la imagen procesado
-        $carrera = new class_carrera(null, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $nombreImagen, $organizador_id);
+        $carrera = new class_carrera(null, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $cupo_maximo, $precio, $nombreImagen, $organizador_id);
 
         // 4. Validaciones de negocio
         if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
         if(empty($fecha)) $error['fecha'] = "La fecha es obligatoria";
         if($distancia <= 0) $error['distancia'] = "La distancia debe ser positiva";
+        if($cupo_maximo <= 0) $error['cupo_maximo'] = "El cupo debe ser mayor que cero";
+        if($precio < 0) $error['precio'] = "El precio no puede ser negativo";
 
         // Si hay errores, redirigir
         if(!empty($error)){
@@ -231,6 +230,8 @@ class Carrera extends Controller {
         $desnivel = filter_var($_POST['desnivel'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
         $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $cupo_maximo = filter_var($_POST['cupo_maximo'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
+        $precio = filter_var($_POST['precio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
         // 2. Gestión de la Imagen (La clave del Update)
@@ -280,7 +281,7 @@ class Carrera extends Controller {
         }
 
         // 3. Crear objeto para validación y persistencia
-        $carrera = new class_carrera($id, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $nombreImagen, $organizador_id);
+        $carrera = new class_carrera($id, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $cupo_maximo, $precio, $nombreImagen, $organizador_id);
 
         // 4. Validaciones
         if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
@@ -308,9 +309,6 @@ class Carrera extends Controller {
         Descripción: Muestra detalles de la carrera (Solo lectura)
     */
     public function show($params) {
-        // sec_session_start();
-        // $this->requireLogin();
-        // $this->requirePrivilege($GLOBALS['carrera']['show']);
 
         $id = (int) $params[0];
         $carrera = $this->model->read($id);
@@ -320,6 +318,8 @@ class Carrera extends Controller {
             $this->errorNotFound($id);
         }
 
+        // Preparamos variables para la vista
+        $this->view->plazas_libres = $this->model->getPlazasDisponibles($id);
         $this->view->carrera = $carrera;
         if ($carrera && isset($carrera['nombre'])) {
             $this->view->title = $carrera['nombre'] . " - Traileros";
@@ -467,6 +467,7 @@ class Carrera extends Controller {
         }
     }
 
+    // Métodos para el redimensionado de las imágenes que se suben
     private function resizeImage($tmp_name, $destination, $targetWidth, $targetHeight = null) {
         // Obtener metadatos de la imagen
         list ($width, $height, $type) = getimagesize($tmp_name);

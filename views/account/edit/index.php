@@ -187,9 +187,7 @@
                         </div>
 
                         <div class="form-actions">
-                            <div class="btns-left">
-                                <a class="btn-account-cancel" href="<?= URL ?>account" role="button">Cancelar</a>
-                            </div>
+                            <a class="btn-account-cancel" href="<?= URL ?>account" role="button">Cancelar</a>
                             <button type="submit" class="btn-account-save">
                                 <i class="fas fa-save"></i> Guardar Cambios
                             </button>

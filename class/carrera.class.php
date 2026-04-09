@@ -14,6 +14,8 @@ class class_carrera {
     public $desnivel;
     public $dificultad;
     public $descripcion;
+    public $cupo_maximo;
+    public $precio;
     public $imagen;
     public $organizador_id;
 
@@ -26,6 +28,8 @@ class class_carrera {
         $desnivel = null,
         $dificultad = null,
         $descripcion = null,
+        $cupo_maximo = null,
+        $precio = null,
         $imagen = null,
         $organizador_id = null
     ) {
@@ -37,6 +41,8 @@ class class_carrera {
         $this->desnivel = $desnivel;
         $this->dificultad = $dificultad;
         $this->descripcion = $descripcion;
+        $this->cupo_maximo = $cupo_maximo;
+        $this->precio = $precio;
         $this->imagen = $imagen;
         $this->organizador_id = $organizador_id;
     }

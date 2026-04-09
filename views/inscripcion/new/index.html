@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <?php require_once 'template/layouts/head.layout.php'; ?>
+    <title><?= $this->title ?> </title>
+</head>
+
+<body>
+    <?php require_once 'template/partials/header.partial.php'; ?>
+
+    <main class="form-page-container">
+        <div class="form-card">
+            <header class="form-card-header">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <h2>Confirmar Inscripción</h2>
+                <p>Estás a un paso de participar en: <strong><?= htmlspecialchars($this->evento['nombre']) ?></strong></p>
+            </header>
+
+            <?php require_once 'template/partials/mensaje.partial.php'; ?>
+            <?php require_once 'template/partials/error.partial.php'; ?>
+
+            <form action="<?= URL ?>inscripcion/create" method="POST" class="custom-form">
+                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                <input type="hidden" name="evento_id" value="<?= $this->evento['id'] ?>">
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label>Precio de Inscripción</label>
+                        <div class="fake-input"><?= number_format($this->evento['precio'], 2) ?> €</div>
+                    </div>
+                    <div class="form-group col">
+                        <label>Fecha del Evento</label>
+                        <div class="fake-input"><?= date('d/m/Y', strtotime($this->evento['fecha'])) ?></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="metodo_pago">Selecciona Método de Pago</label>
+                    <select name="metodo_pago" required>
+                        <option value="" disabled selected>Elegir método...</option>
+                        <option value="tarjeta">Tarjeta de Crédito / Débito</option>
+                        <option value="bizum">Bizum</option>
+                        <option value="transferencia">Transferencia Bancaria</option>
+                    </select>
+                    <small class="text-muted">El pago se procesará de forma segura en el siguiente paso.</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Información del Corredor</label>
+                    <div class="fake-input">
+                        <?= $_SESSION['user_name'] ?> 
+                        <small>(La categoría se asignará automáticamente por edad y sexo)</small>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="file-input-wrapper">
+                        <p class="text-muted" style="font-size: 0.85rem;">
+                            Al confirmar la inscripción, declaras estar en condiciones físicas óptimas para la práctica de trail running y aceptas el reglamento de la carrera.
+                        </p>
+                    </div>
+                </div>
+<!-- "<?= URL ?>carrera/show/<?= $this->evento['id'] ?>" -->
+                <div class="form-actions">
+                    <a href="<?= URL ?>" class="btn-account-cancel">Volver</a>
+                    <div class="main-buttons">
+                        <button type="submit" class="btn-account-save">
+                            <i class="fas fa-check-circle"></i> Confirmar y Pagar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <?php require_once 'template/partials/footer.partial.php'; ?>
+    </footer>
+</body>
+
+</html>

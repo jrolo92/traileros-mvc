@@ -21,6 +21,8 @@ class carreraModel extends Model {
                         e.distancia,
                         e.desnivel,
                         e.dificultad,
+                        e.cupo_maximo,
+                        e.precio,      
                         e.imagen,
                         u.name AS organizador
                     FROM Eventos AS e
@@ -78,9 +80,9 @@ class carreraModel extends Model {
     public function create(class_carrera $carrera) {
         try {
             $sql = "INSERT INTO Eventos 
-                    (nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, imagen, organizador_id)
+                    (nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, cupo_maximo, precio, imagen, organizador_id)
                     VALUES
-                    (:nombre, :fecha, :ubicacion, :distancia, :desnivel, :dificultad, :descripcion, :imagen, :organizador_id)";
+                    (:nombre, :fecha, :ubicacion, :distancia, :desnivel, :dificultad, :descripcion, :cupo_maximo, :precio, :imagen, :organizador_id)";
 
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
@@ -92,6 +94,8 @@ class carreraModel extends Model {
             $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
+            $stmt->bindParam(':cupo_maximo',    $carrera->cupo_maximo, PDO::PARAM_INT);
+            $stmt->bindParam(':precio',         $carrera->precio);
             $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
             $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
 
@@ -145,6 +149,8 @@ class carreraModel extends Model {
                         desnivel = :desnivel,
                         dificultad = :dificultad,
                         descripcion = :descripcion,
+                        cupo_maximo = :cupo_maximo,
+                        precio = :precio,           
                         imagen = :imagen,
                         organizador_id = :organizador_id
                     WHERE id = :id 
@@ -160,6 +166,8 @@ class carreraModel extends Model {
             $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
+            $stmt->bindParam(':cupo_maximo',    $carrera->cupo_maximo, PDO::PARAM_INT);
+            $stmt->bindParam(':precio',         $carrera->precio);
             $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
             $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
             $stmt->bindParam(':id',             $id, PDO::PARAM_INT);
@@ -200,7 +208,11 @@ class carreraModel extends Model {
                         e.ubicacion, 
                         e.distancia, 
                         e.desnivel, 
-                        e.dificultad, 
+                        e.dificultad,
+                        e.cupo_maximo,
+                        e.precio,      
+                        e.cupo_maximo,
+                        e.precio,      
                         e.imagen,
                         u.name AS organizador
                     FROM Eventos e
@@ -259,7 +271,42 @@ class carreraModel extends Model {
         }
     }
 
-    
+    /*
+        Método: getPlazasDisponibles($evento_id)
+        Descripcion: Calcula las plazas disponibles teniendo en cuenta las inscripciones actuales
+        Devuelve: Plazas disponibles en el momento de la consulta.
+    */
+    public function getPlazasDisponibles($evento_id) {
+        try {
+            $db = $this->db->connect();
+            
+            // 1. Obtener cupo máximo
+            $sqlCupo = "SELECT cupo_maximo FROM Eventos WHERE id = :id";
+            $stmt1 = $db->prepare($sqlCupo);
+            $stmt1->execute(['id' => $evento_id]);
+            $cupo = $stmt1->fetchColumn();
+
+            // 2. Contar inscritos
+            $sqlInscritos = "SELECT COUNT(*) FROM Inscripciones WHERE evento_id = :id";
+            $stmt2 = $db->prepare($sqlInscritos);
+            $stmt2->execute(['id' => $evento_id]);
+            $inscritos = $stmt2->fetchColumn();
+
+            return $cupo - $inscritos;
+
+        } catch (PDOException $e) {
+            return 0;
+        }
+    }
+
+    public function getPlazasOcupadas($evento_id) {
+        // Solo contamos a los que ya han pasado por caja
+        $sql = "SELECT COUNT(*) FROM Inscripciones 
+                WHERE evento_id = :id AND estado_pago = 'completado'";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $evento_id]);
+        return $stmt->fetchColumn();
+    }
 
     /*
         Gestión de errores
