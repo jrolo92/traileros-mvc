@@ -18,48 +18,107 @@ class InscripcionModel extends Model {
                 INNER JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id";
 
+        $db = $this->db->connect();
+
         // Si el role_id no es el de administrador (ej: 1), filtramos por user_id
         if ($role_id != 1) { 
             $sql .= " WHERE i.user_id = :user_id";
-            $stmt = $this->db->prepare($sql);
+            $stmt = $db->prepare($sql);
             $stmt->execute(['user_id' => $user_id]);
         } else {
-            $stmt = $this->db->query($sql);
+            $stmt = $db->query($sql);
         }
 
         return $stmt->fetchAll();
     }
 
-    public function create(class_inscripcion $inscripcion) {
+    /*
+        Descripción: filtra las inscripciones en funcion del rol y el id del usuario:
+            1. Muestra todas las inscripciones a usuario ADMIN.
+            2. Muestra inscripciones de los eventos creados a usuarios ORGANIZADORES.
+            3. Muestra inscripciones propias a usuarios CORREDORES.
+    */
+    public function getInscripcionesByRole($user_id, $role_id) {
         try {
-            // Al ser pago inmediato, asignamos el dorsal ya mismo
-            $inscripcion->dorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
+            $db = $this->db->connect();
             
-            // El estado siempre será completado porque viene de un pago exitoso
-            $inscripcion->estado_pago = 'completado';
+            // Base de la consulta
+            $sql = "SELECT  i.*,
+                            e.nombre as evento_nombre, 
+                            e.fecha as evento_fecha, 
+                            c.nombre as categoria_nombre, 
+                            u.name as usuario_nombre
+                    FROM Inscripciones i
+                    LEFT JOIN Eventos e ON i.evento_id = e.id
+                    LEFT JOIN Categorias c ON i.categoria_id = c.id
+                    LEFT JOIN users u ON i.user_id = u.id";
 
-            $sql = "INSERT INTO Inscripciones (user_id, evento_id, categoria_id, dorsal, metodo_pago, estado_pago, precio_final) 
-                    VALUES (:user_id, :evento_id, :categoria_id, :dorsal, :metodo_pago, :estado_pago, :precio_final)";
-            
-            $stmt = $this->db->prepare($sql);
-            return $stmt->execute([
-                'user_id'      => $inscripcion->user_id,
-                'evento_id'    => $inscripcion->evento_id,
-                'categoria_id' => $inscripcion->categoria_id,
-                'dorsal'       => $inscripcion->dorsal,
-                'metodo_pago'  => $inscripcion->metodo_pago,
-                'estado_pago'  => $inscripcion->estado_pago,
-                'precio_final' => $inscripcion->precio_final
-            ]);
+            // --- FILTRADO POR ROL ---
+            if ($role_id == 1) { 
+                // ADMIN: ve todo.
+                $query = $db->prepare($sql . " ORDER BY e.fecha DESC, i.user_id ASC");
+                $query->execute();
+            } 
+            elseif ($role_id == 2) { 
+                // ORGANIZADOR: Solo ve inscripciones de SUS eventos
+                $sql .= " WHERE e.organizador_id = :user_id ORDER BY e.fecha DESC, i.user_id ASC";
+                $query = $db->prepare($sql);
+                $query->execute(['user_id' => $user_id]);
+            } 
+            else { 
+                // USUARIO: Solo ve SUS propias inscripciones
+                $sql .= " WHERE i.user_id = :user_id ORDER BY e.fecha DESC, i.user_id ASC";
+                $query = $db->prepare($sql);
+                $query->execute(['user_id' => $user_id]);
+            }
+
+            $res = $query->fetchAll(PDO::FETCH_OBJ);
+        
+            return $res;
 
         } catch (PDOException $e) {
-            return false;
+            return [];
         }
+    }
+
+    public function create(class_inscripcion $inscripcion) {
+        try {
+        $db = $this->db->connect();
+        
+        // 1. Generamos el dorsal
+        $inscripcion->dorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
+        
+        // 2. Definimos la SQL
+        $sql = "INSERT INTO Inscripciones (user_id, evento_id, categoria_id, dorsal, metodo_pago, estado_pago, precio_final) 
+                VALUES (:user_id, :evento_id, :categoria_id, :dorsal, :metodo_pago, :estado_pago, :precio_final)";
+        
+        $stmt = $db->prepare($sql);
+        
+        // 3. Preparamos los datos
+        $datos = [
+            'user_id'      => $inscripcion->user_id,
+            'evento_id'    => $inscripcion->evento_id,
+            'categoria_id' => $inscripcion->categoria_id,
+            'dorsal'       => $inscripcion->dorsal,
+            'metodo_pago'  => $inscripcion->metodo_pago,
+            'estado_pago'  => $inscripcion->estado_pago,
+            'precio_final' => $inscripcion->precio_final
+        ];
+
+        // 4. Ejecutamos
+        $resultado = $stmt->execute($datos);
+
+        return true; 
+
+    } catch (Throwable $e) {
+        return false;
+    }
     }
 
     public function read($user_id, $evento_id) {
         $sql = "SELECT * FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
         return $stmt->fetch();
     }
@@ -74,7 +133,8 @@ class InscripcionModel extends Model {
                 precio_final = :precio_final
                 WHERE user_id = :user_id AND evento_id = :evento_id";
         
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         return $stmt->execute($data);
     }
 
@@ -86,8 +146,8 @@ class InscripcionModel extends Model {
                     SET estado_pago = 'cancelado', 
                         dorsal = NULL 
                     WHERE user_id = :u AND evento_id = :e";
-            
-            $stmt = $this->db->prepare($sql);
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
             return $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
         } catch (PDOException $e) {
             return false;
@@ -97,30 +157,35 @@ class InscripcionModel extends Model {
     // Método opcional para eliminar totalmente la inscripción
     public function hardDelete($user_id, $evento_id) {
         $sql = "DELETE FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
-        return $this->db->prepare($sql)->execute(['u' => $user_id, 'e' => $evento_id]);
+        $db = $this->db->connect();
+        return $db->prepare($sql)->execute(['u' => $user_id, 'e' => $evento_id]);
     }   
 
     // --- Lógica de Negocio ---
     public function getCategoriaAdecuada($edad, $sexo) {
+
         // Buscamos la categoría donde encaje la edad y el sexo (o mixto)
         $sql = "SELECT id FROM Categorias 
                 WHERE :edad BETWEEN edad_min AND edad_max 
                 AND (sexo = :sexo OR sexo = 'Mixto') 
                 LIMIT 1";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['edad' => $edad, 'sexo' => $sexo]);
         return $stmt->fetchColumn();
     }
 
     public function isUserInscribed($user_id, $evento_id) {
         $sql = "SELECT COUNT(*) FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
         return $stmt->fetchColumn() > 0;
     }
 
     public function getAllCategorias() {
-        return $this->db->query("SELECT * FROM Categorias ORDER BY edad_min ASC")->fetchAll();
+        $db = $this->db->connect();
+        return $db->query("SELECT * FROM Categorias ORDER BY edad_min ASC")->fetchAll();
     }
 
     public function getDetalleCompleto($user_id, $evento_id) {
@@ -131,7 +196,8 @@ class InscripcionModel extends Model {
                 JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id
                 WHERE i.user_id = :u AND i.evento_id = :e";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
         return $stmt->fetch();
     }
@@ -139,7 +205,8 @@ class InscripcionModel extends Model {
     private function generarSiguienteDorsal($evento_id) {
         // Buscamos el dorsal máximo actual para este evento
         $sql = "SELECT MAX(dorsal) FROM Inscripciones WHERE evento_id = :evento_id";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['evento_id' => $evento_id]);
         $max_dorsal = $stmt->fetchColumn();
 
@@ -164,8 +231,8 @@ class InscripcionModel extends Model {
                 OR u.apellidos LIKE :term 
                 OR e.nombre LIKE :term
                 OR i.dorsal LIKE :term";
-
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['term' => "%$term%"]);
         return $stmt->fetchAll();
     }
@@ -195,7 +262,8 @@ class InscripcionModel extends Model {
                 INNER JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id
                 ORDER BY $orden";
-
-        return $this->db->query($sql)->fetchAll();
+        
+        $db = $this->db->connect();
+        return $db->query($sql)->fetchAll();
     }
 }

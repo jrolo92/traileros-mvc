@@ -19,10 +19,10 @@
                 
                 $objModel = new $modelName();
         
-                // 1. Esto mantiene la compatibilidad con tus controladores viejos
+                //  Esto mantiene la compatibilidad con los controladores 
                 $this->model = $objModel; 
                 
-                // 2. Esto permite que el controlador de Inscripciones reciba el modelo extra
+                // Esto permite que el controlador de Inscripciones reciba el modelo extra
                 return $objModel;
             }
         }

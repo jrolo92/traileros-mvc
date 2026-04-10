@@ -3,7 +3,7 @@
 
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
-    <title><?= $this->title ?> </title>
+    <title><?php echo $this->title ?> </title>
 </head>
 
 <body>
@@ -14,24 +14,24 @@
             <header class="form-card-header">
                 <i class="fas fa-file-invoice-dollar"></i>
                 <h2>Confirmar Inscripción</h2>
-                <p>Estás a un paso de participar en: <strong><?= htmlspecialchars($this->evento['nombre']) ?></strong></p>
+                <p>Estás a un paso de participar en: <strong><?php echo htmlspecialchars($this->evento['nombre']) ?></strong></p>
             </header>
 
             <?php require_once 'template/partials/mensaje.partial.php'; ?>
             <?php require_once 'template/partials/error.partial.php'; ?>
 
-            <form action="<?= URL ?>inscripcion/create" method="POST" class="custom-form">
-                <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                <input type="hidden" name="evento_id" value="<?= $this->evento['id'] ?>">
+            <form action="<?php echo URL ?>inscripcion/create" method="POST" class="custom-form">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?>">
+                <input type="hidden" name="evento_id" value="<?php echo $this->evento['id'] ?>">
 
                 <div class="form-row">
-                    <div class="form-group col">
+                    <div class="form-group">
                         <label>Precio de Inscripción</label>
-                        <div class="fake-input"><?= number_format($this->evento['precio'], 2) ?> €</div>
+                        <div class="fake-input"><?php echo number_format($this->evento['precio'], 2) ?> €</div>
                     </div>
-                    <div class="form-group col">
+                    <div class="form-group">
                         <label>Fecha del Evento</label>
-                        <div class="fake-input"><?= date('d/m/Y', strtotime($this->evento['fecha'])) ?></div>
+                        <div class="fake-input"><?php echo date('d/m/Y', strtotime($this->evento['fecha'])) ?></div>
                     </div>
                 </div>
 
@@ -49,8 +49,34 @@
                 <div class="form-group">
                     <label>Información del Corredor</label>
                     <div class="fake-input">
-                        <?= $_SESSION['user_name'] ?> 
+                        <?php echo $_SESSION['user_name'] ?>
                         <small>(La categoría se asignará automáticamente por edad y sexo)</small>
+                    </div>
+                    <div class="form-section-header">
+                        <h3> Verifica tus datos</h3>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tlf">Teléfono de contacto</label>
+                            <input type="text" name="tlf" value="<?php echo $this->usuario->tlf ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="talla">Talla de Camiseta</label>
+                            <select name="talla">
+                                <option value="S" <?php echo $this->usuario->talla == 'S' ? 'selected' : '' ?>>S</option>
+                                <option value="M" <?php echo $this->usuario->talla == 'M' ? 'selected' : '' ?>>M</option>
+                                <option value="L" <?php echo $this->usuario->talla == 'L' ? 'selected' : '' ?>>L</option>
+                                <option value="XL" <?php echo $this->usuario->talla == 'XL' ? 'selected' : '' ?>>XL</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="club">Club (opcional)</label>
+                            <input type="text" name="club" value="<?php echo $this->usuario->club ?>">
+                        </div>
                     </div>
                 </div>
 
@@ -61,9 +87,9 @@
                         </p>
                     </div>
                 </div>
-<!-- "<?= URL ?>carrera/show/<?= $this->evento['id'] ?>" -->
+
                 <div class="form-actions">
-                    <a href="<?= URL ?>" class="btn-account-cancel">Volver</a>
+                    <a href="<?php echo URL ?>carrera/show/<?php echo $this->evento['id'] ?>" class="btn-account-cancel">Volver</a>
                     <div class="main-buttons">
                         <button type="submit" class="btn-account-save">
                             <i class="fas fa-check-circle"></i> Confirmar y Pagar

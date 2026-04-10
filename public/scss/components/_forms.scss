@@ -147,3 +147,9 @@
     letter-spacing: 0.5px;
     margin-bottom: 6px;
 }
+
+.form-section-header h3 {
+    color: var(--text-sec);
+    border-bottom: 1px solid var(--text-sec);
+    margin: 10px 0;
+}

@@ -21,7 +21,9 @@ class App {
                 $controller = new $controllerName();
 
                 // Cargar el modelo asociado al controlador, si existe
-                $controller->loadModel($controllerName);
+                if ($controllerName !== 'error' && method_exists($controller, 'loadModel')) {
+                    $controller->loadModel($controllerName);
+                }
 
                 // Determinar el método y los parámetros
                 $methodName = isset($url[1]) ? $url[1] : 'render';

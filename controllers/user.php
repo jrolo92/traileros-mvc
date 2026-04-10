@@ -222,8 +222,13 @@
             $club = filter_var($_POST['club'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $talla = $_POST['talla'] ?? null;
             $num_licencia = filter_var($_POST['num_licencia'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-            // Checkbox: si no llega es 0, si llega es 1
+            // Select: si es federado = 1 | Si no = 0
             $es_federado = isset($_POST['es_federado']) ? 1 : 0;
+
+            // Si el usuario NO está federado, forzamos que la licencia sea un string vacío
+            if ($es_federado == 0) {
+                $num_licencia = ''; 
+            }
 
             // Gestión del avatar
             $avatar = $user_db->avatar; // Por defecto mantenemos el actual

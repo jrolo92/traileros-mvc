@@ -319,7 +319,8 @@ class Carrera extends Controller {
         }
 
         // Preparamos variables para la vista
-        $this->view->plazas_libres = $this->model->getPlazasDisponibles($id);
+        $ocupadas = $this->model->getPlazasOcupadas($id);
+        $this->view->plazas_libres = $carrera['cupo_maximo'] - $ocupadas;
         $this->view->carrera = $carrera;
         if ($carrera && isset($carrera['nombre'])) {
             $this->view->title = $carrera['nombre'] . " - Traileros";

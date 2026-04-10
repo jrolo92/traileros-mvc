@@ -15,4 +15,17 @@ public/
 
 09/04/2026: Creación de lógica de inscripciones (MVC). 
             IMPORTANTE: Plantear conveniencia de implantar pasarela de pago (ahora solo hago una simulación).
-            
+
+10/04/2026: Creacion de vistas de inscripciones: main y new
+
+
+
+
+MEJORAS:
+    - En la documentación se podría hacer unas matrices de control de acceso de cada controlador para que se vean los permisos de una manera mas visual. PE:
+    Método,Usuario (3),Organizador (2),Admin (1),Condición Extra
+    render,✅,✅,✅,Filtro en SQL (ya lo tienes)
+    create,✅,✅,✅,-
+    edit,❌,✅,✅,"Si es Org, solo sus eventos"
+    delete,❌,❌,✅,-
+    show,✅,✅,✅,Validar propiedad del registro

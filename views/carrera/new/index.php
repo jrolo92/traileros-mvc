@@ -80,11 +80,10 @@
                     <input type="number" 
                         name="cupo_maximo" 
                         id="cupo_maximo" 
-                        class="form-control" 
+                        placeholder="Número total de dorsales disponibles."
                         value="<?= $this->carrera->cupo_maximo ?>" 
                         min="1" 
                         required>
-                    <small class="text-muted">Número total de dorsales disponibles.</small>
                 </div>
 
                 <div class="form-group">
@@ -92,12 +91,26 @@
                     <input type="number" 
                         name="precio" 
                         id="precio" 
-                        class="form-control" 
+                        placeholder="Precio base para la inscripción."
                         value="<?= $this->carrera->precio ?>" 
                         step="0.01" 
                         min="0" 
                         required>
-                    <small class="text-muted">Precio base para la inscripción.</small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col">
+                        <label for="edad_minima">Edad mínima</label>
+                        <input type="number" step="1" name="edad_minima" min="0" max="99"
+                            value="<?= htmlspecialchars($this->carrera->edad_minima) ?? 18 ?>" required>
+                        <small class="text-muted">Edad mínima el día del evento.</small>
+                    </div>
+                    <div class="form-group col">
+                        <label for="edad_maxima">Edad máxima</label>
+                        <input type="number" step="1" name="edad_maxima" min="0" max="99"
+                            value="<?= htmlspecialchars($this->carrera->edad_maxima) ?? 99 ?>" required>
+                        <small class="text-muted">Edad máxima el día del evento</small>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -110,6 +123,8 @@
                         <small class="error-text"><?= $this->errors['imagen'] ?></small>
                     <?php endif; ?>
                 </div>
+
+                
 
                 <div class="form-group readonly-group">
                     <label>Organizador</label>

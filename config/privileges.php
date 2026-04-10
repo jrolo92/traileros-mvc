@@ -51,7 +51,15 @@
     $GLOBALS['user']['show'] = [1];
     $GLOBALS['user']['search'] = [1];
     $GLOBALS['user']['order'] = [1];
-    
-    
 
+    $GLOBALS['inscripcion']['render'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['new'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['create'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['edit'] = [1, 2];
+    $GLOBALS['inscripcion']['update'] = [1, 2];
+    $GLOBALS['inscripcion']['delete'] = [1];
+    $GLOBALS['inscripcion']['show'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['search'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['order'] = [1, 2, 3];
+    
 ?>

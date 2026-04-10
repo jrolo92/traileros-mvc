@@ -5,7 +5,7 @@
         </a>
     </li>
     <li>
-        <a href="<?= URL ?>account/inscripciones">
+        <a href="<?= URL ?>inscripcion">
             <i class="fas fa-running"></i> Mis Carreras
         </a>
     </li>

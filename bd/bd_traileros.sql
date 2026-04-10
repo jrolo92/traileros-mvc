@@ -56,6 +56,7 @@ CREATE TABLE IF NOT EXISTS roles_users(
 );
 
 -- 3. Entidades del Dominio (Traileros)
+DROP TABLE IF EXISTS Categorias;
 CREATE TABLE IF NOT EXISTS Categorias (
     id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(100) NOT NULL,
@@ -75,11 +76,14 @@ CREATE TABLE IF NOT EXISTS Eventos (
     descripcion TEXT,
     cupo_maximo INT UNSIGNED DEFAULT 100,
     precio DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    edad_minima TINYINT UNSIGNED DEFAULT 18,
+    edad_maxima TINYINT UNSIGNED DEFAULT 99,
     imagen VARCHAR(255),
     organizador_id INT UNSIGNED NOT NULL,
     FOREIGN KEY (organizador_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS Inscripciones;
 CREATE TABLE IF NOT EXISTS Inscripciones (
     user_id INT UNSIGNED,
     evento_id INT UNSIGNED,

@@ -1,8 +1,10 @@
 <?php
 
-class Inscripcion extends Controller {
+class Inscripcion extends Controller
+{
 
-    function __construct() {
+    public function __construct()
+    {
         parent::__construct();
         // Iniciamos sesión una sola vez para todos los métodos de este controlador
         if (session_status() == PHP_SESSION_NONE) {
@@ -14,22 +16,26 @@ class Inscripcion extends Controller {
         Método: render()
         Descripción: Renderiza la lista principal de inscripciones
     */
-    function render(){
+    public function render()
+    {
         $this->requireLogin();
-        // $this->requirePrivilege($GLOBALS['inscripcion']['render']);
+        $this->requirePrivilege($GLOBALS['inscripcion']['render']);
 
-        if(empty($_SESSION['csrf_token'])){
+        if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        if (isset($_SESSION['notify'])){
+        $user_id = $_SESSION['user_id'];
+        $role_id = $_SESSION['role_id'];
+
+        if (isset($_SESSION['notify'])) {
             $this->view->notify = $_SESSION['notify'];
             unset($_SESSION['notify']);
         }
 
         $this->view->title = "Mis Inscripciones - Traileros";
-        
-        $this->view->inscripciones = $this->model->get($_SESSION['user_id'], $_SESSION['role_id']);
+
+        $this->view->inscripciones = $this->model->getInscripcionesByRole($user_id, $role_id);
 
         $this->view->render('inscripcion/main/index');
     }
@@ -38,27 +44,70 @@ class Inscripcion extends Controller {
         Método: new
         Descripción: Muestra el formulario de inscripción para un evento específico
     */
-    function new($params=null){
+    public function new ($params = null)
+    {
         $this->requireLogin();
-        // $this->requirePrivilege($GLOBALS['inscripcion']['new']);
+        $this->requirePrivilege($GLOBALS['inscripcion']['new']);
 
-        if(empty($_SESSION['csrf_token'])){
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        // Antes de nada verificar los datos del perfil del usuario.
+        $user_id = $_SESSION['user_id'];
+        /** @var UserModel $userModel */
+        $userModel = $this->loadModel('user');
+        $usuario   = $userModel->read($user_id);
+
+        // Campos fijos obligatorios para la inscripción.
+        $campos_obligatorios = [
+            'nombre', 'apellidos', 'email', 'sexo',
+            'fecha_nac', 'dni', 'tlf', 'direccion', 
+            'poblacion', 'provincia', 'cp', 'talla'
+        ];
+
+        foreach ($campos_obligatorios as $campo) {
+            if (!isset($usuario->$campo) || trim($usuario->$campo) === '') {
+                $this->redirectIncomplete("Falta el dato: " . $campo);
+            }
+        }
+
+        // Comprobamos número de licencia en caso de usuario federado
+        if ($usuario->es_federado == 1 && empty($usuario->num_licencia)) {
+            $this->redirectIncomplete("Si estás federado, debes indicar tu número de licencia.");
         }
 
         $evento_id = (int) ($params[0] ?? 0);
-        if ($evento_id === 0) header('location:' . URL . 'carrera');
-
         // Cargamos modelos adicionales para datos del evento y categorías
         /** @var CarreraModel $eventoModel */
         $eventoModel = $this->loadModel('carrera');
-        // VERIFICACIÓN: Si $eventoModel sigue siendo null, el problema está en loadModel
-        if (!$eventoModel) {
-            die("Error: No se pudo cargar el modelo CarreraModel. Revisa el nombre del archivo.");
-        }
         $evento = $eventoModel->read($evento_id);
 
-        if (!$evento) $this->errorNotFound($evento_id);
+        if (! $evento) {
+            $this->errorNotFound($evento_id);
+        }
+
+        // Calculamos la edad (Comparando fecha de nacimiento con fecha del evento)
+        $fecha_nac    = new DateTime($usuario->fecha_nac);
+        $fecha_evento = new DateTime($evento['fecha']);
+        $intervalo    = $fecha_nac->diff($fecha_evento);
+        $edad_usuario = $intervalo->y;
+
+        // Validamos rangos
+        $min = (int) $evento['edad_minima'];
+        $max = (int) $evento['edad_maxima'];
+
+        if ($edad_usuario < $min) {
+            $_SESSION['notify'] = "Lo sentimos, esta carrera requiere un mínimo de $min años. Tienes $edad_usuario.";
+            header('location:' . URL . 'carrera/show/' . $evento_id);
+            exit;
+        }
+
+        if ($edad_usuario > $max) {
+            $_SESSION['notify'] = "Lo sentimos, esta carrera tiene un límite de edad de $max años.";
+            header('location:' . URL . 'carrera/show/' . $evento_id);
+            exit;
+        }
+
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
 
         // Comprobación de plazas antes de mostrar el formulario
         $plazas_libres = $evento['cupo_maximo'] - $eventoModel->getPlazasOcupadas($evento_id);
@@ -68,11 +117,14 @@ class Inscripcion extends Controller {
             exit;
         }
 
-        $this->view->title = "Inscripción: " . $evento['nombre'];
+        $this->view->title  = "Inscripción: " . $evento['nombre'];
+
         $this->view->evento = $evento;
-        
+
         $this->view->inscripcion = new class_inscripcion();
         $this->view->inscripcion->evento_id = $evento_id;
+
+        $this->view->usuario = $usuario;
 
         $this->view->render('inscripcion/new/index');
     }
@@ -81,71 +133,77 @@ class Inscripcion extends Controller {
         Método: create
         Descripción: Procesa la inscripción y asigna categoría automáticamente
     */
-    function create() {
+    public function create()
+    {
+        // --- 1. SEGURIDAD Y REQUISITOS ---
         $this->requireLogin();
-        // $this->requirePrivilege($GLOBALS['inscripcion']['create'])
-
+        $this->requirePrivilege($GLOBALS['inscripcion']['create']);
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
         }
 
-        $evento_id = (int) $_POST['evento_id'];
+        // --- 2. CARGA DE MODELOS (Todos juntos al principio para claridad) ---
+        $userModel = $this->loadModel('user');
+        $carreraModel = $this->loadModel('carrera');
+        $inscripcionModel = $this->loadModel('inscripcion'); // El modelo principal de este controller
+
+        // --- 3. RECOGIDA Y ACTUALIZACIÓN DE DATOS DEL USUARIO ---
         $user_id = $_SESSION['user_id'];
+        $datosBase = $userModel->read($user_id);
+        
+        // Mapeo a class_user (lo que arreglamos antes)
+        $user = new class_user();
+        foreach ($datosBase as $prop => $val) { $user->$prop = $val; }
+        $user->tlf = $_POST['tlf'];
+        $user->talla = $_POST['talla'];
+        $user->club = $_POST['club'];
+        
+        // Guardamos cambios en el perfil
+        $userModel->update($user, $user_id, $_SESSION['role_id']);
 
-        // Cargamos el modelo de Carrera para obtener el precio real
-        /** @var CarreraModel $eventoModel */
-        $eventoModel = $this->loadModel('Carrera');
-        $evento = $eventoModel->read($evento_id);
+        // --- 4. VALIDACIÓN DE LA CARRERA (Plazas y Evento) ---
+        $evento_id = (int)$_POST['evento_id'];
+        $evento = $carreraModel->read($evento_id);
 
-        // CRÍTICO: Comprobación de plazas antes de simular el pago
-        $libres = $evento['cupo_maximo'] - $eventoModel->getPlazasOcupadas($evento_id);
+        $libres = $evento['cupo_maximo'] - $carreraModel->getPlazasOcupadas($evento_id);
         if ($libres <= 0) {
-            $_SESSION['notify'] = "Evento completado mientras procesabas los datos.";
+            $_SESSION['notify'] = "Lo sentimos, ya no quedan plazas.";
             header('Location: ' . URL . 'carrera');
             exit();
         }
 
-        // SIMULACIÓN DE PAGO (Si falla, nunca llegamos al Model)
-        $pagoExitoso = true; 
-        if (!$pagoExitoso) {
-            $_SESSION['notify'] = "Error en la pasarela de pago.";
-            header('Location: ' . URL . 'inscripcion/new/' . $evento_id);
-            exit();
-        }
-        
-        // Si llegamos aquí, el pago es OK. Obtenemos datos del usuario para lógica de categoría
-        /** @var UserModel $userModel */
-        $userModel = $this->loadModel('User');
-        $usuario = $userModel->read($user_id);
-        
-        // Calcular edad
-        $nacimiento = new DateTime($usuario['fecha_nacimiento']);
-        $hoy = new DateTime();
-        $edad = $hoy->diff($nacimiento)->y;
+        // --- 5. LÓGICA DE NEGOCIO (Categoría y Edad) ---
+        $nacimiento = new DateTime($user->fecha_nac);
+        $fecha_evento = new DateTime($evento['fecha']);
+        $edad = $fecha_evento->diff($nacimiento)->y;
 
-        // Determinar Categoría Automática
-        $categoria_id = $this->model->getCategoriaAdecuada($edad, $usuario['sexo']);
+        // IMPORTANTE: Aquí usamos el modelo de inscripción
+        $categoria_id = $inscripcionModel->getCategoriaAdecuada($edad, $user->sexo);
 
-        // Saneamiento de metodo de pago
-        $metodo_pago = filter_var($_POST['metodo_pago'] ?? 'transferencia', FILTER_SANITIZE_SPECIAL_CHARS);
+        // --- 6. PROCESADO DE PAGO (Simulación) ---
+        $pagoExitoso = true; // Aquí iría la lógica de tu pasarela
 
-        // Crear objeto de inscripción
-        $inscripcion = new class_inscripcion(
-            $user_id, 
-            $evento_id, 
-            $categoria_id, 
-            null, // El dorsal se genera en el modelo (auto) una vez se confirma el pago (método creaete())
-            $metodo_pago, 
-            'completado', 
-            $evento['precio']
-        );
+        // --- 7. FINALIZACIÓN: GUARDAR INSCRIPCIÓN ---
+        if ($pagoExitoso) {
+            $metodo_pago = filter_var($_POST['metodo_pago'], FILTER_SANITIZE_SPECIAL_CHARS);
+            
+            $nuevaInscripcion = new class_inscripcion(
+                $user_id,
+                $evento_id,
+                $categoria_id,
+                null, // El dorsal se autogenera en el model
+                $metodo_pago,
+                'completado',
+                $evento['precio']
+            );
 
-        // Guardar en BD
-        if ($this->model->create($inscripcion)) {
-            $_SESSION['notify'] = "¡Pago confirmado! Tu dorsal es el " . $inscripcion->dorsal;
-            header('Location: ' . URL . 'inscripcion/show/' . $_SESSION['user_id'] . '/' . $evento_id);
-        } else {
-            $this->handleError();
+            if ($inscripcionModel->create($nuevaInscripcion)) {
+                $_SESSION['notify'] = "¡Inscripción realizada con éxito!";
+                header('Location: ' . URL . 'inscripcion');
+                exit();
+            } else {
+                $this->handleError();
+            }
         }
     }
 
@@ -153,32 +211,40 @@ class Inscripcion extends Controller {
         Método: edit / update
         Descripción: Permite al admin cambiar estado de pago o dorsal
     */
-    public function edit($params) {
+    public function edit($params)
+    {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['edit']);
 
-        $user_id = (int) $params[0];
+        $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
-        
-        $inscripcion = $this->model->read($user_id, $evento_id);
-        if (!$inscripcion) $this->errorNotFound("$user_id-$evento_id");
 
-        $this->view->categorias = $this->model->getAllCategorias();
+        $inscripcion = $this->model->getDetalleCompleto($user_id, $evento_id);
+        if (! $inscripcion) {
+            $this->errorNotFound("$user_id-$evento_id");
+        }
+
+        // Check de permisos
+        $this->checkOwnership($inscripcion->user_id, $inscripcion->organizador_id);
+
+        $this->view->categorias   = $this->model->getAllCategorias();
         $this->view->metodos_pago = ['tarjeta', 'transferencia', 'bizum', 'efectivo'];
-        $this->view->inscripcion = $inscripcion;
-        $this->view->title = "Editar Inscripción";
+        $this->view->inscripcion  = $inscripcion;
+        $this->view->title        = "Editar Inscripción";
         $this->view->render('inscripcion/edit/index');
     }
 
-    public function update($params) {
+    public function update($params)
+    {
         $this->requireLogin();
-        
-        $user_id = (int) $params[0];
+        $this->requirePrivilege($GLOBALS['inscripcion']['update']);
+
+        $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
 
         // Saneamiento de datos
         $estado_pago = $_POST['estado_pago'];
-        $dorsal = (int) $_POST['dorsal'];
+        $dorsal      = (int) $_POST['dorsal'];
 
         $data = [
             'user_id'      => $user_id,
@@ -187,7 +253,7 @@ class Inscripcion extends Controller {
             'dorsal'       => empty($_POST['dorsal']) ? null : (int) $_POST['dorsal'],
             'metodo_pago'  => filter_var($_POST['metodo_pago'], FILTER_SANITIZE_SPECIAL_CHARS),
             'estado_pago'  => filter_var($_POST['estado_pago'], FILTER_SANITIZE_SPECIAL_CHARS),
-            'precio_final' => filter_var($_POST['precio_final'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)
+            'precio_final' => filter_var($_POST['precio_final'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
         ];
 
         if ($this->model->update($data)) {
@@ -203,25 +269,35 @@ class Inscripcion extends Controller {
         Método: show
         Descripción: Ver resguardo de inscripción
     */
-    public function show($params) {
+    public function show($params)
+    {
         $this->requireLogin();
-        $user_id = (int) $params[0];
+        $this->requirePrivilege($GLOBALS['inscripcion']['show']);
+        $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
 
-        $this->view->inscripcion = $this->model->getDetalleCompleto($user_id, $evento_id);
+        $inscripcion = $this->model->getDetalleCompleto($user_id, $evento_id);
+
+        if (!$inscripcion) $this->handleError();
+
+        $this->checkOwnership($inscripcion->user_id, $inscripcion->organizador_id);
+
+        $this->view->inscripcion = $inscripcion;
+
         $this->view->render('inscripcion/show/index');
     }
 
-    public function delete($params) {
+    public function delete($params)
+    {
         $this->requireLogin();
-        // $this->requirePrivilege($GLOBALS['inscripcion']['delete']);
+        $this->requirePrivilege($GLOBALS['inscripcion']['delete']);
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || 
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
+            ! hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
         }
 
-        $user_id = (int) $params[0];
+        $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
 
         if ($this->model->delete($user_id, $evento_id)) {
@@ -238,53 +314,93 @@ class Inscripcion extends Controller {
     /*
         Métodos: search y order
     */
-    public function search() {
+    public function search()
+    {
         $this->requireLogin();
-        $term = $_GET['term'] ?? '';
+        $this->requirePrivilege($GLOBALS['inscripcion']['search']);
+        $term                      = $_GET['term'] ?? '';
         $this->view->inscripciones = $this->model->search($term);
-        $this->view->title = "Resultados de búsqueda: " . $term;
+        $this->view->title         = "Resultados de búsqueda: " . $term;
         $this->view->render('inscripcion/main/index');
     }
 
-    public function order($param) {
+    public function order($param)
+    {
         $this->requireLogin();
-        $criterio = $param[0] ?? 'fecha';
+        $this->requirePrivilege($GLOBALS['inscripcion']['order']);
+        $criterio                  = $param[0] ?? 'fecha';
         $this->view->inscripciones = $this->model->order($criterio);
-        $this->view->title = "Inscripciones ordenadas por: " . $criterio;
+        $this->view->title         = "Inscripciones ordenadas por: " . $criterio;
         $this->view->render('inscripcion/main/index');
+    }
+
+    /*
+        Método para redireccionar a edición del perfil en caso de perfil incompleto
+        (Función auxiliar dentro del controlador para no repetir código)
+    */
+    private function redirectIncomplete($mensaje)
+    {
+        $_SESSION['error'] = $mensaje;
+        header('location: ' . URL . 'user/edit/' . $_SESSION['user_id']);
+        exit;
     }
 
     /* --- Métodos privados de seguridad --- */
-    private function requirePrivilege($allowedRoles){
-        if (!in_array($_SESSION['role_id'], $allowedRoles)){
+    private function requirePrivilege($allowedRoles)
+    {
+        if (! in_array($_SESSION['role_id'], $allowedRoles)) {
             $_SESSION['notify'] = "No tienes permisos para realizar esta acción";
             header('Location: ' . URL . 'carrera');
             exit();
         }
     }
-    
-    private function requireLogin(){
-        if(!isset($_SESSION['user_id'])) {
+
+    private function requireLogin()
+    {
+        if (! isset($_SESSION['user_id'])) {
             $_SESSION['notify'] = "Acceso restringido. Por favor, inicia sesión.";
             header('Location: ' . URL . 'auth/login');
             exit();
         }
     }
 
+    private function checkOwnership($userIdInscrito, $organizadorIdEvento) {
+        $mi_id  = $_SESSION['user_id'];
+        $mi_rol = $_SESSION['role_id'];
+
+        // 1. El Admin (Rol 1) se salta cualquier restricción
+        if ($mi_rol == 1) return true;
+
+        // 2. El Organizador (Rol 2) puede ver si el evento es suyo O si es su propia inscripción
+        if ($mi_rol == 2) {
+            if ($organizadorIdEvento == $mi_id || $userIdInscrito == $mi_id) return true;
+        }
+
+        // 3. El Corredor (Rol 3) SOLO puede ver si la inscripción es suya
+        if ($mi_rol == 3) {
+            if ($userIdInscrito == $mi_id) return true;
+        }
+
+        // Si no ha entrado en ningún return true, es que no tiene permiso
+        $_SESSION['notify'] = "No tienes permiso para acceder a este registro.";
+        header('Location: ' . URL . 'inscripcion');
+        exit();
+    }
+
     // Metodos para el manejo de errores
-     private function handleError() {
+    private function handleError()
+    {
         header('location:' . URL . 'error');
         exit();
     }
 
     // Método de error not found
-    private function errorNotFound($id) {
-        $this->view->tipo = "404";
-        $this->view->titulo = "Recurso no encontrado";
+    private function errorNotFound($id)
+    {
+        $this->view->tipo    = "404";
+        $this->view->titulo  = "Recurso no encontrado";
         $this->view->mensaje = "Lo sentimos, el elemento con ID $id no existe.";
         $this->view->render('error/index');
         exit;
     }
 }
-
-?>

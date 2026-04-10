@@ -629,6 +629,12 @@ body {
   margin-bottom: 6px;
 }
 
+.form-section-header h3 {
+  color: var(--text-sec);
+  border-bottom: 1px solid var(--text-sec);
+  margin: 10px 0;
+}
+
 .custom-alert {
   display: flex;
   align-items: center;
@@ -1386,6 +1392,38 @@ body {
 .carrera-info-panel {
   margin: 0 20px;
 }
+.carrera-info-panel .carrera-specs-minimal {
+  margin: 1.5rem 0;
+  padding: 1rem 0;
+  border-top: 1px solid var(--text-sec);
+  border-bottom: 1px solid var(--text-sec);
+}
+.carrera-info-panel .carrera-specs-minimal .spec-item {
+  display: flex;
+  align-items: center;
+}
+.carrera-info-panel .carrera-specs-minimal .spec-content {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.carrera-info-panel .carrera-specs-minimal .spec-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.carrera-info-panel .carrera-specs-minimal .spec-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+.carrera-info-panel .carrera-specs-minimal .spec-value small {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: #999;
+}
 .carrera-info-panel .detail-header {
   margin-bottom: 25px;
 }
@@ -1419,7 +1457,7 @@ body {
 .carrera-info-panel .stats-grid .stat-item .label {
   display: block;
   font-size: 0.75rem;
-  color: #888;
+  color: var(--text-sec);
   text-transform: uppercase;
 }
 .carrera-info-panel .stats-grid .stat-item .value {

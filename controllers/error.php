@@ -8,11 +8,14 @@
             $this->view->tipo = $tipo;
             $this->view->titulo = $titulo;
             $this->view->mensaje = $mensaje_error;
+
+            $this->render();
+        }
+
+        function render() {
             $this->view->render('error/index');
             exit();
         }
-
-      
 
     }
 

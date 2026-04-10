@@ -271,39 +271,13 @@ class carreraModel extends Model {
         }
     }
 
-    /*
-        Método: getPlazasDisponibles($evento_id)
-        Descripcion: Calcula las plazas disponibles teniendo en cuenta las inscripciones actuales
-        Devuelve: Plazas disponibles en el momento de la consulta.
-    */
-    public function getPlazasDisponibles($evento_id) {
-        try {
-            $db = $this->db->connect();
-            
-            // 1. Obtener cupo máximo
-            $sqlCupo = "SELECT cupo_maximo FROM Eventos WHERE id = :id";
-            $stmt1 = $db->prepare($sqlCupo);
-            $stmt1->execute(['id' => $evento_id]);
-            $cupo = $stmt1->fetchColumn();
-
-            // 2. Contar inscritos
-            $sqlInscritos = "SELECT COUNT(*) FROM Inscripciones WHERE evento_id = :id";
-            $stmt2 = $db->prepare($sqlInscritos);
-            $stmt2->execute(['id' => $evento_id]);
-            $inscritos = $stmt2->fetchColumn();
-
-            return $cupo - $inscritos;
-
-        } catch (PDOException $e) {
-            return 0;
-        }
-    }
-
     public function getPlazasOcupadas($evento_id) {
+
         // Solo contamos a los que ya han pasado por caja
         $sql = "SELECT COUNT(*) FROM Inscripciones 
                 WHERE evento_id = :id AND estado_pago = 'completado'";
-        $stmt = $this->db->prepare($sql);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
         $stmt->execute(['id' => $evento_id]);
         return $stmt->fetchColumn();
     }
