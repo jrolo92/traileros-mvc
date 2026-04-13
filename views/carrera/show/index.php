@@ -128,7 +128,7 @@
                         <?php else: ?>
                             <div class="login-alert">
                                 <p>Para participar en este evento es necesario estar registrado.</p><br>
-                                <a href="<?php echo URL ?>login" class="btn-primary">Iniciar Sesión / Registro</a>
+                                <a href="<?php echo URL ?>auth/login" class="btn-primary">Iniciar Sesión / Registro</a>
                             </div>
                         <?php endif; ?>
 

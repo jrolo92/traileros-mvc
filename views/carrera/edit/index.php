@@ -85,8 +85,8 @@
                     <input type="number" 
                         name="cupo_maximo" 
                         id="cupo_maximo" 
-                        class="form-control" 
-                        value="<?= $this->carrera->cupo_maximo ?>" 
+                        
+                        value="<?= $this->carrera['cupo_maximo'] ?>" 
                         min="1" 
                         required>
                     <small class="text-muted">Número total de dorsales disponibles.</small>
@@ -97,8 +97,8 @@
                     <input type="number" 
                         name="precio" 
                         id="precio" 
-                        class="form-control" 
-                        value="<?= $this->carrera->precio ?>" 
+                        
+                        value="<?= $this->carrera['precio'] ?>" 
                         step="0.01" 
                         min="0" 
                         required>

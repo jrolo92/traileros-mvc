@@ -33,7 +33,7 @@
                 </nav>
             </header>
 
-            <div class="account-content">
+            <div class="account-content custom-form">
                 <?php require_once "template/partials/mensaje.partial.php"?>
                 <?php require_once "template/partials/error.partial.php"?>
 

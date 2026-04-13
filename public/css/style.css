@@ -514,6 +514,17 @@ body {
   outline: none;
   box-shadow: 0 0 0 3px rgba(45, 90, 39, 0.1);
 }
+.custom-form .form-group input[type=number]::-webkit-inner-spin-button {
+  opacity: 0;
+}
+.custom-form .form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+}
 .custom-form .form-group.readonly-group .fake-input {
   background: var(--bg-body);
   padding: 12px 15px;
@@ -1891,7 +1902,7 @@ body {
 .account-content .form-group input {
   padding: 12px;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: field;
   border-radius: 8px;
   color: var(--text-main);
   cursor: text;
@@ -1900,15 +1911,16 @@ body {
 .account-content .form-group input:focus {
   border-color: #2d5a27;
   outline: none;
-  background: var(--bg-card);
+  background: field;
 }
 .account-content .form-group input:disabled {
   background: var(--bg-body);
+  border-color: var(--bg-body);
   color: #777;
   cursor: not-allowed;
 }
 .account-content .form-group .form-select {
-  background-color: var(--bg-card);
+  background-color: field;
   color: var(--text-main);
   border: 1px solid var(--border-color);
   padding: 12px;
@@ -1982,62 +1994,6 @@ body {
 }
 .alert-danger-custom i {
   font-size: 1.2rem;
-}
-
-.account-nav-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 5px;
-  padding: 0 20px;
-}
-.account-nav-list li {
-  margin: 0;
-}
-.account-nav-list li a {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  color: #666;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 0.9rem;
-  border-radius: 8px 8px 0 0;
-  transition: all 0.2s;
-  border-bottom: 3px solid transparent;
-}
-.account-nav-list li a i {
-  font-size: 1rem;
-  color: #999;
-}
-.account-nav-list li a:hover {
-  background: rgba(45, 90, 39, 0.05);
-  color: #2d5a27;
-  border-bottom-color: #2d5a27;
-}
-.account-nav-list li a:hover i {
-  color: #2d5a27;
-}
-.account-nav-list li a.active {
-  background: var(--bg-card);
-  color: #2d5a27;
-  border-bottom: 3px solid #2d5a27;
-  font-weight: 700;
-}
-.account-nav-list li a.active i {
-  color: #2d5a27;
-}
-.account-nav-list li a.delete-link:hover {
-  color: #c53030;
-  background: #fff5f5;
-  border-bottom-color: #c53030;
-}
-.account-nav-list li a.delete-link:hover i {
-  color: #c53030;
 }
 
 .account-table {
@@ -2185,13 +2141,13 @@ body {
   transition: transform 0.2s;
 }
 .admin-table tbody tr:hover {
-  background-color: #f9fdfb;
+  background-color: field;
 }
 .admin-table tbody tr td {
   padding: 15px;
   border-bottom: 1px solid #f0f0f0;
   vertical-align: middle;
-  color: #444;
+  color: var(--text-main);
 }
 
 /* Badges de Rol */

@@ -9,14 +9,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Estado: FEDERADO
                 campoLicencia.disabled = false;
                 campoLicencia.style.opacity = "1";
-                campoLicencia.style.backgroundColor = "var(--bg-card)";
+                campoLicencia.style.backgroundColor = "field";
                 campoLicencia.placeholder = "Introduce tu nº de licencia";
             } else {
                 // Estado: NO FEDERADO
                 campoLicencia.disabled = true;
                 campoLicencia.value = ""; 
                 campoLicencia.style.opacity = "0.5";
-                campoLicencia.style.backgroundColor = "var(--bg-card)";
+                campoLicencia.style.backgroundColor = "field";
                 campoLicencia.placeholder = "No necesario";
             }
         }

@@ -46,7 +46,7 @@
                 <?php require_once "template/partials/mensaje.partial.php"?>
                 <?php require_once "template/partials/error.partial.php"?>
 
-                <div class="account-content">
+                <div class="account-content custom-form">
                     <form action="<?= URL ?>account/update" method="post" class="account-form">
 
                         <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
