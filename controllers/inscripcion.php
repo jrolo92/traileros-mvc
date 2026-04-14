@@ -225,7 +225,7 @@ class Inscripcion extends Controller
         }
 
         // Check de permisos
-        $this->checkOwnership($inscripcion->user_id, $inscripcion->organizador_id);
+        $this->checkOwnership($inscripcion['user_id'], $inscripcion['organizador_id']);
 
         $this->view->categorias   = $this->model->getAllCategorias();
         $this->view->metodos_pago = ['tarjeta', 'transferencia', 'bizum', 'efectivo'];
@@ -239,13 +239,10 @@ class Inscripcion extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['update']);
 
-        $user_id   = (int) $params[0];
-        $evento_id = (int) $params[1];
+        $user_id   = (int) $_POST['user_id'];
+        $evento_id = (int) $_POST['evento_id'];
 
         // Saneamiento de datos
-        $estado_pago = $_POST['estado_pago'];
-        $dorsal      = (int) $_POST['dorsal'];
-
         $data = [
             'user_id'      => $user_id,
             'evento_id'    => $evento_id,
@@ -280,9 +277,11 @@ class Inscripcion extends Controller
 
         if (!$inscripcion) $this->handleError();
 
-        $this->checkOwnership($inscripcion->user_id, $inscripcion->organizador_id);
+        $this->checkOwnership($inscripcion['user_id'], $inscripcion['organizador_id']);
 
+        $this->view->title = "Detalles de inscripción";
         $this->view->inscripcion = $inscripcion;
+        $this->view->readonly = true;
 
         $this->view->render('inscripcion/show/index');
     }
@@ -295,6 +294,7 @@ class Inscripcion extends Controller
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
             ! hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
+            exit();
         }
 
         $user_id   = (int) $params[0];
@@ -318,9 +318,23 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['search']);
-        $term                      = $_GET['term'] ?? '';
-        $this->view->inscripciones = $this->model->search($term);
-        $this->view->title         = "Resultados de búsqueda: " . $term;
+
+        $user_id = $_SESSION['user_id'];
+        $role_id = $_SESSION['role_id'];
+
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+
+        // Si el término está vacío, cargamos todas las inscripciones (método main/get)
+        if ($term === '') {
+            $this->view->inscripciones = $this->model->get(null,null);
+            $this->view->subtitle = null;
+        } else {
+            $this->view->inscripciones = $this->model->search($term);
+            $this->view->subtitle = "Resultados de búsqueda: " . htmlspecialchars($term);
+        }
+
+        $this->view->title = "Resultados de búsqueda: " . $term;
+
         $this->view->render('inscripcion/main/index');
     }
 
@@ -328,9 +342,24 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['order']);
-        $criterio                  = $param[0] ?? 'fecha';
+        
+        // Obtenemos el criterio
+        $criterio = $param[0] ?? 'fecha';
         $this->view->inscripciones = $this->model->order($criterio);
-        $this->view->title         = "Inscripciones ordenadas por: " . $criterio;
+
+        $titulos = [
+            'usuario' => 'Participante',
+            'evento'  => 'Evento',
+            'dorsal'  => 'Dorsal',
+            'fecha'   => 'Fecha de Inscripción',
+            'estado'  => 'Estado de Pago'
+        ];
+        $nombre_criterio = $titulos[$criterio] ?? 'Fecha';
+
+        $this->view->title = "Mis Inscripciones - Traileros";
+        
+        $this->view->subtitle = "Inscripciones ordenadas por: " . $nombre_criterio;
+
         $this->view->render('inscripcion/main/index');
     }
 

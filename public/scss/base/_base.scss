@@ -43,9 +43,8 @@ $font-main: 'Inter', sans-serif;
 
 // Reset
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    // Aplicamos el border box para que sea mas sencillo calcular el tamaño. 
+    box-sizing: border-box; // El ancho y alto de cada elemento incluye padding y margin
     font-family: $font-main;
 }
 

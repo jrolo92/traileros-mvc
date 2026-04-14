@@ -118,7 +118,7 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--bg-card);
-    color: #2f3640;
+    color: var(--text-main);
     transition: all 0.3s ease;
     outline: none;
 }
@@ -141,7 +141,7 @@
 .form-select:focus {
     border-color: $primary-green;
     box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
-    background-color: #f9fffb;
+    background-color: var(--bg-card);
 }
 
 /* Estilo para el estado de error/inválido */

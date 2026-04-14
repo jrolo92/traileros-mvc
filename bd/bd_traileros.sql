@@ -91,7 +91,7 @@ CREATE TABLE IF NOT EXISTS Inscripciones (
     fecha_inscripcion DATETIME DEFAULT CURRENT_TIMESTAMP,
     dorsal INT UNSIGNED NULL,
     metodo_pago VARCHAR(50),
-    estado_pago ENUM('pendiente', 'completado', 'fallido') DEFAULT 'pendiente',
+    estado_pago ENUM('pendiente', 'completado', 'fallido', 'cancelado') DEFAULT 'pendiente',
     precio_final DECIMAL(10,2),
     PRIMARY KEY (user_id, evento_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -151,3 +151,6 @@ INSERT INTO Categorias (nombre, edad_min, edad_max, sexo) VALUES
 ('Veterano C', 60, 99, 'H'),
 ('Veterana C', 60, 99, 'M');
 
+ALTER TABLE Inscripciones 
+MODIFY COLUMN estado_pago ENUM('pendiente', 'completado', 'fallido', 'cancelado') 
+DEFAULT 'pendiente';

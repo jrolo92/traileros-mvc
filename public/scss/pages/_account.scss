@@ -59,6 +59,10 @@
 .account-content {
     padding: 40px;
 
+    p {
+        font-family: inherit;
+    }
+
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr; // Dos columnas
@@ -241,61 +245,59 @@
 }
 
 // Estilos del menú (ul y li)
-// .account-nav-list {
-//     list-style: none;
-//     padding: 0;
-//     margin: 0;
-//     display: flex; 
-//     flex-wrap: wrap; // Por si hay muchos elementos, que bajen a la siguiente línea en móvil
-//     justify-content: flex-start; // Alineados a la izquierda
-//     gap: 5px; // Espacio entre pestañas
-//     padding: 0 20px; // Un poco de aire a los lados
+.account-nav-list {
+    list-style: none;
+    padding: 0;
+    display: flex; 
+    flex-wrap: wrap; // Por si hay muchos elementos, que bajen a la siguiente línea en móvil
+    justify-content: flex-start; // Alineados a la izquierda
+    gap: 5px; // Espacio entre pestañas
+    padding: 0 20px; // Un poco de aire a los lados
 
-//     li {
-//         margin: 0;
+    li {
 
-//         a {
-//             display: flex;
-//             align-items: center;
-//             gap: 8px;
-//             padding: 10px 18px;
-//             color: #666;
-//             text-decoration: none;
-//             font-weight: 500;
-//             font-size: 0.9rem;
-//             border-radius: 8px 8px 0 0; // Solo redondeamos las esquinas de arriba
-//             transition: all 0.2s;
-//             border-bottom: 3px solid transparent; // Preparar el borde inferior para el 'active'
+        a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            color: #666;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: 8px 8px 0 0; // Solo redondeamos las esquinas de arriba
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent; // Preparar el borde inferior para el 'active'
 
-//             i { 
-//                 font-size: 1rem; 
-//                 color: #999; 
-//             }
+            i { 
+                font-size: 1rem; 
+                color: #999; 
+            }
 
-//             &:hover {
-//                 background: rgba($primary-green, 0.05);
-//                 color: $primary-green;
-//                 border-bottom-color: $primary-green;
-//                 i { color: $primary-green; }
-//             }
+            &:hover {
+                background: rgba($primary-green, 0.05);
+                color: $primary-green;
+                border-bottom-color: $primary-green;
+                i { color: $primary-green; }
+            }
 
-//             &.active {
-//                 background: var(--bg-card);
-//                 color: $primary-green;
-//                 border-bottom: 3px solid $primary-green; 
-//                 font-weight: 700;
-//                 i { color: $primary-green; }
-//             }
+            &.active {
+                background: var(--bg-card);
+                color: $primary-green;
+                border-bottom: 3px solid $primary-green; 
+                font-weight: 700;
+                i { color: $primary-green; }
+            }
 
-//             &.delete-link:hover {
-//                 color: $error-color;
-//                 background: #fff5f5;
-//                 border-bottom-color: $error-color;
-//                 i { color: $error-color; }
-//             }
-//         }
-//     }
-// }
+            &.delete-link:hover {
+                color: $error-color;
+                background: #fff5f5;
+                border-bottom-color: $error-color;
+                i { color: $error-color; }
+            }
+        }
+    }
+}
 
 
 // Tablas de inscripciones

@@ -404,19 +404,17 @@ class Carrera extends Controller {
         Descripción: Filtra las carreras según un término de búsqueda
     */
     public function search() {
-        // sec_session_start();
-        // $this->requireLogin();
-
-        // Capa gestión rol de usuario
-        // $this->requirePrivilege($GLOBALS['carrera']['search']);
 
         // Validar que el término de búsqueda existe y no está vacío
-        if (isset($_GET['term']) && (!empty($_GET['term']))) {
-            $term = $_GET['term'];
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+        $this->view->term = $term;
+
+        if ($term === '') {
+            // Si el buscador está vacío, cargamos las carreras normales (con o sin paginación)
+            $this->view->carreras = $this->model->get(); 
         } else {
-            // Si el término está vacío, redirigimos al listado general
-            header('location:' . URL . 'carrera');
-            exit();
+            // Si hay término, filtramos
+            $this->view->carreras = $this->model->search($term);
         }
 
         // Título de la página indicando la búsqueda

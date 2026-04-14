@@ -273,9 +273,9 @@ class carreraModel extends Model {
 
     public function getPlazasOcupadas($evento_id) {
 
-        // Solo contamos a los que ya han pasado por caja
+        // Contamos todos menos los cancelados y fallidos
         $sql = "SELECT COUNT(*) FROM Inscripciones 
-                WHERE evento_id = :id AND estado_pago = 'completado'";
+                WHERE evento_id = :id AND estado_pago NOT IN ('cancelado', 'fallido')";
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);
         $stmt->execute(['id' => $evento_id]);

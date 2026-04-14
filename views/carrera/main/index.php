@@ -4,6 +4,8 @@
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?> </title>
     <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
+    <script src="<?php echo URL ?>public/js/search-carreras.js" defer></script>
+    
 </head>
 <body>
 
@@ -15,6 +17,7 @@
                     <i class="fas fa-search"></i>
                     <input
                         type="search"
+                        id="search"
                         name="term"
                         placeholder="Buscar carrera..."
                         value="<?php echo htmlspecialchars($this->term ?? '') ?>"

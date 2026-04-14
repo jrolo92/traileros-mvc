@@ -4,6 +4,8 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
+    <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
+    <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 
 <body>
@@ -31,13 +33,52 @@
                 <nav class="account-menu">
                     <?php require_once "views/account/partials/menu.partial.php"?>
                 </nav>
+                
             </header>
 
             <section class="account-main-content">
                 <?php require_once "template/partials/mensaje.partial.php" ?>
                 <?php require_once "template/partials/error.partial.php" ?>
 
+                <section class="carreras-container">
+                    <div class="carreras-toolbar">
+                        <form class="carreras-search" action="<?php echo URL ?>inscripcion/search" method="GET">
+                            <div class="search-wrapper">
+                                <i class="fas fa-search"></i>
+                                <input
+                                    type="search"
+                                    id="search" 
+                                    name="term"
+                                    placeholder="Buscar inscripción..."
+                                    value="<?php echo htmlspecialchars($this->term ?? '') ?>"
+                                    autocomplete="off"
+                                >
+                            </div>
+                        </form>
+
+                        <div class="carreras-dropdown" id="orderDropdown">
+                            <button type="button" class="dropdown-button" id="dropdownBtn">
+                                <span>Ordenar por</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+
+                            <ul class="dropdown-list">
+                                <li><a href="<?php echo URL ?>inscripcion/order/usuario">Participante</a></li>
+                                <li><a href="<?php echo URL ?>inscripcion/order/evento">Evento</a></li>
+                                <li><a href="<?php echo URL ?>inscripcion/order/dorsal">Dorsal</a></li>
+                                <li><a href="<?php echo URL ?>inscripcion/order/fecha">Fecha</a></li>
+                                <li><a href="<?php echo URL ?>inscripcion/order/estado">Estado de Pago</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
                 <div class="account-content">
+                    
+                    <div id="subtitle-container">
+                        <?php if(isset($this->subtitle)): ?>
+                            <div class="subtitle-badge"><?= htmlspecialchars($this->subtitle) ?></div>
+                        <?php endif ?>
+                    </div>
                     <?php if (empty($this->inscripciones)): ?>
                         <div class="aviso-vacio" style="text-align: center; padding: 40px;">
                             <i class="fas fa-info-circle" style="font-size: 2rem; display: block; margin-bottom: 10px;"></i>
@@ -103,10 +144,15 @@
                                                     title="Editar">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
-                                                    <?php if ($_SESSION['role_id'] == 1): ?>
-                                                        <a href="#" class="action-btn delete-btn <?= !in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['delete']) ? 'disabled' : '' ?>" title="Anular inscripción">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
+                                                    <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['delete'])): ?>
+                                                        <form method="POST" action="<?= URL ?>inscripcion/delete/<?= $i->user_id ?>/<?= $i->evento_id ?>" class="d-inline">
+                                                            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+                                                            <button type="submit" class="action-btn delete-btn" 
+                                                                    onclick="return confirm('¿Desea cancelar esta inscripción?')"
+                                                                    title="Eliminar">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
                                                     <?php endif; ?>
                                                 </div>
                                             </td>

@@ -1,4 +1,4 @@
-<ul class="account-nav-list admin-nav-style">
+<ul class="account-nav-list">
     <li>
         <a href="<?= URL ?>user" class="<?= ($this->title == 'Panel de Usuarios') ? 'active' : '' ?>">
             <i class="fas fa-list"></i> Lista Usuarios
@@ -6,7 +6,7 @@
     </li>
 
     <li>
-        <a href="<?= URL ?>user/new" class="nav-action-link">
+        <a href="<?= URL ?>user/new">
             <i class="fas fa-plus-circle"></i> Nuevo Usuario
         </a>
     </li>

@@ -2,7 +2,7 @@
 .admin-table {
     width: 100%;
     border-collapse: separate;
-    border-spacing: 0 8px; // Crea el efecto de filas separadas
+    border-spacing: 0 8px; 
     margin-top: 10px;
 
     thead th {
@@ -52,107 +52,122 @@
     font-size: 0.9rem;
 }
 
-.admin-nav-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 0;
-    margin-bottom: 10px;
-    gap: 20px;
-    flex-wrap: wrap;
+// MENÚ USUARIOS
+/* Estilos para el desplegable (Ordenar por...) */
+.nav-item-dropdown {
+    position: relative;
 
-    .nav-actions-left {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    // Enlaces de navegación
-    .nav-brand-link, .nav-action-link, .nav-dropbtn {
-        text-decoration: none;
-        color: var(--header-text);
-        font-size: 0.9rem;
-        font-weight: 600;
-        transition: color 0.3s;
-        background: none;
+    .dropdown-trigger {
+        width: 100%;
+        background: transparent;
         border: none;
+        text-align: left;
+        font-family: inherit;
+        font-size: 1rem;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 12px;
+        padding: 12px 16px;
+        color: #666;
+        border-radius: 8px;
+        transition: all 0.3s ease;
 
-        &:hover:not(.disabled) {
-            color: $primary-green;
-        }
+        i:first-child { color: #888; }
         
+        &:hover:not(.disabled) {
+            background: var(--bg-body);
+            color: $primary-green;
+            i:first-child { color: $primary-green; }
+        }
+
         &.disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
     }
 
-    // Buscador Estilizado
-    .nav-search-form {
-        .search-wrapper {
-            display: flex;
-            // background: var(--bg-card);
-            border-radius: 20px;
-            padding: 5px 15px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s;
+    /* El menú desplegable */
+    .dropdown-menu-list {
+        display: none; 
+        position: absolute;
+        left: 20px;    
+        right: 0;
+        top: 90%;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 100;
+        list-style: none;
+        padding: 5px;
+        margin-top: 0;
+        padding-top: 10px;
 
-            &:focus-within {
-                background: var(--bg-card);
-                border-color: $primary-green;
-                box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
-            }
-
-            input {
-                border: none;
-                background: transparent;
-                padding: 5px;
-                outline: none;
-                font-size: 0.85rem;
-                width: 180px;
-            }
-
-            button {
-                border: none;
-                background: transparent;
-                color: #888;
-                cursor: pointer;
-                &:hover { color: $primary-green; }
+        li a {
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            
+            &:hover {
+                background: rgba($primary-green, 0.05);
+                color: $primary-green;
             }
         }
     }
 
-    // Estilo básico para el Dropdown
-    .nav-dropdown {
-        position: relative;
-        display: inline-block;
+    &:hover .dropdown-menu-list {
+        display: block; 
+    }
+}
 
-        .nav-dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 140px;
-            box-shadow: 0px 8px 16px rgba(0,0,0,0.1);
-            z-index: 10;
-            border-radius: 8px;
-            overflow: hidden;
-            top: 100%;
+/* Estilos para la Barra de Búsqueda */
+.nav-item-search {
+    padding: 8px 16px;
+    margin-left: 200px;
 
-            a {
-                color: #444;
-                padding: 10px 15px;
-                text-decoration: none;
-                display: block;
-                font-size: 0.85rem;
-                &:hover { background-color: #f8f9fa; color: $primary-green; }
-            }
+    @media (max-width: 1100px){
+        margin-left: 0;
+    }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        background: field; 
+        border: 1px solid var(--border-color);
+        border-radius: 25px; 
+        padding: 2px 12px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+
+        &:focus-within {
+            border-color: $primary-green;
+            box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+            background: field;
         }
 
-        &:hover .nav-dropdown-content { display: block; }
+        input[type="search"] {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 8px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            outline: none;
+
+            &::placeholder { color: #aaa; }
+        }
+
+        button {
+            background: transparent;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 5px;
+            transition: color 0.3s;
+
+            &:hover:not(:disabled) { color: $primary-green; }
+            &:disabled { opacity: 0.3; cursor: not-allowed; }
+        }
     }
 }
 
@@ -167,7 +182,7 @@
 /* Clase base para todos los avatares circulares de la web */
 .avatar-circle {
     border-radius: 50%;
-    overflow: hidden; /* ¡La clave del éxito! */
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -275,13 +290,13 @@
         cursor: pointer;
         border: none;
         padding: 10px 25px;
-        background: #27ae60;
+        background: $primary-green;
         color: #fff;
         border-radius: 8px;
         font-weight: 600;
         transition: background 0.3s;
 
-        &:hover { background: #219150; }
+        &:hover { background: rgba($primary-green, 0.05); }
     }
 
     .btn-cancel {
@@ -298,7 +313,7 @@
 
 /* Estilo para el input de archivo */
 input[type="file"].form-control {
-    padding: 6px; // Un poco de aire
+    padding: 6px;
     cursor: pointer;
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);

@@ -77,7 +77,7 @@ class InscripcionModel extends Model {
             return $res;
 
         } catch (PDOException $e) {
-            return [];
+            $this->handleError($e);
         }
     }
 
@@ -111,7 +111,7 @@ class InscripcionModel extends Model {
         return true; 
 
     } catch (Throwable $e) {
-        return false;
+        $this->handleError($e);
     }
     }
 
@@ -150,7 +150,7 @@ class InscripcionModel extends Model {
             $stmt = $db->prepare($sql);
             return $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
         } catch (PDOException $e) {
-            return false;
+            $this->handleError($e);
         }
     }
 
@@ -190,7 +190,17 @@ class InscripcionModel extends Model {
 
     public function getDetalleCompleto($user_id, $evento_id) {
         // Similar al get() pero para un solo registro y con más info
-        $sql = "SELECT i.*, e.*, u.*, c.nombre as categoria_nombre
+        $sql = "SELECT  i.*,
+                        e.nombre as evento_nombre, 
+                        e.organizador_id,
+                        e.fecha as evento_fecha, 
+                        e.ubicacion as evento_lugar, 
+                        u.name as usuario_nombre, 
+                        u.apellidos as usuario_apellidos,
+                        u.email as usuario_email, 
+                        u.dni as usuario_dni, 
+                        u.telefono as usuario_telefono,
+                        c.nombre as categoria_nombre
                 FROM Inscripciones i
                 JOIN Eventos e ON i.evento_id = e.id
                 JOIN users u ON i.user_id = u.id
@@ -218,8 +228,10 @@ class InscripcionModel extends Model {
     Descripción: Permite buscar por nombre de usuario, apellidos o nombre del evento.
     */
     public function search($term) {
-        $sql = "SELECT i.*, 
-                    e.nombre as evento_nombre, 
+        try{
+            $sql = "SELECT i.*, 
+                    e.nombre as evento_nombre,
+                    e.fecha as evento_fecha,
                     u.name as usuario_nombre, 
                     u.apellidos as usuario_apellidos,
                     c.nombre as categoria_nombre
@@ -227,14 +239,22 @@ class InscripcionModel extends Model {
                 INNER JOIN Eventos e ON i.evento_id = e.id
                 INNER JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id
-                WHERE u.name LIKE :term 
-                OR u.apellidos LIKE :term 
-                OR e.nombre LIKE :term
-                OR i.dorsal LIKE :term";
-        $db = $this->db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['term' => "%$term%"]);
-        return $stmt->fetchAll();
+                WHERE CONCAT_WS('', u.name, u.apellidos, e.nombre, e.fecha, i.dorsal) LIKE :term
+                ORDER BY i.fecha_inscripcion DESC";
+
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+
+            $term = "%$term%";
+
+            $stmt->bindParam(':term', $term, PDO::PARAM_STR);
+            $stmt->setFetchMode(PDO::FETCH_OBJ);
+            $stmt->execute();
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
     }
 
     /* Método: order
@@ -243,17 +263,18 @@ class InscripcionModel extends Model {
     public function order($criterio) {
         
         $columnas_permitidas = [
-            'dorsal'       => 'i.dorsal',
-            'usuario'      => 'u.apellidos',
-            'evento'       => 'e.nombre',
-            'fecha'        => 'i.fecha_inscripcion',
-            'categoria'    => 'c.nombre'
+            'dorsal' => 'i.dorsal',
+            'usuario' => 'u.apellidos ASC, u.name ASC',
+            'evento' => 'e.nombre ASC',
+            'fecha' => 'i.fecha_inscripcion DESC',
+            'estado' => 'i.estado_pago ASC'
         ];
 
         $orden = $columnas_permitidas[$criterio] ?? 'i.fecha_inscripcion DESC';
 
         $sql = "SELECT i.*, 
                     e.nombre as evento_nombre, 
+                    e.fecha as evento_fecha,
                     u.name as usuario_nombre, 
                     u.apellidos as usuario_apellidos,
                     c.nombre as categoria_nombre
@@ -264,6 +285,22 @@ class InscripcionModel extends Model {
                 ORDER BY $orden";
         
         $db = $this->db->connect();
-        return $db->query($sql)->fetchAll();
+        return $db->query($sql)->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /*
+        Gestión de errores
+    */
+    private function handleError(PDOException $e) {
+        $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
+        if (file_exists($errorControllerFile)) {
+            require_once $errorControllerFile;
+            $mensaje = $e->getMessage() . " en " . $e->getFile() . ":" . $e->getLine();
+            $controller = new Errores('DE BASE DE DATOS', 'Mensaje de Error: ', $mensaje);
+            exit();
+        } else {
+            echo "Error crítico: " . $e->getMessage();
+            exit();
+        }
     }
 }
