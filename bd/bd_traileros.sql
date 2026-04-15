@@ -109,6 +109,39 @@ CREATE TABLE IF NOT EXISTS Resultados (
     FOREIGN KEY (evento_id) REFERENCES Eventos(id) ON DELETE CASCADE
 );
 
+-- REFACTORIZACIÓN
+-- 1. Creamos la nueva tabla de Modalidades
+CREATE TABLE IF NOT EXISTS Modalidades (
+    id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    evento_id INT UNSIGNED NOT NULL,
+    nombre VARCHAR(100) NOT NULL, -- Ej: 'Ultra', 'Maratón', 'Promo'
+    distancia DECIMAL(10, 2),
+    desnivel INT,
+    precio DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    cupo_maximo INT UNSIGNED DEFAULT 100,
+    FOREIGN KEY (evento_id) REFERENCES Eventos(id) ON DELETE CASCADE
+);
+
+-- 2. Limpiamos la tabla Eventos de los datos que ahora son específicos de cada modalidad
+ALTER TABLE Eventos DROP COLUMN distancia;
+ALTER TABLE Eventos DROP COLUMN desnivel;
+ALTER TABLE Eventos DROP COLUMN precio;
+ALTER TABLE Eventos DROP COLUMN cupo_maximo;
+
+-- 3. Modificamos la tabla Inscripciones
+-- Primero eliminamos la PK anterior para poder cambiar la estructura
+ALTER TABLE Inscripciones DROP PRIMARY KEY;
+
+-- Añadimos la columna para la modalidad
+ALTER TABLE Inscripciones ADD COLUMN modalidad_id INT UNSIGNED NOT NULL AFTER evento_id;
+
+-- Creamos una nueva PK simple autoincremental
+ALTER TABLE Inscripciones ADD COLUMN id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT FIRST;
+
+-- Añadimos la clave foránea
+ALTER TABLE Inscripciones ADD CONSTRAINT fk_inscripcion_modalidad 
+FOREIGN KEY (modalidad_id) REFERENCES Modalidades(id);
+
 -- 4. Inserción de Datos Iniciales
 -- Roles básicos
 INSERT INTO roles (name, description) VALUES 
@@ -150,7 +183,3 @@ INSERT INTO Categorias (nombre, edad_min, edad_max, sexo) VALUES
 ('Veterana B', 50, 59, 'M'),
 ('Veterano C', 60, 99, 'H'),
 ('Veterana C', 60, 99, 'M');
-
-ALTER TABLE Inscripciones 
-MODIFY COLUMN estado_pago ENUM('pendiente', 'completado', 'fallido', 'cancelado') 
-DEFAULT 'pendiente';

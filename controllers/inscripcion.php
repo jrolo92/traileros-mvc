@@ -64,7 +64,7 @@ class Inscripcion extends Controller
 
         foreach ($campos_obligatorios as $campo) {
             if (!isset($usuario->$campo) || trim($usuario->$campo) === '') {
-                $this->redirectIncomplete("Falta el dato: " . $campo);
+                $this->redirectIncomplete("Debes completar los datos del perfil");
             }
         }
 
@@ -369,8 +369,8 @@ class Inscripcion extends Controller
     */
     private function redirectIncomplete($mensaje)
     {
-        $_SESSION['error'] = $mensaje;
-        header('location: ' . URL . 'user/edit/' . $_SESSION['user_id']);
+        $_SESSION['notify'] = $mensaje;
+        header('location: ' . URL . 'account/edit/' . $_SESSION['user_id']);
         exit;
     }
 

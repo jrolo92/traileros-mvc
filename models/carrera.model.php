@@ -14,19 +14,13 @@ class carreraModel extends Model {
     public function get() {
         try {
             $sql = "SELECT 
-                        e.id,
-                        e.nombre,
-                        e.fecha,
-                        e.ubicacion,
-                        e.distancia,
-                        e.desnivel,
-                        e.dificultad,
-                        e.cupo_maximo,
-                        e.precio,      
-                        e.imagen,
+                        e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
+                        m.distancia, m.desnivel, m.cupo_maximo, m.precio,
                         u.name AS organizador
                     FROM Eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id
+                    LEFT JOIN modalidades AS m ON e.id = m.evento_id
+                    GROUP BY e.id
                     ORDER BY e.id ASC";
 
             $db = $this->db->connect();
@@ -53,9 +47,12 @@ class carreraModel extends Model {
             $conexion = $this->db->connect(); 
             
             // Usamos una consulta simple primero para asegurar resultados
-            $sql = "SELECT * FROM eventos 
-                    WHERE fecha >= CURDATE() 
-                    ORDER BY fecha ASC 
+            $sql = "SELECT e.*, m.distancia 
+                    FROM eventos e
+                    LEFT JOIN modalidades m ON e.id = m.evento_id
+                    WHERE fecha >= CURDATE()
+                    GROUP BY e.id
+                    ORDER BY e.fecha ASC 
                     LIMIT 4";
             
             $query = $conexion->query($sql);
@@ -77,47 +74,75 @@ class carreraModel extends Model {
         Método: create(classCarrera $carrera)
         Descripción: Inserta un nuevo evento
     */
-    public function create(class_carrera $carrera) {
+    public function create($carrera, $modalidades) {
         try {
-            $sql = "INSERT INTO Eventos 
-                    (nombre, fecha, ubicacion, distancia, desnivel, dificultad, descripcion, cupo_maximo, precio, imagen, organizador_id)
-                    VALUES
-                    (:nombre, :fecha, :ubicacion, :distancia, :desnivel, :dificultad, :descripcion, :cupo_maximo, :precio, :imagen, :organizador_id)";
-
             $db = $this->db->connect();
-            $stmt = $db->prepare($sql);
+            $db->beginTransaction();
 
-            $stmt->bindParam(':nombre',         $carrera->nombre, PDO::PARAM_STR);
-            $stmt->bindParam(':fecha',          $carrera->fecha);
-            $stmt->bindParam(':ubicacion',      $carrera->ubicacion, PDO::PARAM_STR);
-            $stmt->bindParam(':distancia',      $carrera->distancia);
-            $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
-            $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
-            $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
-            $stmt->bindParam(':cupo_maximo',    $carrera->cupo_maximo, PDO::PARAM_INT);
-            $stmt->bindParam(':precio',         $carrera->precio);
-            $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
-            $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
+            // 1. Insertar en tabla EVENTOS
+            $sqlEvento = "INSERT INTO Eventos 
+                    (nombre, fecha, ubicacion, dificultad, descripcion, imagen, organizador_id, edad_minima, edad_maxima)
+                    VALUES
+                    (:nombre, :fecha, :ubicacion, :dificultad, :descripcion, :imagen, :organizador_id, :edad_minima, :edad_maxima)";
+
+            
+            $stmt = $db->prepare($sqlEvento);
+
+            $stmt->bindParam(':nombre',         $carrera['nombre'], PDO::PARAM_STR);
+            $stmt->bindParam(':fecha',          $carrera['fecha']);
+            $stmt->bindParam(':ubicacion',      $carrera['ubicacion'], PDO::PARAM_STR);
+            $stmt->bindParam(':dificultad',     $carrera['dificultad'], PDO::PARAM_STR);
+            $stmt->bindParam(':descripcion',    $carrera['descripcion'], PDO::PARAM_STR);
+            $stmt->bindParam(':imagen',         $carrera['imagen'], PDO::PARAM_STR);
+            $stmt->bindParam(':organizador_id', $carrera['organizador_id'], PDO::PARAM_INT);
+            $stmt->bindParam(':edad_minima',    $carrera['edad_minima'], PDO::PARAM_INT);
+            $stmt->bindParam(':edad_maxima',    $carrera['edad_maxima'], PDO::PARAM_INT);
 
             $stmt->execute();
-            return $db->lastInsertId();
+            $idEvento = $db->lastInsertId();
+
+            // 2. Insertar en tabla MODALIDADES
+            $sqlMod = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo)
+                       VALUES (:evento_id, :nombre_mod, :distancia, :desnivel, :precio, :cupo_maximo)";
+            
+            $stmt = $db->prepare($sqlMod);
+
+            foreach ($modalidades as $mod) {
+                $stmt->bindParam(':evento_id',      $idEvento, PDO::PARAM_INT);
+                $stmt->bindParam(':nombre_mod',     $mod['nombre'], PDO::PARAM_STR);
+                $stmt->bindParam(':distancia',      $mod['distancia'], PDO::PARAM_INT);
+                $stmt->bindParam(':desnivel',       $mod['desnivel'], PDO::PARAM_INT);
+                $stmt->bindParam(':precio',         $mod['precio'], PDO::PARAM_INT);
+                $stmt->bindParam(':cupo_maximo',    $mod['cupo_maximo'], PDO::PARAM_INT);
+
+                $stmt->execute();
+            }
+            
+
+            $db->commit();
+            return true;
+            
 
         } catch (PDOException $e) {
+            $db->rollBack();   
             $this->handleError($e);
+            return false;
         }
     }
 
     /*
         Método: read(int $id)
-        Descripción: Obtiene un evento por su ID
+        Descripción: Obtiene un evento por su ID con su modalidad principal
     */
     public function read(int $id) {
         try {
             $sql = "SELECT 
-                    e.*, 
+                    e.*,
+                    m.distancia, m.desnivel, m.precio, m.cupo_maximo, m.id as modalidad_id,
                     u.name AS organizador 
                 FROM Eventos e
                 INNER JOIN Users AS u ON e.organizador_id = u.id
+                LEFT JOIN modalidades AS m ON e.id = m.evento_id
                 WHERE e.id = :id 
                 LIMIT 1";
             
@@ -140,42 +165,45 @@ class carreraModel extends Model {
     */
     public function update(class_carrera $carrera, $id) {
         try {
+
+            $db = $this->db->connect();
+            $db->beginTransaction();
+
+            // Update EVENTO
             $sql = "UPDATE Eventos 
                     SET 
                         nombre = :nombre,
                         fecha = :fecha,
                         ubicacion = :ubicacion, 
-                        distancia = :distancia, 
-                        desnivel = :desnivel,
                         dificultad = :dificultad,
-                        descripcion = :descripcion,
-                        cupo_maximo = :cupo_maximo,
-                        precio = :precio,           
+                        descripcion = :descripcion,       
                         imagen = :imagen,
-                        organizador_id = :organizador_id
                     WHERE id = :id 
                     LIMIT 1";
 
-            $db = $this->db->connect();
             $stmt = $db->prepare($sql);
 
             $stmt->bindParam(':nombre',         $carrera->nombre, PDO::PARAM_STR);
             $stmt->bindParam(':fecha',          $carrera->fecha);
             $stmt->bindParam(':ubicacion',      $carrera->ubicacion, PDO::PARAM_STR);
-            $stmt->bindParam(':distancia',      $carrera->distancia);
-            $stmt->bindParam(':desnivel',       $carrera->desnivel, PDO::PARAM_INT);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
-            $stmt->bindParam(':cupo_maximo',    $carrera->cupo_maximo, PDO::PARAM_INT);
-            $stmt->bindParam(':precio',         $carrera->precio);
             $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
-            $stmt->bindParam(':organizador_id', $carrera->organizador_id, PDO::PARAM_INT);
             $stmt->bindParam(':id',             $id, PDO::PARAM_INT);
 
-            return $stmt->execute();
+            // Update Modalidad (buscamos la primera del evento)
+            $sql2 = "UPDATE modalidades SET distancia=:dist, desnivel=:desn, precio=:pre, cupo_maximo=:cup WHERE evento_id=:id LIMIT 1";
+            $db->prepare($sql2);
+            $db->execute([
+                ':dist' => $carrera->distancia, ':desn' => $carrera->desnivel, 
+                ':pre' => $carrera->precio, ':cup' => $carrera->cupo_maximo, ':id' => $id
+            ]);
+
+            return $db->commit();
 
         } catch (PDOException $e) {
-           $this->handleError($e);
+            $db->rollBack();
+            $this->handleError($e);
         }
     }
 
@@ -202,22 +230,14 @@ class carreraModel extends Model {
     public function search(string $term) {
         try {
             $sql = "SELECT 
-                        e.id, 
-                        e.nombre, 
-                        e.fecha, 
-                        e.ubicacion, 
-                        e.distancia, 
-                        e.desnivel, 
-                        e.dificultad,
-                        e.cupo_maximo,
-                        e.precio,      
-                        e.cupo_maximo,
-                        e.precio,      
-                        e.imagen,
+                        e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
+                        m.distancia, m.desnivel,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
+                    LEFT JOIN modalidades m ON e.id = m.evento_id
                     WHERE CONCAT_WS(' ', e.nombre, e.ubicacion, e.dificultad, u.name) LIKE :term
+                    GROUP BY e.id
                     ORDER BY e.fecha ASC";
 
             $db = $this->db->connect();
@@ -253,10 +273,11 @@ class carreraModel extends Model {
 
         try {
             $sql = "SELECT 
-                        e.id, e.nombre, e.fecha, e.ubicacion, e.distancia, e.desnivel, e.dificultad, e.imagen,
+                        e.id, e.nombre, e.fecha, e.ubicacion, m.distancia, m.desnivel, e.dificultad, e.imagen,
                         u.name AS organizador
                     FROM Eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
+                    LEFT JOIN modalidades AS m ON e.id = m.evento_id
                     ORDER BY $orderBy ASC";
 
             $db = $this->db->connect();
@@ -280,6 +301,18 @@ class carreraModel extends Model {
         $stmt = $db->prepare($sql);
         $stmt->execute(['id' => $evento_id]);
         return $stmt->fetchColumn();
+    }
+
+    public function getModalidadesByEvento($evento_id) {
+        try {
+            $sql = "SELECT * FROM modalidades WHERE evento_id = :id ORDER BY distancia ASC";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id' => $evento_id]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
     }
 
     /*

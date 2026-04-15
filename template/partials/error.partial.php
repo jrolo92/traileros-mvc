@@ -5,7 +5,7 @@
         </div>
         <div class="alert-content">
             <strong>Error</strong>
-            <p><?= $this->error; ?></p>
+            <p><?= htmlspecialchars($this->error); ?></p>
         </div>
         <button type="button" class="alert-close" onclick="this.parentElement.style.display='none';">
             <i class="fas fa-times"></i>

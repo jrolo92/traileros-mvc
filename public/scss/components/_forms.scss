@@ -167,3 +167,7 @@
     margin: 10px 0;
 }
 
+.section-header, .modalidad-header {
+    display: flex;
+    justify-content: space-between;
+}

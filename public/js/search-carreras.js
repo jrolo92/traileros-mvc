@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Esperamos 300ms antes de lanzar la petición
             timeout = setTimeout(() => {
-                fetch(`carrera/search?term=${encodeURIComponent(searchTerm)}`)
+                // URL absoluta para que no se pise con la de order
+                fetch(`/trail-CRUD/carrera/search?term=${encodeURIComponent(searchTerm)}`)
                     .then(response => response.text())
                     .then(html => {
                         const parser = new DOMParser();
@@ -34,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Ocultamos paginación:
                         if (pagination) {
-                            if (searchTerm > 0) {
+                            if (searchTerm.lenght > 0) {
                                 pagination.style.display = 'none';
                             } else {
                                 pagination.style.display = 'flex';

@@ -29,32 +29,38 @@
                             <?php echo $this->carrera['dificultad'] ?>
                         </span>
                         <h1><?php echo $this->carrera['nombre'] ?></h1>
-                        <p class="ubicacion"><i class="fas fa-map-marker-alt"></i> <?php echo $this->carrera['ubicacion'] ?></p>
+                        <div class="header-meta">
+                            <p class="ubicacion"><i class="fas fa-map-marker-alt"></i> <?php echo $this->carrera['ubicacion'] ?></p>
+                            <p class="fecha-header"><i class="fas fa-calendar-alt"></i> <?php echo date('d/m/Y', strtotime($this->carrera['fecha'])) ?></p>
+                        </div>
                     </header>
+                    <div class="description"><h3>Modalidades</h3></div>
+                    <?php foreach ($this->modalidades as $mod): ?>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <i class="fas fa-tag"></i>
+                                <div class="stat-text">
+                                    <span class="value"><?php echo $mod['nombre'] ?></span>
+                                </div>
+                            </div>
+                            
+                            <div class="stat-item">
+                                <i class="fas fa-route"></i>
+                                <div class="stat-text">
+                                    <span class="label">Distancia</span>
+                                    <span class="value"><?php echo $mod['distancia'] ?> Km</span>
+                                </div>
+                            </div>
 
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <i class="fas fa-route"></i>
-                            <div class="stat-text">
-                                <span class="label">Distancia</span>
-                                <span class="value"><?php echo $this->carrera['distancia'] ?> Km</span>
+                            <div class="stat-item">
+                                <i class="fas fa-mountain"></i>
+                                <div class="stat-text">
+                                    <span class="label">Desnivel</span>
+                                    <span class="value">+<?php echo $mod['desnivel'] ?> m</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-item">
-                            <i class="fas fa-mountain"></i>
-                            <div class="stat-text">
-                                <span class="label">Desnivel</span>
-                                <span class="value">+<?php echo $this->carrera['desnivel'] ?> m</span>
-                            </div>
-                        </div>
-                        <div class="stat-item">
-                            <i class="fas fa-calendar-alt"></i>
-                            <div class="stat-text">
-                                <span class="label">Fecha</span>
-                                <span class="value"><?php echo date('d/m/Y', strtotime($this->carrera['fecha'])) ?></span>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
 
                     <div class="description">
                         <h3>Sobre la carrera</h3>
@@ -139,13 +145,13 @@
                                     <a href="<?php echo URL ?>carrera/edit/<?php echo $this->carrera['id'] ?>" class="btn-secondary">
                                         <i class="fas fa-tools"></i> Editar
                                     </a>
-                                    <div class="admin-buttons">
-                                        <?php if ($_SESSION['role_id'] < 3): ?>
-                                            <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar CSV para cronometraje">
-                                                <i class="fas fa-file-csv"></i> Exportar CSV
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
+
+                                    <?php if ($_SESSION['role_id'] < 3): ?>
+                                        <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar CSV para cronometraje">
+                                            <i class="fas fa-file-csv"></i> Exportar CSV
+                                        </a>
+                                    <?php endif; ?>
+
                                     <form method="POST" action="<?php echo URL ?>carrera/delete/<?php echo $this->carrera['id'] ?>" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?>">
 

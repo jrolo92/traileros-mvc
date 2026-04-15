@@ -364,3 +364,11 @@
     font-weight: bold;
   }
 }
+
+.header-meta {
+    display: flex;
+    justify-content:space-between;
+    margin-right: 5px;
+    gap: 20px;
+    color: #666;
+}

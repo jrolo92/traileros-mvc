@@ -80,14 +80,12 @@ class Carrera extends Controller {
 
         // 1. Saneamiento de datos de texto
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $fecha = filter_var($_POST['fecha'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+        $fecha = $_POST['fecha'] ?? '';
         $ubicacion = filter_var($_POST['ubicacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $distancia = filter_var($_POST['distancia'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $desnivel = filter_var($_POST['desnivel'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
         $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $cupo_maximo = filter_var($_POST['cupo_maximo'] ?? 0, FILTER_SANITIZE_NUMBER_INT);
-        $precio = filter_var($_POST['precio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $edad_minima = filter_var($_POST['edad_minima'] ?? 18, FILTER_SANITIZE_NUMBER_INT);
+        $edad_maxima = filter_var($_POST['edad_maxima'] ?? 99, FILTER_SANITIZE_NUMBER_INT);
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
         // 2. Lógica de subida de Imagen
@@ -139,15 +137,28 @@ class Carrera extends Controller {
             }
         }
 
-        // 3. Crear objeto con el nombre de la imagen procesado
-        $carrera = new class_carrera(null, $nombre, $fecha, $ubicacion, $distancia, $desnivel, $dificultad, $descripcion, $cupo_maximo, $precio, $nombreImagen, $organizador_id);
+        // 3. Recoger y sanear MODALIDADES (Los arrays [] del form)
+        $modalidades = [];
+        $mod_nombres = $_POST['mod_nombre'] ?? [];
+        $mod_distancias = $_POST['mod_distancia'] ?? [];
+        $mod_desniveles = $_POST['mod_desnivel'] ?? [];
+        $mod_precios = $_POST['mod_precio'] ?? [];
+        $mod_cupos = $_POST['mod_cupo'] ?? [];
+
+        foreach ($mod_nombres as $i => $val) {
+            $modalidades[] = [
+                'nombre'      => filter_var($val, FILTER_SANITIZE_SPECIAL_CHARS),
+                'distancia'   => filter_var($mod_distancias[$i], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
+                'desnivel'    => filter_var($mod_desniveles[$i], FILTER_SANITIZE_NUMBER_INT),
+                'precio'      => filter_var($mod_precios[$i], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
+                'cupo_maximo' => filter_var($mod_cupos[$i] ?? $_POST['cupo_maximo'], FILTER_SANITIZE_NUMBER_INT) 
+            ];
+        }
 
         // 4. Validaciones de negocio
         if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
         if(empty($fecha)) $error['fecha'] = "La fecha es obligatoria";
-        if($distancia <= 0) $error['distancia'] = "La distancia debe ser positiva";
-        if($cupo_maximo <= 0) $error['cupo_maximo'] = "El cupo debe ser mayor que cero";
-        if($precio < 0) $error['precio'] = "El precio no puede ser negativo";
+        if(empty($modalidades)) $error['modalidades'] = "Debes añadir al menos una modalidad";
 
         // Si hay errores, redirigir
         if(!empty($error)){
@@ -157,8 +168,21 @@ class Carrera extends Controller {
             exit();
         }
 
-        // 5. Guardar en BD
-        if ($this->model->create($carrera)) {
+        // 5. Guardar en BD pasando los datos generales + el array de modalidades
+        // Creamos un array asociativo o un objeto que contenga todo
+        $datosEvento = [
+            'nombre' => $nombre,
+            'fecha' => $fecha,
+            'ubicacion' => $ubicacion,
+            'dificultad' => $dificultad,
+            'descripcion' => $descripcion,
+            'imagen' => $nombreImagen,
+            'organizador_id' => $organizador_id,
+            'edad_minima' => $edad_minima,
+            'edad_maxima' => $edad_maxima
+        ];
+
+        if ($this->model->create($datosEvento, $modalidades)) {
             $_SESSION['notify'] = "¡Carrera publicada correctamente!";
             header('Location: ' . URL . 'carrera');
             exit();
@@ -318,6 +342,9 @@ class Carrera extends Controller {
             $this->errorNotFound($id);
         }
 
+        // Obtener las modalidades para este evento
+        $this->view->modalidades = $this->model->getModalidadesByEvento($id);
+
         // Preparamos variables para la vista
         $ocupadas = $this->model->getPlazasOcupadas($id);
         $this->view->plazas_libres = $carrera['cupo_maximo'] - $ocupadas;
@@ -351,9 +378,6 @@ class Carrera extends Controller {
         $carrera = $this->model->read($id);
 
         if ($carrera) {
-            // Accedemos como array o objeto según devuelva tu método read()
-            // Si read() devuelve un array: $carrera['imagen']
-            // Si read() devuelve un objeto: $carrera->imagen
             $imagen = is_array($carrera) ? $carrera['imagen'] : $carrera->imagen;
 
             if ($imagen !== 'default.jpg') {
@@ -379,11 +403,6 @@ class Carrera extends Controller {
         Parámetros: $param (id del criterio de ordenación)
     */
     public function order($param) {
-
-        // $this->requireLogin();
-
-        // Capa gestión rol de usuario (usamos el permiso de order)
-        // $this->requirePrivilege($GLOBALS['carrera']['order']);
 
         // Recogemos el criterio de ordenación del parámetro
         $criterio = $param[0];
@@ -419,9 +438,6 @@ class Carrera extends Controller {
 
         // Título de la página indicando la búsqueda
         $this->view->title = "Resultados de búsqueda: \"$term\" - Traileros";
-
-        // Llamamos al modelo pasándole el término
-        $this->view->carreras = $this->model->search($term);
 
         // Renderizamos la misma vista principal
         $this->view->render('carrera/main/index');
