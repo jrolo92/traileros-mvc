@@ -139,6 +139,13 @@
                                     <a href="<?php echo URL ?>carrera/edit/<?php echo $this->carrera['id'] ?>" class="btn-secondary">
                                         <i class="fas fa-tools"></i> Editar
                                     </a>
+                                    <div class="admin-buttons">
+                                        <?php if ($_SESSION['role_id'] < 3): ?>
+                                            <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar CSV para cronometraje">
+                                                <i class="fas fa-file-csv"></i> Exportar CSV
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
                                     <form method="POST" action="<?php echo URL ?>carrera/delete/<?php echo $this->carrera['id'] ?>" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?>">
 

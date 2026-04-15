@@ -61,5 +61,6 @@
     $GLOBALS['inscripcion']['show'] = [1, 2, 3];
     $GLOBALS['inscripcion']['search'] = [1, 2, 3];
     $GLOBALS['inscripcion']['order'] = [1, 2, 3];
+    $GLOBALS['inscripcion']['export'] = [1, 2];
     
 ?>

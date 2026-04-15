@@ -145,13 +145,13 @@ class Inscripcion extends Controller
         // --- 2. CARGA DE MODELOS (Todos juntos al principio para claridad) ---
         $userModel = $this->loadModel('user');
         $carreraModel = $this->loadModel('carrera');
-        $inscripcionModel = $this->loadModel('inscripcion'); // El modelo principal de este controller
+        $inscripcionModel = $this->loadModel('inscripcion');
 
         // --- 3. RECOGIDA Y ACTUALIZACIÓN DE DATOS DEL USUARIO ---
         $user_id = $_SESSION['user_id'];
         $datosBase = $userModel->read($user_id);
         
-        // Mapeo a class_user (lo que arreglamos antes)
+        // Mapeo a class_user
         $user = new class_user();
         foreach ($datosBase as $prop => $val) { $user->$prop = $val; }
         $user->tlf = $_POST['tlf'];
@@ -177,7 +177,7 @@ class Inscripcion extends Controller
         $fecha_evento = new DateTime($evento['fecha']);
         $edad = $fecha_evento->diff($nacimiento)->y;
 
-        // IMPORTANTE: Aquí usamos el modelo de inscripción
+        // Usamos el modelo de inscripción
         $categoria_id = $inscripcionModel->getCategoriaAdecuada($edad, $user->sexo);
 
         // --- 6. PROCESADO DE PAGO (Simulación) ---
@@ -191,7 +191,7 @@ class Inscripcion extends Controller
                 $user_id,
                 $evento_id,
                 $categoria_id,
-                null, // El dorsal se autogenera en el model
+                null, // El dorsal se autogenera en el modelo
                 $metodo_pago,
                 'completado',
                 $evento['precio']
@@ -372,6 +372,53 @@ class Inscripcion extends Controller
         $_SESSION['error'] = $mensaje;
         header('location: ' . URL . 'user/edit/' . $_SESSION['user_id']);
         exit;
+    }
+
+    /*
+        Método para exportar inscripciones en formato CSV / Excel
+    */
+    public function export($param){
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['inscripcion']['export']);
+
+        $evento_id = $param[0];
+        $inscritos = $this->model->getInscritosExport($evento_id);
+
+        if (empty($inscritos)){
+            // Si no hay ningún inscrito redirigimos con notificación
+            $_SESSION['notify'] = "No hay inscripciones para este evento";
+            header("Location: " . URL . "inscripcion");
+        }
+
+        // Obtenemos el nombre del evento y lo limpiamos
+        $nombreEvento = $this->model->getNombreEvento($evento_id);
+        $nombreLimpio = strtolower($nombreEvento);
+        $nombreLimpio = str_replace([' ', 'á', 'é', 'í', 'ó', 'ú', 'ñ'], ['_', 'a', 'e', 'i', 'o', 'u', 'n'], $nombreLimpio);
+        // Quitamos cualquier otro caracter no alfanumérico
+        $nombreLimpio = preg_replace('/[^a-z0-9_]/', '', $nombreLimpio);
+
+        // Nombre del archivo:
+        $fileName = "inscritos_" . $nombreLimpio . "_" . date('Y-m-d') . ".csv";
+
+        // Cabeceras para forzar descarga del archivo 
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+
+        // Abrimos archivo y configuramos 
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));    //Formato de caracteres
+
+        // Cabeceras del archivo
+        fputcsv($output, ['Dorsal', 'Nombre', 'Email', 'Categoria', 'Estado Pago', 'Fecha Inscripcion'], ";");
+
+        foreach ($inscritos as $fila){
+            fputcsv($output, $fila, ";");
+        }
+
+        // Cerramos  archivo
+        fclose($output);
+        exit;
+
     }
 
     /* --- Métodos privados de seguridad --- */

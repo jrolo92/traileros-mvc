@@ -289,6 +289,50 @@ class InscripcionModel extends Model {
     }
 
     /*
+        Descripción: Método para obtener todos los inscritos a una carrera para su exportación.
+    */
+    public function getInscritosExport($evento_id){
+        try{
+            $sql = "SELECT  i.dorsal,
+                            CONCAT_WS(' ', u.apellidos, u.name),
+                            u.email,
+                            c.nombre AS categoria,
+                            i.metodo_pago,
+                            i.fecha_inscripcion
+                    FROM inscripciones i 
+                    INNER JOIN users u ON i.user_id = u.id
+                    LEFT JOIN categorias c ON i.categoria_id = c.id
+                    WHERE i.evento_id = :evento_id
+                    ORDER BY i.dorsal ASC";
+            
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindParam(':evento_id', $evento_id, PDO::PARAM_INT);
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+
+        }catch (PDOException $e){
+            $this->handleError($e);
+        }
+    }
+
+    // Método para obtener el nombre del evento (para el nombre del archivo exportable)
+    public function getNombreEvento($id){
+        $sql = "SELECT nombre FROM eventos WHERE id = :id LIMIT 1";
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);      
+        $stmt->execute();
+        $stmt->setFetchMode(PDO::FETCH_OBJ);
+        $res = $stmt->fetch();
+        return ($res) ? $res->nombre : 'evento';
+
+    }
+
+    /*
         Gestión de errores
     */
     private function handleError(PDOException $e) {
