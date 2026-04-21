@@ -28,10 +28,8 @@ class Inscripcion extends Controller
         $user_id = $_SESSION['user_id'];
         $role_id = $_SESSION['role_id'];
 
-        if (isset($_SESSION['notify'])) {
-            $this->view->notify = $_SESSION['notify'];
-            unset($_SESSION['notify']);
-        }
+        // Comprobar si hay mensajes:
+        $this->checkMessages();
 
         $this->view->title = "Mis Inscripciones - Traileros";
 

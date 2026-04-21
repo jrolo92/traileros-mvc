@@ -36,24 +36,7 @@ class Account extends Controller
         }
 
         // // Compruebo si hay mensaje de éxito
-        // if (isset($_SESSION['notify'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->notify = $_SESSION['notify'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['notify']);
-        // }
-
-        // // Compruebo si hay mensaje de error
-        // if (isset($_SESSION['error'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->error = $_SESSION['error'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['error']);
-        // }
+        $this->checkMessages();
 
         // Obtenemos los detalles completos del usuario
         $this->view->account = $this->model->read($_SESSION['user_id']);
@@ -88,24 +71,7 @@ class Account extends Controller
         }
 
         // // Compruebo si hay mensaje de éxito
-        // if (isset($_SESSION['notify'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->mensaje = $_SESSION['notify'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['notify']);
-        // }
-
-        // // Compruebo si hay mensaje de error
-        // if (isset($_SESSION['error'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->error = $_SESSION['error'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['error']);
-        // }
+        $this->checkMessages();
 
         // Obtenemos el id del usuario
         $id = $_SESSION['user_id'];
@@ -286,24 +252,7 @@ class Account extends Controller
         $this->requireLogin();
 
         // // Compruebo si hay mensaje de éxito
-        // if (isset($_SESSION['notify'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->mensaje = $_SESSION['notify'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['notify']);
-        // }
-
-        // // Compruebo si hay mensaje de error
-        // if (isset($_SESSION['error'])) {
-
-        //     // Creo la propiedad mensaje en la vista
-        //     $this->view->error = $_SESSION['error'];
-
-        //     // Elimino la variable de sesión mensaje
-        //     unset($_SESSION['error']);
-        // }
+        $this->checkMessages();
 
         // Capa no validación del formulario
         if (isset($_SESSION['errors'])) {
@@ -423,6 +372,9 @@ class Account extends Controller
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
+        // Comprobamos si hay algún mensaje para mostrar:
+        $this->checkMessages();
+
          # Obtenemos los detalles completos del usuario
         $this->view->account = $this->model->read($_SESSION['user_id']);
 
@@ -436,8 +388,6 @@ class Account extends Controller
 
     public function delete_confirmed()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -455,9 +405,6 @@ class Account extends Controller
 
         // Elimino la cookie de sesión
         setcookie(session_name(), '', time() - 3600);
-
-        // vuelvo a abrir sesión
-        // sec_session_start(); 
 
         // Genero mensaje de éxito
         $_SESSION['notify'] = 'Cuenta usuario eliminada correctamente';

@@ -6,23 +6,9 @@
             
             $this->view = new View();
 
-            // Centralizamos la captura de mensajes de sesión
-            if (session_status() === PHP_SESSION_NONE) {
-                sec_session_start();
-            }
-
-            if (isset($_SESSION['notify'])) {
-                $this->view->notify = $_SESSION['notify'];
-                unset($_SESSION['notify']);
-            }
-
-            if (isset($_SESSION['error'])) {
-                $this->view->error = $_SESSION['error'];
-                unset($_SESSION['error']);
-            }
-
         }
         
+        // Método común a todos los controladores para cargar otro modelo distinto al suyo (cuando sea necesario)
         function loadModel($model) {
 
             $url = 'models/' . $model . '.model.php';
@@ -41,6 +27,20 @@
                 return $objModel;
             }
         }
+
+        // Función para mostrar mensajes en los métodos de los controladores.
+        protected function checkMessages() {
+        
+        if (isset($_SESSION['notify'])) {
+            $this->view->notify = $_SESSION['notify'];
+            unset($_SESSION['notify']);
+        }
+
+        if (isset($_SESSION['error'])) {
+            $this->view->error = $_SESSION['error'];
+            unset($_SESSION['error']);
+        }
+    }
     }
 
 
