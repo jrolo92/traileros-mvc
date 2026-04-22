@@ -37,11 +37,8 @@
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             }
 
-            // Comprobar si hay mensajes en la sesión y pasarlos a la vista
-            if (isset($_SESSION['notify'])){
-                $this->view->notify = $_SESSION['notify'];
-                unset($_SESSION['notify']);
-            }
+            // Compruebo si hay mensajes
+            $this->checkMessages();
                         
             // Obtengo los datos del  modelo para mostrar en la vista      
             // Creo la propiedad  title para la vista
@@ -66,6 +63,9 @@
             if(empty($_SESSION['csrf_token'])){
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             }
+
+            // Compruebo si hay mensajes
+            $this->checkMessages();
 
             // Objeto vacío para el formulario
             $this->view->user = new class_user();
@@ -140,8 +140,21 @@
             // Cifrado de contraseña
             $user->password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Avatar
-            $user->avatar = 'default-avatar.png';
+            if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
+                $fileTmpPath = $_FILES['avatar']['tmp_name'];
+                $extension = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
+                
+                // Usamos el nombre saneado para generar el nombre del archivo
+                $newFileName = md5(time() . $nombre) . '.' . $extension;
+                $uploadFileDir = 'public/assets/img/avatars/';
+
+                // Redimensionamos a 300x300 igual que en el update
+                if ($this->resizeImage($fileTmpPath, $uploadFileDir . $newFileName, 300, 300)) {
+                    $avatar = $newFileName;
+                }
+            }
+
+            $user->avatar = $avatar;
 
             // Insertar usuario y obtener ID
             $user_id = $this->model->create($user, $role_id);
@@ -167,6 +180,9 @@
             if (empty($_SESSION['csrf_token'])) {
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
             }
+
+            // Compruebo si hay mensajes
+            $this->checkMessages();
             
             $this->view->user = $this->model->read($id);
             $this->view->id = $id;
@@ -232,6 +248,8 @@
 
             // Gestión del avatar
             $avatar = $user_db->avatar; // Por defecto mantenemos el actual
+
+            // Si hay un archivo de imagen cojo los metadatos
             if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
                 $fileTmpPath = $_FILES['avatar']['tmp_name'];
                 $fileName = $_FILES['avatar']['name'];
@@ -239,12 +257,14 @@
                 $newFileName = md5(time() . $nombre) . '.' . $extension;
                 $uploadFileDir = 'public/assets/img/avatars/';
 
-                if (move_uploaded_file($fileTmpPath, $uploadFileDir . $newFileName)) {
-                    // Borrar el anterior si no es el default
+                if ($this->resizeImage($fileTmpPath, $uploadFileDir . $newFileName, 300, 300)) {
+        
+                    // Borra el anterior si no es el default y existe
                     if ($avatar !== 'default-avatar.png' && file_exists($uploadFileDir . $avatar)) {
                         unlink($uploadFileDir . $avatar);
                     }
                     $avatar = $newFileName;
+                    $cambios = true; // Forzamos que detecte cambio al subir foto nueva
                 }
             }
 
@@ -287,7 +307,8 @@
                 exit();
             }
 
-            if (!$cambios && !isset($_FILES['avatar'])) {
+            // Comprobación de cambios si realmente se subió algo
+            if (!$cambios && $_FILES['avatar']['error'] === UPLOAD_ERR_NO_FILE) {
                 $_SESSION['notify'] = "No se han detectado cambios en el Usuario";
                 header('Location: ' . URL . 'user');
                 exit();
@@ -340,6 +361,9 @@
 
             // Capa gestión rol de usuario
             $this->requirePrivilege($GLOBALS['user']['show']);
+
+            // Compruebo si hay mensajes
+            $this->checkMessages();
 
             // Obtener el ID del usuario
             $id = (int) $params[0];
@@ -438,14 +462,57 @@
             $this->view->render('user/main/index');
         }
 
+         // Métodos para el redimensionado de las imágenes que se suben
+        private function resizeImage($tmp_name, $destination, $targetWidth, $targetHeight = null) {
+            // Obtener metadatos de la imagen
+            list ($width, $height, $type) = getimagesize($tmp_name);
+
+            // Calcular alto proporcional si no se define altura
+            if ($targetHeight === null) {
+                $ratio = $width / $height;
+                $targetHeight = (int)($targetWidth / $ratio);
+            }
+
+            // Crear lienzo vacío
+            $newImage = imagecreatetruecolor($targetWidth, $targetHeight);
+
+            // cargar imagen original según su tipo
+            switch ($type){
+                case IMAGETYPE_JPEG: $source = imagecreatefromjpeg($tmp_name); break;
+                case IMAGETYPE_PNG: $source = imagecreatefrompng($tmp_name); break;
+                case IMAGETYPE_WEBP: $source = imagecreatefromwebp($tmp_name); break;
+                default: return false;
+            }
+
+            // Mantener transparencias en PNG/WEBP
+            imagealphablending($newImage, false);
+            imagesavealpha($newImage, true);
+
+            // Redimensionar realizando una copia de la original
+            imagecopyresampled($newImage, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
+
+            // Guardar la imagen redimensionada
+            switch ($type) {
+                case IMAGETYPE_JPEG: imagejpeg($newImage, $destination, 80); break;
+                case IMAGETYPE_PNG: imagepng($newImage, $destination, 8); break;
+                case IMAGETYPE_WEBP: imagewebp($newImage, $destination, 80); break;
+            }
+
+            // Liberar memoria
+            imagedestroy($newImage);
+            imagedestroy($source);
+
+            return true;
+        }
+
         /*
             Método: requirePrivilege($allowedRoles)
             Descripción: Verifica que el usuario tiene privilegios para acceder a la funcionalidad
         */
         private function requirePrivilege($allowedRoles){
             if (!in_array($_SESSION['role_id'], $allowedRoles)){
-                $_SESSION['notify'] = "Debes iniciar sesión para acceder al sistema";
-                header('Location: ' . URL . 'auth/login');
+                $_SESSION['notify'] = "No tienes permisos suficientes para acceder a esta sección.";
+                header('Location: ' . URL . 'main');
                 exit();
             }
         }

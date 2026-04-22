@@ -38,8 +38,8 @@
 
     function sec_session_destroy() {
 
-        session_destroy();
-        session_unset();
+        session_unset();         // Borra los datos de la sesión
+        session_regenerate_id(); // Cambia la "llave" de la sesión
         
     }
 

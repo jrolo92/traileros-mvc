@@ -76,11 +76,11 @@
             <div class="form-row">
                     <div class="col form-group readonly-group">
                         <label>Categoría</label>
-                        <div class="fake-input"><?= $this->inscripcion->categoria_nombre ?? 'Sin asignar' ?></div>
+                        <div class="fake-input"><?= $this->inscripcion['categoria_nombre'] ?? 'Sin asignar' ?></div>
                     </div>
                     <div class="col form-group readonly-group">
                         <label>Dorsal Asignado</label>
-                        <div class="fake-input"><?= $this->inscripcion->dorsal ?? 'Pendiente' ?></div>
+                        <div class="fake-input"><?= $this->inscripcion['dorsal'] ?? 'Pendiente' ?></div>
                     </div>
                 </div>
 

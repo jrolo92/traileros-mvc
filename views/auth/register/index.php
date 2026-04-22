@@ -67,7 +67,7 @@
                     </div>
 
                     <div class="form-buttons">
-                        <a href="<?= URL ?>auth/login" class="btn-register">Volver</a>
+                        <a href="<?= URL ?>auth/login" class="btn-secondary">Volver</a>
                         <button type="submit" class="btn-submit">Crear cuenta</button>
                     </div>
 

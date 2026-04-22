@@ -40,19 +40,6 @@
                         value="<?php echo htmlspecialchars($this->carrera->ubicacion) ?>" placeholder="Ej: Chamonix, Francia">
                 </div>
 
-                <!-- <div class="form-row">
-                    <div class="form-group col">
-                        <label for="distancia">Distancia (km)</label>
-                        <input type="number" step="0.01" name="distancia"
-                               value="<?php echo htmlspecialchars($this->carrera->distancia) ?>">
-                    </div>
-                    <div class="form-group col">
-                        <label for="desnivel">Desnivel (m+)</label>
-                        <input type="number" name="desnivel"
-                               value="<?php echo htmlspecialchars($this->carrera->desnivel) ?>">
-                    </div>
-                </div> -->
-
                 <div class="form-row">
                     <div class="form-group col">
                         <label for="fecha">Fecha del Evento</label>
@@ -87,18 +74,6 @@
                         required>
                 </div>
 
-                <!-- <div class="form-group">
-                    <label for="precio">Precio de Inscripción (€)</label>
-                    <input type="number"
-                        name="precio"
-                        id="precio"
-                        placeholder="Precio base para la inscripción."
-                        value="<?php echo $this->carrera->precio ?>"
-                        step="0.01"
-                        min="0"
-                        required>
-                </div> -->
-
                 <div class="form-row">
                     <div class="form-group col">
                         <label for="edad_minima">Edad mínima</label>
@@ -115,7 +90,7 @@
                 </div>
 
                 <div class="modalidades-section">
-                    <div class="section-header">
+                    <div class="modalidad-header">
                         <h3><i class="fas fa-list-ol"></i> Modalidades del Evento</h3>
                         <button type="button" id="add-modalidad" class="add-modalidad" title="Añadir Modalidad">
                             <i class="fas fa-plus"></i>

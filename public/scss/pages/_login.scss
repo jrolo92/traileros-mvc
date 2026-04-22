@@ -73,7 +73,7 @@ $card-radius: 15px;
         input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #eee;
+            border: 2px solid var(--border-color);
             border-radius: 8px;
             transition: border-color 0.3s;
 
@@ -82,6 +82,21 @@ $card-radius: 15px;
                 outline: none;
             }
         }
+    }
+}
+
+.register-link{
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    gap: 5px;
+    
+    .forgot-link {
+        color: $primary-green;
+        text-decoration: none;
+        &:hover { text-decoration: underline; }
     }
 }
 

@@ -20,10 +20,8 @@ class Carrera extends Controller {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        if (isset($_SESSION['notify'])){
-            $this->view->notify = $_SESSION['notify'];
-            unset($_SESSION['notify']);
-        }
+        // Compruebo si hay mensajes
+        $this->checkMessages();
 
         $this->view->title = "Próximos Eventos - Traileros";
         
@@ -49,6 +47,10 @@ class Carrera extends Controller {
         // Objeto vacío para el formulario
         $this->view->carrera = new class_carrera();
 
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
+        // Si hay error mantengo valores del formulario
         if (isset($_SESSION['errors'])){
             $this->view->errors = $_SESSION['errors'];
             unset($_SESSION['errors']);
@@ -110,8 +112,6 @@ class Carrera extends Controller {
                         
                         // Generar nombre único
                         $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
-                        
-                        // RUTA CORREGIDA: Incluyendo 'assets' como confirmamos en el test
                         $uploadFileDir = 'public/assets/img/carreras/';
                         
                         // Crear directorio si no existe (por seguridad)
@@ -217,6 +217,10 @@ class Carrera extends Controller {
 
         $this->view->id = $id;
 
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
+        // Si hay errores mantengo los valores del form
         if (isset($_SESSION['errors'])) {
             $this->view->errors = $_SESSION['errors'];
             unset($_SESSION['errors']);
@@ -258,41 +262,38 @@ class Carrera extends Controller {
         $precio = filter_var($_POST['precio'] ?? 0, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
-        // 2. Gestión de la Imagen (La clave del Update)
-        // Por defecto, tomamos el nombre que viene del campo oculto
+        // 2. Gestión de la Imagen
+        // Por defecto cojo el nombre que viene del campo oculto
         $nombreImagen = $_POST['imagen_actual'] ?? 'default.jpg';
         $error = [];
 
-        // ¿Se ha seleccionado un archivo nuevo?
+        // Si hay un archivo de imagen cojo los metadatos y defino posibles extensiones
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             
             $fileTmpPath = $_FILES['imagen']['tmp_name'];
             $fileName = $_FILES['imagen']['name'];
             $fileSize = $_FILES['imagen']['size'];
             $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-            
             $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
 
+            // Compruebo que la extensión esta permitida
             if (in_array($fileExtension, $allowedExtensions)) {
-                if ($fileSize <= 5 * 1024 * 1024) {
-                    
+                // Si se pasa de tamaño la redimensiona
+                if ($fileSize <= 5 * 1024 * 1024) {                  
                     $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
                     $uploadFileDir = 'public/assets/img/carreras/';
                     $dest_path = $uploadFileDir . $nuevoNombreImagen;
 
-                    if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {
-                        
-                        // Si se subió la nueva, borramos la vieja físicamente (si no es la default)
+                    if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {                       
+                        // Si se subió la nueva borra la vieja (siempre que no sea la por defecto)
                         if ($nombreImagen !== 'default.jpg') {
                             $oldFile = $uploadFileDir . $nombreImagen;
                             if (file_exists($oldFile)) {
                                 unlink($oldFile);
                             }
                         }
-                        
                         // Actualizamos la variable con el nuevo nombre para la BD
                         $nombreImagen = $nuevoNombreImagen;
-
                     } else {
                         $error['imagen'] = "Error al mover la nueva imagen.";
                     }
@@ -345,6 +346,9 @@ class Carrera extends Controller {
         // Obtener las modalidades para este evento
         $this->view->modalidades = $this->model->getModalidadesByEvento($id);
 
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
         // Preparamos variables para la vista
         $ocupadas = $this->model->getPlazasOcupadas($id);
         $this->view->plazas_libres = $carrera['cupo_maximo'] - $ocupadas;
@@ -354,6 +358,7 @@ class Carrera extends Controller {
         } else {
             $this->view->title = "Carrera no encontrada";
         }
+
         $this->view->render('carrera/show/index');
     }
 
@@ -407,6 +412,9 @@ class Carrera extends Controller {
         // Recogemos el criterio de ordenación del parámetro
         $criterio = $param[0];
 
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
         // Título de la página
         $this->view->title = "Explorar Carreras - Traileros";
 
@@ -435,6 +443,9 @@ class Carrera extends Controller {
             // Si hay término, filtramos
             $this->view->carreras = $this->model->search($term);
         }
+
+        // Compruebo si hay mensajes
+        $this->checkMessages();
 
         // Título de la página indicando la búsqueda
         $this->view->title = "Resultados de búsqueda: \"$term\" - Traileros";
@@ -490,7 +501,7 @@ class Carrera extends Controller {
         // Calcular alto proporcional si no se define altura
         if ($targetHeight === null) {
             $ratio = $width / $height;
-            $targetHeight = (int) round ($targetWidth / $ratio);
+            $targetHeight = (int)($targetWidth / $ratio);
         }
 
         // Crear lienzo vacío

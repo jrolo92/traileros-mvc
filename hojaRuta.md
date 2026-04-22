@@ -18,7 +18,9 @@ public/
 
 10/04/2026: Creacion de vistas de inscripciones: main y new
 
+13/04-17/04: Refactorizacion tablas bd
 
+22/04/26: Integra pasarela de pago con Stripe (Modo sandbox)
 
 
 MEJORAS:

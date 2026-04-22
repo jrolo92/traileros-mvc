@@ -31,16 +31,16 @@
         // Función para mostrar mensajes en los métodos de los controladores.
         protected function checkMessages() {
         
-        if (isset($_SESSION['notify'])) {
-            $this->view->notify = $_SESSION['notify'];
-            unset($_SESSION['notify']);
-        }
+            if (isset($_SESSION['notify'])) {
+                $this->view->notify = $_SESSION['notify'];
+                unset($_SESSION['notify']);
+            }
 
-        if (isset($_SESSION['error'])) {
-            $this->view->error = $_SESSION['error'];
-            unset($_SESSION['error']);
+            if (isset($_SESSION['error'])) {
+                $this->view->error = $_SESSION['error'];
+                unset($_SESSION['error']);
+            }
         }
-    }
     }
 
 

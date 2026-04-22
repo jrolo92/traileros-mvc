@@ -1,5 +1,8 @@
 <?php
 
+// Carga las librerias instaldas con composer (Por el momento: Stripe)
+require_once 'vendor/autoload.php';
+
 class Inscripcion extends Controller
 {
 
@@ -46,6 +49,9 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['new']);
+
+        // Compruebo si hay mensajes
+        $this->checkMessages();
 
         // Antes de nada verificar los datos del perfil del usuario.
         $user_id = $_SESSION['user_id'];
@@ -115,9 +121,13 @@ class Inscripcion extends Controller
             exit;
         }
 
+
+
         $this->view->title  = "Inscripción: " . $evento['nombre'];
 
         $this->view->evento = $evento;
+
+        $this->view->modalidades = $eventoModel->getModalidadesByEvento($evento_id);
 
         $this->view->inscripcion = new class_inscripcion();
         $this->view->inscripcion->evento_id = $evento_id;
@@ -133,44 +143,45 @@ class Inscripcion extends Controller
     */
     public function create()
     {
-        // --- 1. SEGURIDAD Y REQUISITOS ---
+
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['create']);
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
         }
 
-        // --- 2. CARGA DE MODELOS (Todos juntos al principio para claridad) ---
+        // Carga de todos los modelos que vamos a usar en este método
         $userModel = $this->loadModel('user');
         $carreraModel = $this->loadModel('carrera');
         $inscripcionModel = $this->loadModel('inscripcion');
 
-        // --- 3. RECOGIDA Y ACTUALIZACIÓN DE DATOS DEL USUARIO ---
+        // Recoge datos del usuario
         $user_id = $_SESSION['user_id'];
-        $datosBase = $userModel->read($user_id);
+        $datos = $userModel->read($user_id);
         
         // Mapeo a class_user
         $user = new class_user();
-        foreach ($datosBase as $prop => $val) { $user->$prop = $val; }
+        foreach ($datos as $clave => $val) { $user->$clave = $val; }
+        // Datos que pueden cambiar en el formulario de inscripción
         $user->tlf = $_POST['tlf'];
         $user->talla = $_POST['talla'];
         $user->club = $_POST['club'];
-        
         // Guardamos cambios en el perfil
         $userModel->update($user, $user_id, $_SESSION['role_id']);
 
-        // --- 4. VALIDACIÓN DE LA CARRERA (Plazas y Evento) ---
+        // Valida si existen plazas en el evento
         $evento_id = (int)$_POST['evento_id'];
         $evento = $carreraModel->read($evento_id);
+        $modalidad_id = (int)$_POST['modalidad_id'];
 
         $libres = $evento['cupo_maximo'] - $carreraModel->getPlazasOcupadas($evento_id);
         if ($libres <= 0) {
             $_SESSION['notify'] = "Lo sentimos, ya no quedan plazas.";
-            header('Location: ' . URL . 'carrera');
+            header('Location: ' . URL . 'carrera/show/' . $evento_id);
             exit();
         }
 
-        // --- 5. LÓGICA DE NEGOCIO (Categoría y Edad) ---
+        // Asigna automáticamente la categoría en función de la edad
         $nacimiento = new DateTime($user->fecha_nac);
         $fecha_evento = new DateTime($evento['fecha']);
         $edad = $fecha_evento->diff($nacimiento)->y;
@@ -178,31 +189,94 @@ class Inscripcion extends Controller
         // Usamos el modelo de inscripción
         $categoria_id = $inscripcionModel->getCategoriaAdecuada($edad, $user->sexo);
 
-        // --- 6. PROCESADO DE PAGO (Simulación) ---
-        $pagoExitoso = true; // Aquí iría la lógica de tu pasarela
+        // Obtenemos los datos de la modalidad elegida paran el precio
+        $modalidad_datos = $carreraModel->getModalidad($modalidad_id);
 
-        // --- 7. FINALIZACIÓN: GUARDAR INSCRIPCIÓN ---
-        if ($pagoExitoso) {
+        if (!$modalidad_datos) {
+            $_SESSION['error'] = "Modalidad no válida.";
+            header('Location: ' . URL . 'carrera');
+            exit();
+        }
+
+        $precio_real = $modalidad_datos['precio'];
+
+        try {
+            // Stripe (entorno de pruebas): Número = 4242 4242 4242 4242 | Fecha = 12/34 | CVC = 123
+            // $pagoExitoso = true; 
+            \Stripe\Stripe::setApiKey(STRIPE_SECRET_KEY);
+
+            $checkout_session = \Stripe\Checkout\Session::create([
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                    'price_data' => [
+                        'currency' => 'eur',
+                        'product_data' => [
+                            'name' => 'Inscripción: ' . $evento['nombre'],
+                            'description' => 'Modalidad: ' . $modalidad['nombre'],
+                        ],
+                        'unit_amount' => $precio_real * 100, // Céntimos
+                    ],
+                    'quantity' => 1,
+                ]],
+                'mode' => 'payment',
+                'success_url' => URL . "inscripcion/success?session_id={CHECKOUT_SESSION_ID}",
+                'cancel_url' => URL . "inscripcion/new/$evento_id",
+            ]);
+
+            // Guarda la inscripción
             $metodo_pago = filter_var($_POST['metodo_pago'], FILTER_SANITIZE_SPECIAL_CHARS);
+            $id_pago = $checkout_session->id;
             
             $nuevaInscripcion = new class_inscripcion(
+                null,
                 $user_id,
                 $evento_id,
+                $modalidad_id,
                 $categoria_id,
+                null, // Fecha current_timestamp en la bd
                 null, // El dorsal se autogenera en el modelo
+                $id_pago,
                 $metodo_pago,
-                'completado',
-                $evento['precio']
+                'pendiente',
+                $precio_real
             );
 
             if ($inscripcionModel->create($nuevaInscripcion)) {
-                $_SESSION['notify'] = "¡Inscripción realizada con éxito!";
-                header('Location: ' . URL . 'inscripcion');
+                // Redirigimos a Stripe
+                header("HTTP/1.1 303 See Other");
+                header("Location: " . $checkout_session->url);
                 exit();
             } else {
-                $this->handleError();
+                die("El modelo devolvió false. Revisa la consulta SQL.");
+                // $this->handleError();
+            }
+
+        } catch (Exception $e){
+            // $_SESSION['notify'] = "Error al conectar con la pasarela de pago: " . $e->getMessage();
+            // header('Location: ' . URL . 'carrera/show/' . $evento_id);
+            // exit();
+            die("Error en Stripe o BD: " . $e->getMessage());
+        }
+    }
+
+
+    // Procesa y confirma el pago (Asigna dorsal automático)
+    public function success()
+    {
+        $this->requireLogin();
+        $id_pago = $_GET['session_id'] ?? null;
+
+        if ($id_pago) {
+            // El modelo se encarga de verificar que no esté ya completada y asignar dorsal
+            if ($this->model->confirmarPago($id_pago)) {
+                $_SESSION['notify'] = "¡Inscripción confirmada! Ya puedes ver tu dorsal en el listado.";
+            } else {
+                $_SESSION['notify'] = "Hubo un problema al confirmar tu pago. Contacta con soporte.";
             }
         }
+
+        header('Location: ' . URL . 'inscripcion');
+        exit();
     }
 
     /*
@@ -213,6 +287,9 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['edit']);
+
+        // Compruebo si hay mensajes
+        $this->checkMessages();
 
         $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
@@ -268,6 +345,10 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['show']);
+
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
         $user_id   = (int) $params[0];
         $evento_id = (int) $params[1];
 
@@ -317,6 +398,9 @@ class Inscripcion extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['search']);
 
+        // Compruebo si hay mensajes
+        $this->checkMessages();
+
         $user_id = $_SESSION['user_id'];
         $role_id = $_SESSION['role_id'];
 
@@ -340,6 +424,9 @@ class Inscripcion extends Controller
     {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['order']);
+
+        // Compruebo si hay mensajes
+        $this->checkMessages();
         
         // Obtenemos el criterio
         $criterio = $param[0] ?? 'fecha';

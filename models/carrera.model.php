@@ -303,6 +303,7 @@ class carreraModel extends Model {
         return $stmt->fetchColumn();
     }
 
+    // Método para obtener todas las modalidades de un evento
     public function getModalidadesByEvento($evento_id) {
         try {
             $sql = "SELECT * FROM modalidades WHERE evento_id = :id ORDER BY distancia ASC";
@@ -312,6 +313,19 @@ class carreraModel extends Model {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             return [];
+        }
+    }
+
+    // Versión corta del método anterior para obtener los datos de una sola modalidad
+    public function getModalidad($id) {
+        try {
+            $sql = "SELECT * FROM modalidades WHERE id = :id LIMIT 1";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id' => $id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return null;
         }
     }
 

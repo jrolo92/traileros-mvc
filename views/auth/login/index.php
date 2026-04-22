@@ -54,8 +54,12 @@
 
                     <div class="form-buttons">
                         <button type="submit" class="btn-submit">Acceder</button>
-                        <a href="<?= URL ?>auth/register" class="btn-register">Registrar</a>
+                        
                     </div>
+
+                    <p class="register-link">¿No tiene cuenta aún?
+                        <a href="<?= URL ?>auth/register" class="forgot-link">Registrarse</a>
+                    </p>
                 </form>
             </section>
 

@@ -49,6 +49,8 @@ $font-main: 'Inter', sans-serif;
 }
 
 body {
+    margin: 0;
+    padding: 0;
     background-color: var(--bg-body);
     overflow-x: hidden;
 }

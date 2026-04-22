@@ -4,6 +4,7 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?> </title>
+    <script src="<?= URL ?>/public/js/precio-ajax.js" defer></script>
 </head>
 
 <body>
@@ -24,10 +25,22 @@
                 <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?>">
                 <input type="hidden" name="evento_id" value="<?php echo $this->evento['id'] ?>">
 
+                <div class="form-group">
+                    <label for="modalidad_id">Selecciona Modalidad</label>
+                    <select name="modalidad_id" id="modalidad_id" required>
+                        <option disabled selected>Elegir modalidad...</option>
+                        <?php foreach ($this->modalidades as $modalidad): ?>
+                            <option value="<?= $modalidad['id'] ?>">
+                                <?= $modalidad['nombre'] ?> (<?= $modalidad['precio'] ?>€)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
                 <div class="form-row">
                     <div class="form-group">
                         <label>Precio de Inscripción</label>
-                        <div class="fake-input"><?php echo number_format($this->evento['precio'], 2) ?> €</div>
+                        <div class="fake-input" id="precio"> -- €</div>
                     </div>
                     <div class="form-group">
                         <label>Fecha del Evento</label>
@@ -39,9 +52,7 @@
                     <label for="metodo_pago">Selecciona Método de Pago</label>
                     <select name="metodo_pago" required>
                         <option value="" disabled selected>Elegir método...</option>
-                        <option value="tarjeta">Tarjeta de Crédito / Débito</option>
-                        <option value="bizum">Bizum</option>
-                        <option value="transferencia">Transferencia Bancaria</option>
+                        <option value="stripe">Stripe</option>
                     </select>
                     <small class="text-muted">El pago se procesará de forma segura en el siguiente paso.</small>
                 </div>

@@ -1,0 +1,4 @@
+/vendor/
+.env
+*.log
+config/private.php

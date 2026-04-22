@@ -131,7 +131,8 @@ INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_ma
 (6, 'CxM', 29.00, 1200, 28.00, 350),
 (6, 'Open', 16.00, 900, 18.00, 200),
 (7, 'Trail Dolmen', 16.00, 550, 20.00, 100),
-(8, 'Trail Moros y Cristianos', 17.00, 695, 13.00, 100);
+(8, 'Trail', 17.00, 695, 13.00, 100),  
+(8, 'Sprint Trail', 12.00, 495, 9.00, 100);
 
 -- 7. TABLA INSCRIPCIONES
 DROP TABLE IF EXISTS inscripciones;
@@ -143,6 +144,7 @@ CREATE TABLE inscripciones (
   categoria_id int(10) unsigned DEFAULT NULL,
   fecha_inscripcion datetime DEFAULT current_timestamp(),
   dorsal int(10) unsigned DEFAULT NULL,
+  id_pago varchar(255) DEFAULT NULL,
   metodo_pago varchar(50) DEFAULT NULL,
   estado_pago enum('pendiente','completado','fallido','cancelado') DEFAULT 'pendiente',
   precio_final decimal(10,2) DEFAULT NULL,

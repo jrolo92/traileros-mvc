@@ -20,7 +20,7 @@
 .header-right {
     display: flex;
     align-items: center;
-    gap: 30px; // Espacio entre el menú "Carreras" y el botón de Login/Perfil
+    gap: 30px; 
 
     .header-nav {
         a {
@@ -175,13 +175,13 @@
     }
 }
 
-/* --- ESTILOS DEL SWITCH (TOGGLE) --- */
+// Desplegable
 .switch {
     position: relative;
     display: inline-block;
     width: 34px;
     height: 18px;
-    pointer-events: none; // El click lo captura el div padre
+    pointer-events: none; 
 
     input { opacity: 0; width: 0; height: 0; }
 
@@ -209,5 +209,13 @@
 
     input:checked + .slider:before {
         transform: translateX(16px);
+    }
+}
+
+@media(max-width: 500px){
+    .header-right{
+        display:flex;
+        justify-content: right;
+        gap: 5px;
     }
 }

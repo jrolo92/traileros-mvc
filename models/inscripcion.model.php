@@ -81,38 +81,129 @@ class InscripcionModel extends Model {
         }
     }
 
+    // public function create(class_inscripcion $inscripcion) {
+    //     try {
+    //         $db = $this->db->connect();
+            
+    //         // 1. Generamos el dorsal
+    //         // $inscripcion->dorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
+            
+    //         // 2. Definimos la SQL
+    //         $sql = "INSERT INTO Inscripciones (user_id, evento_id, categoria_id, dorsal, metodo_pago, estado_pago, precio_final) 
+    //                 VALUES (:user_id, :evento_id, :categoria_id, :dorsal, :metodo_pago, :estado_pago, :precio_final)";
+            
+    //         $stmt = $db->prepare($sql);
+            
+    //         // 3. Preparamos los datos
+    //         $datos = [
+    //             'user_id'      => $inscripcion->user_id,
+    //             'evento_id'    => $inscripcion->evento_id,
+    //             'categoria_id' => $inscripcion->categoria_id,
+    //             'dorsal'       => $inscripcion->dorsal,
+    //             'metodo_pago'  => $inscripcion->metodo_pago,
+    //             'estado_pago'  => $inscripcion->estado_pago,
+    //             'precio_final' => $inscripcion->precio_final
+    //         ];
+
+    //         // 4. Ejecutamos
+    //         $resultado = $stmt->execute($datos);
+
+    //         return true; 
+
+    //     } catch (Throwable $e) {
+    //         $this->handleError($e);
+    //     }
+    // }
+
+    /*
+        Método: create()
+        Descripción: Inserta una nueva inscripcion en la base de datos
+        IMPORTANTE: Este método inicia el procedimiento de pago por lo que estado_pago no se modifica
+        y seguirá siendo 'pendiente'.
+    */
     public function create(class_inscripcion $inscripcion) {
         try {
-        $db = $this->db->connect();
-        
-        // 1. Generamos el dorsal
-        $inscripcion->dorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
-        
-        // 2. Definimos la SQL
-        $sql = "INSERT INTO Inscripciones (user_id, evento_id, categoria_id, dorsal, metodo_pago, estado_pago, precio_final) 
-                VALUES (:user_id, :evento_id, :categoria_id, :dorsal, :metodo_pago, :estado_pago, :precio_final)";
-        
-        $stmt = $db->prepare($sql);
-        
-        // 3. Preparamos los datos
-        $datos = [
-            'user_id'      => $inscripcion->user_id,
-            'evento_id'    => $inscripcion->evento_id,
-            'categoria_id' => $inscripcion->categoria_id,
-            'dorsal'       => $inscripcion->dorsal,
-            'metodo_pago'  => $inscripcion->metodo_pago,
-            'estado_pago'  => $inscripcion->estado_pago,
-            'precio_final' => $inscripcion->precio_final
-        ];
+            $db = $this->db->connect();
+            
+            
+            $sql = "INSERT INTO inscripciones (
+                    user_id, 
+                    evento_id, 
+                    modalidad_id, 
+                    categoria_id, 
+                    id_pago, 
+                    metodo_pago, 
+                    estado_pago, 
+                    precio_final
+                ) VALUES (
+                    :user_id, 
+                    :evento_id, 
+                    :modalidad_id, 
+                    :categoria_id, 
+                    :id_pago, 
+                    :metodo_pago, 
+                    :estado_pago, 
+                    :precio_final
+                )";
+            
+            $stmt = $db->prepare($sql);
+            
+            $datos = [
+                ':user_id'      => $inscripcion->user_id,
+                ':evento_id'    => $inscripcion->evento_id,
+                ':modalidad_id' => $inscripcion->modalidad_id,
+                ':categoria_id' => $inscripcion->categoria_id,
+                ':id_pago'      => $inscripcion->id_pago,
+                ':metodo_pago'  => $inscripcion->metodo_pago,
+                ':estado_pago'  => $inscripcion->estado_pago,
+                ':precio_final' => $inscripcion->precio_final
+            ];
 
-        // 4. Ejecutamos
-        $resultado = $stmt->execute($datos);
+            return $stmt->execute($datos); 
 
-        return true; 
-
-    } catch (Throwable $e) {
-        $this->handleError($e);
+        } catch (Throwable $e) {
+            $this->handleError($e);
+        }
     }
+
+    /*
+        Método: confirmarPago()
+        Descripción: Confirma el pago y asigna el dorsal definitivo a partir del id_pago. 
+        IMPORTANTE: Cambia el estado_pago a completado y asigna el dorsal
+    */
+    public function confirmarPago($id_pago) {
+        try {
+            $db = $this->db->connect();
+            
+            // 1. Buscamos la inscripción que tiene ese ID de pago
+            $sql = "SELECT id, evento_id, estado_pago FROM inscripciones WHERE id_pago = :id_pago LIMIT 1";
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id_pago' => $id_pago]);
+            $inscripcion = $stmt->fetch(PDO::FETCH_OBJ);
+
+            // 2. Si existe y no está ya pagada (evitar duplicar dorsales si refresca la página)
+            if ($inscripcion && $inscripcion->estado_pago !== 'completado') {
+                
+                // Asignamos el dorsal ahora que el pago es seguro
+                $nuevoDorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
+
+                $sqlConfirm = "UPDATE inscripciones SET 
+                            estado_pago = 'completado', 
+                            dorsal = :dorsal 
+                            WHERE id = :id";
+                
+                $stmtConfirm = $db->prepare($sqlConfirm);
+                return $stmtConfirm->execute([
+                    'dorsal' => $nuevoDorsal,
+                    'id'     => $inscripcion->id
+                ]);
+            }
+            
+            return ($inscripcion && $inscripcion->estado_pago === 'completado');
+
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
     }
 
     public function read($user_id, $evento_id) {
@@ -125,13 +216,14 @@ class InscripcionModel extends Model {
 
     public function update($data) {
 
-        $sql = "UPDATE Inscripciones SET 
-                categoria_id = :categoria_id,
-                dorsal = :dorsal,
-                metodo_pago = :metodo_pago,
-                estado_pago = :estado_pago,
-                precio_final = :precio_final
-                WHERE user_id = :user_id AND evento_id = :evento_id";
+        $sql = "UPDATE inscripciones SET 
+            categoria_id = :categoria_id,
+            dorsal       = :dorsal,
+            metodo_pago  = :metodo_pago,
+            estado_pago  = :estado_pago,
+            precio_final = :precio_final,
+            id_pago      = :id_pago
+            WHERE id = :id";
         
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);
@@ -163,7 +255,6 @@ class InscripcionModel extends Model {
 
     // --- Lógica de Negocio ---
     public function getCategoriaAdecuada($edad, $sexo) {
-
         // Buscamos la categoría donde encaje la edad y el sexo (o mixto)
         $sql = "SELECT id FROM Categorias 
                 WHERE :edad BETWEEN edad_min AND edad_max 
@@ -200,11 +291,13 @@ class InscripcionModel extends Model {
                         u.email as usuario_email, 
                         u.dni as usuario_dni, 
                         u.telefono as usuario_telefono,
-                        c.nombre as categoria_nombre
+                        c.nombre as categoria_nombre,
+                        m.nombre as modalidad_nombre
                 FROM Inscripciones i
-                JOIN Eventos e ON i.evento_id = e.id
-                JOIN users u ON i.user_id = u.id
+                INNER JOIN Eventos e ON i.evento_id = e.id
+                INNER JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id
+                INNER JOIN modalidades m ON i.modalidad_id = m.id
                 WHERE i.user_id = :u AND i.evento_id = :e";
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);

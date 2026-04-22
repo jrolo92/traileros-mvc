@@ -35,7 +35,7 @@ class Account extends Controller
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        // // Compruebo si hay mensaje de éxito
+        // Compruebo si hay mensaje de éxito
         $this->checkMessages();
 
         // Obtenemos los detalles completos del usuario
@@ -70,7 +70,7 @@ class Account extends Controller
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        // // Compruebo si hay mensaje de éxito
+        // Compruebo si hay mensaje de éxito
         $this->checkMessages();
 
         // Obtenemos el id del usuario
@@ -241,8 +241,6 @@ class Account extends Controller
     */
     public function password()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         if (empty($_SESSION['csrf_token'])) {
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -251,7 +249,7 @@ class Account extends Controller
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
 
-        // // Compruebo si hay mensaje de éxito
+        // Compruebo si hay mensajes
         $this->checkMessages();
 
         // Capa no validación del formulario
@@ -360,8 +358,6 @@ class Account extends Controller
     */
     public function delete()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
@@ -477,7 +473,7 @@ class Account extends Controller
 
             $oldAvatar = $_SESSION['user_avatar'] ?? null;
 
-            // 4. Mover el archivo de la carpeta temporal a la carpeta final
+            // 4. Redimensionar imagen y mover a su carpeta (public/assets/img/avatars)
             if ($this->resizeImage($file['tmp_name'], $uploadPath, 400, 400)) {
 
                 // Si ya existe un archivo de imagen previo, lo borramos

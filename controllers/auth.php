@@ -25,9 +25,6 @@
 
         function login() {
 
-            // Iniciar o continuar sesión
-            // sec_session_start();
-
             // Generar token CSRF:
             if(empty($_SESSION['csrf_token'])){
                 $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
@@ -37,13 +34,10 @@
             $this->view->email = null;
             $this->view->password = null;
 
-            // Comprobar si hay mensajes en la sesión y pasarlos a la vista
-            if (isset($_SESSION['notify'])){
-                $this->view->notify = $_SESSION['notify'];
-                unset($_SESSION['notify']);
-            }
+            // Compruebo si hay mensajes
+            $this->checkMessages();
 
-            // Verificar si existe algún error
+            // Mantener campos del formulario
             if (isset($_SESSION['errors'])){
                 // Mostrar los detalles del error
                 $this->view->errors = $_SESSION ['errors'];
@@ -57,8 +51,7 @@
                 $this->view->password = $_SESSION['password'];
 
                 // Eliminamos las vv de sesion de ambos campos del form
-                unset($_SESSION['email']);
-                unset($_SESSION['password']);
+                unset($_SESSION['email'], $_SESSION['password']);
 
             }
                         
@@ -85,9 +78,6 @@
                 - csrf_token
        */
        public function validate_login() {
-
-        // Inicio o continúo sesión
-        // sec_session_start();
 
         // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -203,11 +193,8 @@
             $this->view->password = null;
             $this->view->password2 = null;
 
-            // Comprobar si hay mensajes en la sesión y pasarlos a la vista
-            if (isset($_SESSION['notify'])){
-                $this->view->notify = $_SESSION['notify'];
-                unset($_SESSION['notify']);
-            }
+            // Compruebo si hay mensajes
+            $this->checkMessages();
 
             // Verificar si existen errores
             if (isset($_SESSION['errors'])){
@@ -224,15 +211,10 @@
                 $this->view->password = $_SESSION['password'];
                 $this->view->password2 = $_SESSION['password2'];
 
-                // Eliminamos las vv de sesion de ambos campos del form
-                unset($_SESSION['name']);
-                unset($_SESSION['email']);
-                unset($_SESSION['password']);
-                unset($_SESSION['password2']);
+                // Eliminamos las vv de sesion de los campos del form
+                unset($_SESSION['name'], $_SESSION['email'], $_SESSION['password'], $_SESSION['password2']);
 
             }
-                        
-            // Obtengo los datos del  modelo para mostrar en la vista
             
             // Creo la propiedad  title para la vista
             $this->view->title = "Registrarse - Traileros";
@@ -322,16 +304,12 @@
 
             // Almaceno los errores en la sesión
             $_SESSION['errors'] = $errors;
-
             // Almaceno el nombre
             $_SESSION['name'] = $name;
-
             // Almaceno el email
             $_SESSION['email'] = $email;
-
             // Almaceno el password 1
             $_SESSION['password'] = $password;
-
             // Almaceno el password 2
             $_SESSION['password2'] = $password;
 
@@ -356,13 +334,11 @@
     }   
 
     public function logout() {
-        // 1. Iniciar o continuar sesión
-        // sec_session_start();
 
-        // 2. Terminar la sesión
+        // Terminar la sesión
         sec_session_destroy();
 
-        // 3. Mostrar mensaje y redirigir al login
+        // Mostrar mensaje y redirigir al login
         $_SESSION['notify'] = "Sesión cerrada correctamente";
         
         header('Location: ' . URL . 'auth/login');
