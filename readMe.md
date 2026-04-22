@@ -1,2 +1,4 @@
 # traileros-mvc
-Proyecto traileros con arquitectura MVC (HTML-5, SCSS, JavaScript, PHP)
+### Proyecto traileros con arquitectura MVC ( PHP | SCSS | JavaScript)
+
+En proceso...
