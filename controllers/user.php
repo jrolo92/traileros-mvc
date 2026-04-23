@@ -396,9 +396,6 @@
         */
         public function search() {
 
-            // Iniciar o continuar sesión
-            // sec_session_start();
-
             // Capa de validación de sesión
             $this->requireLogin();
 
@@ -407,15 +404,19 @@
 
             // Obtengo el término de búsqueda del formulario (por GET)
             $term = filter_var($_GET['term'] ??= '', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+            $this->view->term = $term;
 
-            // Si el término está vacío, podríamos redirigir al render principal o dejar que el modelo traiga todo
+            if ($term === ''){
+                // Si el buscador está vacío traemos todos los usuarios
+                $this->view->users = $this->model->get();
+            } else {
+                // Si hay búsqueda filtramos
+                $this->view->users = $this->model->search($term);
+            }            
             
             // Creo la notificación para la vista
             $this->view->notify = "Resultados de la búsqueda para: \"$term\"";
             $this->view->title = "Búsqueda de Usuarios";
-
-            // Llamar al modelo para buscar los usuarios
-            $this->view->users = $this->model->search($term);
 
             // Llama a la vista principal para mostrar los resultados
             $this->view->render('user/main/index');

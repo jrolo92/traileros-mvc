@@ -18,6 +18,7 @@
     tbody tr {
         background: var(--bg-card);
         transition: transform 0.2s;
+        text-align:center;
         
         &:hover {
             background-color: field;
@@ -124,7 +125,7 @@
 /* Estilos para la Barra de Búsqueda */
 .nav-item-search {
     padding: 8px 16px;
-    margin-left: 200px;
+    margin-left: auto;
 
     @media (max-width: 1100px){
         margin-left: 0;

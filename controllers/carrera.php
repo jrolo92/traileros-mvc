@@ -23,10 +23,25 @@ class Carrera extends Controller {
         // Compruebo si hay mensajes
         $this->checkMessages();
 
+        // Lógica para la paginación
+        $items_pp = 6;  
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $order = isset($_GET['order']) ? (int)$_GET['order'] : 1;
+
+        if ($currentPage < 1) $currentPage = 1;
+        $offset = ($currentPage - 1) * $items_pp;
+
+        $totalItems = $this->model->countTotal(); // Asegúrate de tener este método que haga un SELECT COUNT(*)
+        $totalPages = ceil($totalItems / $items_pp);
+
+
         $this->view->title = "Próximos Eventos - Traileros";
         
         // El método get() del modelo ahora trae el nombre del organizador
-        $this->view->carreras = $this->model->get();
+        $this->view->carreras = $this->model->getPaginated($items_pp, $offset, $order);
+        $this->view->currentPage = $currentPage;
+        $this->view->totalPages = $totalPages;
+        $this->view->currentOrder = $order;
 
         $this->view->render('carrera/main/index');
     }

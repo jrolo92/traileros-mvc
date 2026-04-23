@@ -1,7 +1,7 @@
 // Contenedor Principal 
 .carreras-container {
     padding: 20px;
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
 }
 
@@ -120,7 +120,7 @@
 // Grid de Carreras (2 columnas)
 .carreras-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); // Dos columnas iguales
+    grid-template-columns: repeat(2, auto); // Dos columnas iguales
     column-gap: 100px;                      
     row-gap: 20px;
     

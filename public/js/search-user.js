@@ -1,35 +1,31 @@
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('search');
-    const searchForm = document.querySelector('.carreras-search');
-
+    const searchForm = document.querySelector('.nav-search-form');
     const contentContainer = document.querySelector('.account-content');
-    const subtitleContainer = document.getElementById('subtitle-container');
     const footerCount = document.querySelector('.admin-table-footer strong');
 
     let timeout = null;
 
     if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
+        searchForm.addEventListener('submit', function(e){
             e.preventDefault();
         });
     }
 
     if (searchInput && contentContainer) {
-        searchInput.addEventListener('input', function () {
+        searchInput.addEventListener('input', function (){
             const searchTerm = this.value;
-
-            // Limpiamos el timeout anterior
             clearTimeout(timeout);
 
             timeout = setTimeout(() => {
                 // Petición al controlador
-                fetch(`inscripcion/search?term=${encodeURIComponent(searchTerm)}`)
+                fetch(`user/search?term=${encodeURIComponent(searchTerm)}`)
                     .then(response => response.text())
                     .then(html => {
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
-                        
-                        // Actualizar Tabla
+
+                        // Actualizar tabla
                         const newContent = doc.querySelector('.account-content');
                         if (newContent && contentContainer) contentContainer.innerHTML = newContent.innerHTML;
 
@@ -37,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const newCount = doc.querySelector('.admin-table-footer strong');
                         if (footerCount && newCount) footerCount.innerHTML = newCount.innerHTML;
                     })
-                    .catch(error => console.error('Error en búsqueda AJAX:', error));
+                    .catch(error => console.error('Error en la búsqueda AJAX:', error));
             }, 300);
         });
     }

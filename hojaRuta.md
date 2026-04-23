@@ -20,7 +20,8 @@ public/
 
 13/04-17/04: Refactorizacion tablas bd
 
-22/04/26: Integra pasarela de pago con Stripe (Modo sandbox)
+22/04/26: Integra pasarela de pago con Stripe (Modo sandbox).
+23/04/26: Integra paginación en la vista de carreras  y arreglos en los sistemas de búsqueda y orden de los distintos MVC (AJAX para búsqueda sin recargar).
 
 
 MEJORAS:

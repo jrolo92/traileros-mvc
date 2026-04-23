@@ -4,7 +4,6 @@
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?></title>
     <script src="<?= URL ?>public/js/search-user.js" defer></script>
-    <script src="<?= URL ?>public/js/menu-order.js" defer></script>
 </head>
 <body>
     <?php require_once 'template/partials/header.partial.php' ?>
@@ -14,60 +13,20 @@
             
             <header class="account-header">
                 <div class="user-info-main">
-                    <div class="avatar-circle size-md">
-                        <?php if (!empty($_SESSION['user_avatar']) && file_exists($_SESSION['user_avatar'])): ?>
-                            <img src="<?= URL . $_SESSION['user_avatar'] ?>" alt="Perfil">
-                        <?php else: ?>
-                            <i class="fas fa-user-circle" style="font-size: 4rem;"></i>
-                        <?php endif; ?>
-                    </div>
-                    
+                    <i class="fas fa-users-cog"></i>
                     <div>
-                        <h2><?php echo $this->title ?></h2>
+                        <h2>Gestión de Usuarios</h2>
                         <p>Panel de administración de corredores y privilegios</p>
                     </div>
                 </div>
-
-                <nav class="account-menu">
-                    <?php require_once "views/account/partials/menu.partial.php"?>
+                <nav class="admin-sub-menu">
+                    <?php require_once("views/user/partials/menu.user.partial.php") ?>
                 </nav>
-                
             </header>
 
             <section class="account-main-content">
                 <?php require_once("template/partials/mensaje.partial.php") ?>
                 <?php require_once("template/partials/error.partial.php") ?>
-
-                <section class="carreras-container">
-                    <div class="carreras-toolbar">
-                        <form class="carreras-search" action="<?php echo URL ?>inscripcion/search" method="GET">
-                            <div class="search-wrapper">
-                                <i class="fas fa-search"></i>
-                                <input
-                                    type="search"
-                                    id="search" 
-                                    name="term"
-                                    placeholder="Buscar inscripción..."
-                                    value="<?php echo htmlspecialchars($this->term ?? '') ?>"
-                                    autocomplete="off"
-                                >
-                            </div>
-                        </form>
-                        <div class="carreras-dropdown" id="orderDropdown">
-                            <button type="button" class="dropdown-button" id="dropdownBtn">
-                                <span>Ordenar por</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-
-                            <ul class="dropdown-list">
-                                <li><a href="<?= URL ?>user/order/1">ID</a></li>
-                                <li><a href="<?= URL ?>user/order/2">Nombre</a></li>
-                                <li><a href="<?= URL ?>user/order/3">Email</a></li>
-                                <li><a href="<?= URL ?>user/order/4">Rol</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </section>
 
                 <div class="account-content">
                     <div class="table-responsive">
@@ -149,13 +108,7 @@
                     <i class="fas fa-arrow-left"></i>
                     <span>Volver</span>
                 </a>
-                <a class="btn-account-save" href="<?= URL ?>user/new">
-                    <i class="fas fa-plus-circle"></i>Nuevo Usuario
-                </a>
-                </div>
-                <div>
-                    
-                </div>
+            </div>
             </section>
         </div>
     </main>

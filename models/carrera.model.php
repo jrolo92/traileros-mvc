@@ -292,6 +292,15 @@ class carreraModel extends Model {
         }
     }
 
+    // Cuenta el total de carreras disponibles en la tabla eventos
+    public function countTotal(){
+        $sql = "SELECT COUNT(*) FROM eventos";
+        $db = $this->db->connect();
+        $stmt = $db->query($sql);
+
+        return $stmt->fetchColumn();
+    }
+
     public function getPlazasOcupadas($evento_id) {
 
         // Contamos todos menos los cancelados y fallidos
@@ -327,6 +336,39 @@ class carreraModel extends Model {
         } catch (PDOException $e) {
             return null;
         }
+    }
+
+    /**
+     *  Método para llevar a cabo la paginación de carreras
+     */
+    public function getPaginated($limit, $offset, $order = 1) {
+        // Definimos los criterios de ordenación según tu dropdown
+        $criterios = [
+            1 => 'fecha DESC',      // Por defecto
+            2 => 'nombre ASC',      // A-Z
+            3 => 'ubicacion ASC',   // Ciudad
+            4 => 'distancia ASC',   // Distancia
+            5 => 'fecha ASC'        // Fecha próxima
+        ];
+
+        $orderBy = $criterios[$order] ?? $criterios[1];
+
+        $sql = "SELECT e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
+                        m.distancia, m.desnivel, m.cupo_maximo, m.precio,
+                        u.name AS organizador
+                    FROM Eventos AS e
+                    INNER JOIN users AS u ON e.organizador_id = u.id
+                    LEFT JOIN modalidades AS m ON e.id = m.evento_id
+                    GROUP BY e.id
+                    ORDER BY $orderBy LIMIT :limit OFFSET :offset";
+        
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt;
     }
 
     /*

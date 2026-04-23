@@ -255,6 +255,8 @@
                             u.apellidos,
                             u.dni, 
                             u.email,
+                            u.club,
+                            u.federado as es_federado,
                             r.name AS rol
                         FROM users u
                         LEFT JOIN roles_users ru ON u.id = ru.user_id
@@ -264,7 +266,7 @@
                                 u.apellidos,
                                 u.dni, 
                                 u.email, 
-                                r.name,
+                                r.name
                             ) LIKE :term
                         ORDER BY u.id ASC";
 
@@ -315,7 +317,11 @@
                             SELECT 
                                 u.id,
                                 u.name AS nombre,
+                                u.apellidos,
+                                u.dni, 
                                 u.email,
+                                u.club,
+                                u.federado as es_federado,
                                 r.name AS rol
                             FROM users u
                             LEFT JOIN roles_users ru ON u.id = ru.user_id

@@ -28,7 +28,7 @@
     <li class="nav-item-search">
         <form class="nav-search-form" method="GET" action="<?= URL ?>user/search">
             <div class="search-wrapper">
-                <input type="search" placeholder="Buscar trailero..." name="term" autocomplete="off">
+                <input type="search" id="search" placeholder="Buscar trailero..." name="term"  autocomplete="off">
                 <button type="submit" <?= !in_array($_SESSION['role_id'], $GLOBALS['user']['search']) ? 'disabled' : '' ?>>
                     <i class="fas fa-search"></i>
                 </button>

@@ -405,10 +405,11 @@ class Inscripcion extends Controller
         $role_id = $_SESSION['role_id'];
 
         $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+        $this->view->term = $term;
 
         // Si el término está vacío, cargamos todas las inscripciones (método main/get)
         if ($term === '') {
-            $this->view->inscripciones = $this->model->get(null,null);
+            $this->view->inscripciones = $this->model->getInscripcionesByRole($user_id,$role_id);
             $this->view->subtitle = null;
         } else {
             $this->view->inscripciones = $this->model->search($term);

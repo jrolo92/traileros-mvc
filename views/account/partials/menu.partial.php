@@ -21,7 +21,7 @@
     </li>
     <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
         <li>
-            <a href="<?= URL ?>user" class="<?= (isset($_GET['url']) && strpos($_GET['url'], 'user') !== false) ? 'active' : '' ?>">
+            <a href="<?= URL ?>user">
                 <i class="fas fa-users-cog"></i> Panel de Usuarios
             </a>
         </li>

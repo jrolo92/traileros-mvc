@@ -81,15 +81,22 @@
         </div>
 
         <nav class="pagination-container">
-            <a href="?page=1" class="page-link"><i class="fas fa-angle-double-left"></i></a>
+            <a href="?page=<?= $this->currentPage - 1 ?>&order=<?= $this->currentOrder ?>" class="page-link"><i class="fas fa-angle-double-left"></i></a>
 
             <div class="page-numbers">
-                <a href="?page=1" class="page-number active">1</a>
-                <a href="?page=2" class="page-number">2</a>
-                <a href="?page=3" class="page-number">3</a>
+                <?php for ($i = 1; $i <= $this->totalPages; $i++): ?>
+                    <a href="?page=<?= $i ?>&order=<?= $this->currentOrder ?>" 
+                    class="page-number <?= ($i == $this->currentPage) ? 'active' : '' ?>">
+                    <?= $i ?>
+                    </a>
+                <?php endfor; ?>
             </div>
 
-            <a href="?page=2" class="page-link"><i class="fas fa-angle-right"></i></a>
+            <?php if ($this->currentPage < $this->totalPages): ?>
+                <a href="?page=<?= $this->currentPage + 1 ?>&order=<?= $this->currentOrder ?>" class="page-link">
+                    <i class="fas fa-angle-right"></i>
+                </a>
+            <?php endif; ?>
         </nav>
 
         <?php
