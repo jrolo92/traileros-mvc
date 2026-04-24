@@ -286,20 +286,16 @@ class Account extends Controller
     */
     public function update_password()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
-
-        // comprobar si hay usuario logueado
+        // Comprobar si hay usuario logueado
         $this->requireLogin();
 
-        // Validación toekn CSRF
-         // Verificar el token CSRF
+        // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
         }
 
         // Saneamos los detalles del formulario
-        $password = filter_var($_POST['password'] ??= null, FILTER_SANITIZE_SPECIAL_CHARS);
+        $password = $_POST['password'] ??= null;
         $new_password = filter_var($_POST['new_password'] ??= null, FILTER_SANITIZE_SPECIAL_CHARS);
         $confirm_password = filter_var($_POST['confirm_password'] ??= null, FILTER_SANITIZE_SPECIAL_CHARS);
 
@@ -335,11 +331,20 @@ class Account extends Controller
             exit();
         }
 
+        // Limpiamos errores previos de la sesión
+        unset($_SESSION['errors']);
+
         // Actualizo password del usuario
         $this->model->update_pass($new_password, $_SESSION['user_id']);
 
         // Genero mensaje de éxito
         $_SESSION['notify'] = 'Password actualizado correctamente';
+
+        // Enviar correo informativo:
+        $asunto = "Cambio de contraseña";
+        $cuerpo = "<h1>Hola {$account->name}</h1><p>Su contraseña ha sido modificada. Si no ha sido usted, por favor, pongase en contacto con nosotros</p>";
+        
+        Email::enviar($account->email, $asunto, $cuerpo);
 
         // Redirecciono a la vista principal de perfil
         header('location:' . URL . 'account');
@@ -348,13 +353,9 @@ class Account extends Controller
 
     /*
         delete()
-
         Método para eliminar el usuario. 
         Elimina el usuario de la base de datos. 
-
         url: /account/delete
-
-
     */
     public function delete()
     {

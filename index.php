@@ -6,11 +6,13 @@
     require_once 'libs/model.php';
     require_once 'libs/view.php';
     require_once 'libs/app.php';
+    require_once 'libs/email.php';
     require_once 'class/carrera.class.php';
     require_once 'class/user.class.php';
     require_once 'class/inscripcion.class.php';
     require_once 'functions/session_seg.php';
     require_once 'config/privileges.php';
+    require_once 'vendor/autoload.php';
 
     $app = new App();
 

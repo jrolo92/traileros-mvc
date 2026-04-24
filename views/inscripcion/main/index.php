@@ -92,6 +92,7 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
+                                        <th>Id</th>
                                         <?php if ($_SESSION['role_id'] < 3): ?>
                                             <th>Participante</th>
                                         <?php endif; ?>
@@ -106,6 +107,7 @@
                                 <tbody>
                                     <?php foreach ($this->inscripciones as $i): ?>
                                         <tr>
+                                            <td><?= $i->id ?></td>
                                             <?php if ($_SESSION['role_id'] < 3): ?>
                                                 <td>
                                                     <strong><?= htmlspecialchars($i->usuario_nombre) ?></strong>
@@ -144,12 +146,12 @@
                                                     title="Editar">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
-                                                    <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['delete'])): ?>
-                                                        <form method="POST" action="<?= URL ?>inscripcion/delete/<?= $i->user_id ?>/<?= $i->evento_id ?>" class="d-inline">
+                                                    <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['cancel'])): ?>
+                                                        <form method="POST" action="<?= URL ?>inscripcion/cancel/<?= $i->id ?>" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                             <button type="submit" class="action-btn delete-btn" 
                                                                     onclick="return confirm('¿Desea cancelar esta inscripción?')"
-                                                                    title="Eliminar">
+                                                                    title="Cancelar">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         </form>

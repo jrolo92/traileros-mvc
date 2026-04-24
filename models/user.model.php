@@ -176,7 +176,8 @@
                 $sql = "SELECT 
                             id, 
                             name AS nombre, 
-                            email, 
+                            email,
+                            password,
                             avatar, 
                             apellidos, 
                             sexo, 
@@ -344,11 +345,8 @@
 
         /*
             método: update_pass($password, $id)
-
             descripción: actualiza la contraseña del usuario
-
             @param: 
-
                 - password: contraseña del usuario
                 - id: id del usuario
 
@@ -452,14 +450,10 @@
 
         /*
             método: validate_unique_email()
-
             descripción: comprueba si un email ya existe en la base de datos, 
-            devuelve verdadero si es un valor único
-            
+            devuelve verdadero si es un valor único         
             @param: email del usuario
-
         */
-
         public function validate_unique_email($email, $id = null) {
             try {
                 if ($id) {
@@ -484,10 +478,7 @@
 
         /*
             método: validate_unique_name()
-
             Valida el name de usuario, devuelve verdadero si el  nombre no existe en la base de datos
-
-
             @param: name del usuario
         */
         public function validate_unique_name($name)

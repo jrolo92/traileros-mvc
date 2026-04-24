@@ -47,7 +47,7 @@ class carreraModel extends Model {
             $conexion = $this->db->connect(); 
             
             // Usamos una consulta simple primero para asegurar resultados
-            $sql = "SELECT e.*, m.distancia 
+            $sql = "SELECT e.*, m.distancia, m.desnivel 
                     FROM eventos e
                     LEFT JOIN modalidades m ON e.id = m.evento_id
                     WHERE fecha >= CURDATE()

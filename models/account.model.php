@@ -7,5 +7,6 @@ if (!class_exists('accountModel')) {
     class accountModel extends userModel {
     
         // Al heredar, ya tiene todos los métodos: read, update, delete, etc.
+
     }
 }

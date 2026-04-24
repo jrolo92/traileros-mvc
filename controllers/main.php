@@ -23,6 +23,14 @@
 
             $this->view->render('main/index');
         }
+
+        public function testEmail() {
+            if (Email::enviar('coleguito92@gmail.com', 'Prueba Traileros', '¡Funciona!')) {
+                echo "Correo enviado con éxito.";
+            } else {
+                echo "Error al enviar.";
+            }
+        }
     }
 
 ?>

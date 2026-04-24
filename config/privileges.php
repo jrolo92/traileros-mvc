@@ -58,6 +58,7 @@
     $GLOBALS['inscripcion']['edit'] = [1, 2];
     $GLOBALS['inscripcion']['update'] = [1, 2];
     $GLOBALS['inscripcion']['delete'] = [1];
+    $GLOBALS['inscripcion']['cancel'] = [1, 2];
     $GLOBALS['inscripcion']['show'] = [1, 2, 3];
     $GLOBALS['inscripcion']['search'] = [1, 2, 3];
     $GLOBALS['inscripcion']['order'] = [1, 2, 3];

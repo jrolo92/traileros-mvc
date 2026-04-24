@@ -23,6 +23,12 @@ public/
 22/04/26: Integra pasarela de pago con Stripe (Modo sandbox).
 23/04/26: Integra paginación en la vista de carreras  y arreglos en los sistemas de búsqueda y orden de los distintos MVC (AJAX para búsqueda sin recargar).
 
+24/04/26: Integra envío de correos automáticos usando PHPMailer en las siguientes situaciones (con un mensaje personalizado para cada una):
+            - Registro de nueva cuenta.
+            - Cambio de contraseña.
+            - Olvidé mi contraseña (nueva funcionalidad).
+            - Inscripción a evento.
+            - Eliminación de una inscripción (solo por admin u organizador).
 
 MEJORAS:
     - En la documentación se podría hacer unas matrices de control de acceso de cada controlador para que se vean los permisos de una manera mas visual. PE:

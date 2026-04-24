@@ -217,6 +217,20 @@
 
             &:active { transform: scale(0.98); }
         }
+
+        .btn-link {
+            text-decoration: none;
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 10px 15px;
+        }
+
+        .btn-link:hover {
+            color: #2d5a27; /* El verde de Traileros */
+            text-decoration: underline;
+        }
     }
 
     /* Botones de acción minimalistas */

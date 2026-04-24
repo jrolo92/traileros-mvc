@@ -2,36 +2,6 @@
 
 class InscripcionModel extends Model {
 
-    /**
-     * Obtener inscripciones
-     * Si es admin (role_id específico) ve todas, si no, solo las suyas.
-     */
-    public function get($user_id, $role_id) {
-        $sql = "SELECT i.*,
-                       e.nombre as evento_nombre, 
-                       e.fecha as evento_fecha, 
-                       u.name as usuario_nombre, 
-                       u.apellidos as usuario_apellidos,
-                       c.nombre as categoria_nombre
-                FROM Inscripciones i
-                INNER JOIN Eventos e ON i.evento_id = e.id
-                INNER JOIN users u ON i.user_id = u.id
-                LEFT JOIN Categorias c ON i.categoria_id = c.id";
-
-        $db = $this->db->connect();
-
-        // Si el role_id no es el de administrador (ej: 1), filtramos por user_id
-        if ($role_id != 1) { 
-            $sql .= " WHERE i.user_id = :user_id";
-            $stmt = $db->prepare($sql);
-            $stmt->execute(['user_id' => $user_id]);
-        } else {
-            $stmt = $db->query($sql);
-        }
-
-        return $stmt->fetchAll();
-    }
-
     /*
         Descripción: filtra las inscripciones en funcion del rol y el id del usuario:
             1. Muestra todas las inscripciones a usuario ADMIN.
@@ -81,39 +51,58 @@ class InscripcionModel extends Model {
         }
     }
 
-    // public function create(class_inscripcion $inscripcion) {
-    //     try {
-    //         $db = $this->db->connect();
-            
-    //         // 1. Generamos el dorsal
-    //         // $inscripcion->dorsal = $this->generarSiguienteDorsal($inscripcion->evento_id);
-            
-    //         // 2. Definimos la SQL
-    //         $sql = "INSERT INTO Inscripciones (user_id, evento_id, categoria_id, dorsal, metodo_pago, estado_pago, precio_final) 
-    //                 VALUES (:user_id, :evento_id, :categoria_id, :dorsal, :metodo_pago, :estado_pago, :precio_final)";
-            
-    //         $stmt = $db->prepare($sql);
-            
-    //         // 3. Preparamos los datos
-    //         $datos = [
-    //             'user_id'      => $inscripcion->user_id,
-    //             'evento_id'    => $inscripcion->evento_id,
-    //             'categoria_id' => $inscripcion->categoria_id,
-    //             'dorsal'       => $inscripcion->dorsal,
-    //             'metodo_pago'  => $inscripcion->metodo_pago,
-    //             'estado_pago'  => $inscripcion->estado_pago,
-    //             'precio_final' => $inscripcion->precio_final
-    //         ];
+    // Metodo get para el envío de correos al hacer una inscripción exitosa
+    public function getByPagoId($id_pago) {
+        $sql = "SELECT i.*,
+                    e.nombre as evento_nombre, 
+                    e.fecha as evento_fecha, 
+                    u.name as usuario_nombre, 
+                    u.email as email
+                FROM Inscripciones i
+                INNER JOIN Eventos e ON i.evento_id = e.id
+                INNER JOIN users u ON i.user_id = u.id
+                WHERE i.id_pago = :id_pago"; 
 
-    //         // 4. Ejecutamos
-    //         $resultado = $stmt->execute($datos);
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['id_pago' => $id_pago]);
 
-    //         return true; 
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    //     } catch (Throwable $e) {
-    //         $this->handleError($e);
-    //     }
-    // }
+    // Método para obtener los detalles de una inscripción para email
+    public function getDetalleParaEmail($id) {
+        // Traemos solo lo necesario para el correo
+        $sql = "SELECT 
+                    i.id,
+                    u.name AS usuario_nombre, 
+                    u.email AS usuario_email, 
+                    e.nombre AS evento_nombre
+                FROM inscripciones i
+                INNER JOIN users u ON i.user_id = u.id
+                INNER JOIN eventos e ON i.evento_id = e.id
+                WHERE i.id = :id";
+                
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        
+        // Usamos fetch() porque solo esperamos UNA fila
+        return $stmt->fetch(); 
+    }
+
+    // Metodo para comprobar el estado del pago antes de intentar inscribirse 
+    // Por si ya existe una inscripción cancelada o pendiente
+    public function getInscripcionSimple($user_id, $evento_id) {
+        $sql = "SELECT id, estado_pago 
+                FROM Inscripciones 
+                WHERE user_id = :u AND evento_id = :e 
+                LIMIT 1";
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
+        return $stmt->fetch(); // Devuelve el array con id y estado, o false si no existe
+    }
 
     /*
         Método: create()
@@ -230,27 +219,34 @@ class InscripcionModel extends Model {
         return $stmt->execute($data);
     }
 
-    public function delete($user_id, $evento_id) {
+    public function cancel($id) {
        try {
             // Al cancelar, ponemos el dorsal a NULL para que quede libre
             // y el estado a 'cancelado' para que no cuente como plaza ocupada.
-            $sql = "UPDATE Inscripciones 
+            $sql = "UPDATE inscripciones 
                     SET estado_pago = 'cancelado', 
                         dorsal = NULL 
-                    WHERE user_id = :u AND evento_id = :e";
+                    WHERE id = :id
+                    LIMIT 1";
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
-            return $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
+            return $stmt->execute(['id' => $id]);
         } catch (PDOException $e) {
             $this->handleError($e);
         }
     }
 
     // Método opcional para eliminar totalmente la inscripción
-    public function hardDelete($user_id, $evento_id) {
-        $sql = "DELETE FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
-        $db = $this->db->connect();
-        return $db->prepare($sql)->execute(['u' => $user_id, 'e' => $evento_id]);
+    public function hardDelete($user_id) {
+        try {
+            $sql = "DELETE FROM Inscripciones WHERE id = :id LIMIT 1";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            return $stmt->execute(['id' => $user_id]);
+        } catch (PDOException $e) {
+            $this->handleError($e);
+            return false;
+        }
     }   
 
     // --- Lógica de Negocio ---

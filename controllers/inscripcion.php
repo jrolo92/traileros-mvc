@@ -1,8 +1,5 @@
 <?php
 
-// Carga las librerias instaldas con composer (Por el momento: Stripe)
-require_once 'vendor/autoload.php';
-
 class Inscripcion extends Controller
 {
 
@@ -174,6 +171,23 @@ class Inscripcion extends Controller
         $evento = $carreraModel->read($evento_id);
         $modalidad_id = (int)$_POST['modalidad_id'];
 
+        // Comprobamos si existe alguna inscripción previa que se haya cancelado por algun motivo
+        $inscripcionPrevia = $inscripcionModel->getInscripcionSimple($user_id, $evento_id);
+
+        if ($inscripcionPrevia) {
+            $estado = $inscripcionPrevia['estado_pago'];
+
+            // Si está cancelada o fallida, hacemos Hard Delete para permitir la nueva
+            if ($estado === 'cancelado' || $estado === 'fallido') {
+                $inscripcionModel->hardDelete($inscripcionPrevia['id']);
+            } else {
+                // Si ya está pagado o pendiente (esperando a Stripe), no dejamos continuar
+                $_SESSION['notify'] = "Ya tienes una inscripción activa o pendiente para esta carrera.";
+                header('Location: ' . URL . 'carrera/show/' . $evento_id);
+                exit();
+            }
+        }
+
         $libres = $evento['cupo_maximo'] - $carreraModel->getPlazasOcupadas($evento_id);
         if ($libres <= 0) {
             $_SESSION['notify'] = "Lo sentimos, ya no quedan plazas.";
@@ -270,8 +284,28 @@ class Inscripcion extends Controller
             // El modelo se encarga de verificar que no esté ya completada y asignar dorsal
             if ($this->model->confirmarPago($id_pago)) {
                 $_SESSION['notify'] = "¡Inscripción confirmada! Ya puedes ver tu dorsal en el listado.";
+
+                // Envía un correo de confirmación
+                // Primero obtenemos los datos del usuario, carrera e inscripcion:
+                $inscripcion = $this->model->getByPagoId($id_pago);
+                if ($inscripcion){
+                    $asunto = "¡Inscripción confirmada! - " . $inscripcion['evento_nombre'];
+                    $texto = "
+                                <p>Hola <strong>{$inscripcion['usuario_nombre']}</strong>,</p>
+                                <p>¡Ya es oficial! Tienes una cita con la montaña.</p>
+                                <div style='background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;'>
+                                    <p><strong>Carrera:</strong> {$inscripcion['evento_nombre']}</p>
+                                    <p><strong>Dorsal asignado:</strong> <span style='font-size: 24px; color: #e67e22;'>{$inscripcion['dorsal']}</span></p>
+                                    <p><strong>Fecha:</strong> " . date('d/m/Y', strtotime($inscripcion['evento_fecha'])) . "</p>
+                                </div>
+                                <p>Prepárate bien, ¡nos vemos en la salida!</p>
+                    ";
+
+                    Email::enviar($inscripcion['email'], $asunto, $texto);
+                }
+                
             } else {
-                $_SESSION['notify'] = "Hubo un problema al confirmar tu pago. Contacta con soporte.";
+                $_SESSION['notify'] = "Hubo un problema al confirmar tu pago.";
             }
         }
 
@@ -365,10 +399,10 @@ class Inscripcion extends Controller
         $this->view->render('inscripcion/show/index');
     }
 
-    public function delete($params)
+    public function cancel($params)
     {
         $this->requireLogin();
-        $this->requirePrivilege($GLOBALS['inscripcion']['delete']);
+        $this->requirePrivilege($GLOBALS['inscripcion']['cancel']);
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
             ! hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -376,13 +410,27 @@ class Inscripcion extends Controller
             exit();
         }
 
-        $user_id   = (int) $params[0];
-        $evento_id = (int) $params[1];
+        $inscripcion_id   = (int) $params[0];
 
-        if ($this->model->delete($user_id, $evento_id)) {
-            $_SESSION['notify'] = "La inscripción ha sido cancelada.";
+        // Obtenemos detalles de la inscripcion
+        $inscripcion = $this->model->getDetalleParaEmail($inscripcion_id);
+
+        if ($this->model->cancel($inscripcion_id)) {
+            // Envía un correo de confirmación
+            // Si tenemos los datos preparamos el correo    
+            if ($inscripcion){
+                $asunto = "Cancelación de inscripción - " . $inscripcion['evento_nombre'];
+                $cuerpo = "<h1>Hola {$inscripcion['usuario_nombre']}</h1>
+                   <p>Te confirmamos que tu inscripción para la carrera <strong>{$inscripcion['evento_nombre']}</strong> ha sido cancelada con éxito.</p>
+                   <p>Esperamos verte en la próxima montaña.</p>";
+                   
+                // Envia el correo
+                Email::enviar($inscripcion['usuario_email'], $asunto, $cuerpo);
+
+                $_SESSION['notify'] = "La inscripción ha sido cancelada.";
+            }
         } else {
-            $_SESSION['notify'] = "Error al intentar cancelar la inscripción.";
+            $_SESSION['error'] = "Error al intentar cancelar la inscripción.";
 
         }
 

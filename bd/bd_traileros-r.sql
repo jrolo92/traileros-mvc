@@ -149,6 +149,7 @@ CREATE TABLE inscripciones (
   estado_pago enum('pendiente','completado','fallido','cancelado') DEFAULT 'pendiente',
   precio_final decimal(10,2) DEFAULT NULL,
   PRIMARY KEY (id),
+  UNIQUE KEY `usuario_evento_unico` (`user_id`, `evento_id`),
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
   FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE,
   FOREIGN KEY (modalidad_id) REFERENCES modalidades (id) ON DELETE CASCADE,

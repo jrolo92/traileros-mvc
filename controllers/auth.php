@@ -240,9 +240,6 @@
        */
        public function validate_register() {
 
-        // Inicio o continúo sesión
-        // sec_session_start();
-
         // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
             $this->handleError();
@@ -324,8 +321,14 @@
         // Creamos usuario
         $this->model->create_user($name, $email, $hash);
 
-         // Generar mensaje de inicio de sesión
+        // Generar mensaje de inicio de sesión
         $_SESSION['notify'] = "Usuario registrado con éxito. Inicie sesión";
+
+        // Enviar correo de bienvenida:
+        $asunto = "¡Bienvenido a Traileros!";
+        $cuerpo = "<h1>Hola {$name}</h1><p>Gracias por registrarte.</p>";
+        
+        Email::enviar($email, $asunto, $cuerpo);
 
         // Redirigir al login
         header('Location: ' . URL . 'auth/login');
@@ -345,11 +348,62 @@
         exit();
     }
 
+    // Muestra la vista de has olvidado tu contraseña
+    public function forgot() {
+        // Si no existe el token, lo creamos
+        if (!isset($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        $this->view->title = "Recuperar Contraseña - Traileros";
+        $this->view->email = ''; 
+        $this->view->errors = [];
+        $this->view->render('auth/forgot/index');
+    }
+
+    // Función para generar una contraseña aleatoria en caso de has olvidado tu contraseña
+    public function recuperar() {
+
+        // Validar CSRF
+        if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+            header('location:' . URL . 'auth/forgot');
+            exit();
+        }
+
+        $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
+        $user = $this->model->get_user_email($email);
+
+        if ($user) {
+            // Generamos una clave aleatoria de 8 caracteres
+            $nuevaClave = substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyz"), 0, 8);
+            // No hasheamos aquí porque ya lo hacemos en el modelo
+            
+            // La actualizamos en la BD (recuerda usar password_hash)
+            $userModel = $this->loadModel("user");
+            $userModel->update_pass($nuevaClave, $user->id);
+
+            $asunto = "Nueva contraseña temporal";
+            $cuerpo = "<h1>Hola {$user->name}</h1>
+                    <p>Has solicitado restablecer tu acceso a <strong>Traileros</strong>.</p>
+                    <div style='background: #f4f4f4; padding: 15px; border: 1px solid #ddd; text-align: center;'>
+                        <span style='font-size: 18px; font-family: monospace;'>{$nuevaClave}</span>
+                    </div>
+                    <p>Por seguridad, cambia esta contraseña desde tu perfil en cuanto inicies sesión.</p>
+                    <p><a href='".URL."auth/login'>Ir al inicio de sesión</a></p>
+                    ";
+
+            Email::enviar($user->email, $asunto, $cuerpo);
+        }
+
+        // Mensaje seguro
+        $_SESSION['notify'] = "Si el email existe, recibirás instrucciones en breve.";
+        header('location:' . URL . 'auth/login');
+    }
+
     /*
         Método: handleError
         Descripción: Maneja los errores de la base de datos
     */
-
     private function handleError()
     {
         // Incluir y cargar el controlador de errores

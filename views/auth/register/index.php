@@ -23,6 +23,13 @@
             </section>
 
             <section class="login-content">
+
+                <div class="back-navigation">
+                    <a href="<?= URL ?>auth/login" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
                 
                 <header class="login-header">
                     <h2>Registro</h2>
@@ -67,7 +74,6 @@
                     </div>
 
                     <div class="form-buttons">
-                        <a href="<?= URL ?>auth/login" class="btn-secondary">Volver</a>
                         <button type="submit" class="btn-submit">Crear cuenta</button>
                     </div>
 

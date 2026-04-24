@@ -20,18 +20,22 @@
                 <div class="visual-content">
                     <i class="fas fa-mountain"></i>
                     <h1>TRAILEROS</h1>
-                    <p>Tu próxima meta comienza aquí.</p>
+                    <p>¿Has olvidado tu contraseña?</p>
                 </div>
             </section>
 
             <section class="login-content">
-                <?php require_once "template/partials/mensaje.partial.php"?>
-                <?php require_once "template/partials/error.partial.php"?>
+                <div class="back-navigation">
+                    <a href="<?= URL ?>auth/login" class="btn-back">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
                 <header class="login-header">
-                    <h2>LOGIN</h2>
+                    <h2>Introduce tu email</h2>
                 </header>
 
-                <form class="login-form" method="POST" action="<?= URL ?>auth/validate_login">
+                <form class="login-form" method="POST" action="<?= URL ?>auth/recuperar">
                     <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
 
                     <div class="input-group">
@@ -40,28 +44,9 @@
                         <span class="error-msg"><?= $this->errors['email'] ?? '' ?></span>
                     </div>
 
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
-                        <span class="error-msg"><?= $this->errors['password'] ?? '' ?></span>
-                    </div>
-
-                    <div class="form-actions-extra">
-                        <label class="checkbox-container">
-                            <input type="checkbox" name="remember"> 
-                            <span>Recuerdame</span>
-                        </label>
-                        <a href="<?= URL ?>auth/forgot" class="forgot-link">¿Olvidó su contraseña?</a>
-                    </div>
-
                     <div class="form-buttons">
-                        <button type="submit" class="btn-submit">Acceder</button>
-                        
+                        <button type="submit" class="btn btn-primary">Enviar</button>
                     </div>
-
-                    <p class="register-link">¿No tiene cuenta aún?
-                        <a href="<?= URL ?>auth/register" class="forgot-link">Registrarse</a>
-                    </p>
                 </form>
             </section>
 
