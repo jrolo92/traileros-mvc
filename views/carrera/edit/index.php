@@ -108,7 +108,7 @@
                 <div class="form-group">
                     <label>Imagen actual</label>
                     <div class="current-image-preview mb-3">
-                        <img src="<?= URL . 'public/assets/img/carreras/' . $this->carrera['imagen'] ?>" 
+                        <img src="<?= URL . 'public/assets/img/carreras/' . ($this->carrera['imagen'] ?: 'default.png') ?>" 
                             alt="Vista previa" 
                             style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px; border: 1px solid #ddd;">
                     </div>

@@ -169,6 +169,12 @@ class carreraModel extends Model {
             $db = $this->db->connect();
             $db->beginTransaction();
 
+            // Solo incluyo la imagen si viene la por defecto o vacía. Así evito eliminar imágenes que ya están bien
+            $updateImagen = "";
+            if (!empty($carrera->imagen) && $carrera->imagen !== 'default.jpg') {
+                $updateImagen = ", imagen = :imagen";
+            }
+
             // Update EVENTO
             $sql = "UPDATE Eventos 
                     SET 
@@ -176,8 +182,8 @@ class carreraModel extends Model {
                         fecha = :fecha,
                         ubicacion = :ubicacion, 
                         dificultad = :dificultad,
-                        descripcion = :descripcion,       
-                        imagen = :imagen,
+                        descripcion = :descripcion       
+                        $updateImagen
                     WHERE id = :id 
                     LIMIT 1";
 
@@ -188,15 +194,22 @@ class carreraModel extends Model {
             $stmt->bindParam(':ubicacion',      $carrera->ubicacion, PDO::PARAM_STR);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
-            $stmt->bindParam(':imagen',         $carrera->imagen, PDO::PARAM_STR);
+            if (!empty($updateImagen)) {
+                $stmt->bindParam(':imagen', $carrera->imagen);
+            }
             $stmt->bindParam(':id',             $id, PDO::PARAM_INT);
+
+            $stmt->execute();
 
             // Update Modalidad (buscamos la primera del evento)
             $sql2 = "UPDATE modalidades SET distancia=:dist, desnivel=:desn, precio=:pre, cupo_maximo=:cup WHERE evento_id=:id LIMIT 1";
-            $db->prepare($sql2);
-            $db->execute([
-                ':dist' => $carrera->distancia, ':desn' => $carrera->desnivel, 
-                ':pre' => $carrera->precio, ':cup' => $carrera->cupo_maximo, ':id' => $id
+            $stmt2 = $db->prepare($sql2);
+            $stmt2->execute([
+                ':dist' => $carrera->distancia, 
+                ':desn' => $carrera->desnivel, 
+                ':pre' => $carrera->precio, 
+                ':cup' => $carrera->cupo_maximo, 
+                ':id' => $id
             ]);
 
             return $db->commit();

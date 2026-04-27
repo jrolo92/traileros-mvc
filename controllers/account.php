@@ -510,7 +510,7 @@ class Account extends Controller
         // Calcular alto proporcional si no se define altura
         if ($targetHeight === null) {
             $ratio = $width / $height;
-            $targetHeight = $targetWidth / $ratio;
+            $targetHeight = (int)($targetWidth / $ratio);
         }
 
         // Crear lienzo vacío

@@ -106,7 +106,7 @@ class Carrera extends Controller {
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
 
         // 2. Lógica de subida de Imagen
-        $nombreImagen = 'default.jpg'; // Imagen por defecto
+        $nombreImagen = 'default.png'; // Imagen por defecto
         $error = [];
 
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] !== UPLOAD_ERR_NO_FILE) {
@@ -279,7 +279,7 @@ class Carrera extends Controller {
 
         // 2. Gestión de la Imagen
         // Por defecto cojo el nombre que viene del campo oculto
-        $nombreImagen = $_POST['imagen_actual'] ?? 'default.jpg';
+        $nombreImagen = (!empty($_POST['imagen_actual'])) ? $_POST['imagen_actual'] : 'default.png';
         $error = [];
 
         // Si hay un archivo de imagen cojo los metadatos y defino posibles extensiones
@@ -301,9 +301,10 @@ class Carrera extends Controller {
 
                     if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {                       
                         // Si se subió la nueva borra la vieja (siempre que no sea la por defecto)
-                        if ($nombreImagen !== 'default.jpg') {
+                        if (!empty($nombreImagen) && $nombreImagen !== 'default.png') {
                             $oldFile = $uploadFileDir . $nombreImagen;
-                            if (file_exists($oldFile)) {
+                            // Verificar que es un archivo
+                            if (is_file($oldFile)) {
                                 unlink($oldFile);
                             }
                         }
@@ -335,7 +336,7 @@ class Carrera extends Controller {
         }
 
         // 5. Actualizar en BD
-        if ($this->model->update($carrera, $carrera->id)) {
+        if ($this->model->update($carrera, $id)) {
             $_SESSION['notify'] = "¡Carrera actualizada correctamente!";
             header('Location: ' . URL . 'carrera');
             exit();
@@ -400,7 +401,7 @@ class Carrera extends Controller {
         if ($carrera) {
             $imagen = is_array($carrera) ? $carrera['imagen'] : $carrera->imagen;
 
-            if ($imagen !== 'default.jpg') {
+            if ($imagen !== 'default.png') {
                 $ruta = 'public/assets/img/carreras/' . $imagen;
                 if (file_exists($ruta)) {
                     unlink($ruta);
@@ -529,6 +530,9 @@ class Carrera extends Controller {
             case IMAGETYPE_WEBP: $source = imagecreatefromwebp($tmp_name); break;
             default: return false;
         }
+
+        // Verificar si la imagen se ha cargado bien antes de continuar
+        if (!$source) return false;
 
         // Mantener transparencias en PNG/WEBP
         imagealphablending($newImage, false);
