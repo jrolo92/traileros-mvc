@@ -19,6 +19,10 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
         array (
             'PHPMailer\\PHPMailer\\' => 20,
         ),
+        'F' =>
+        array (
+            'Fpdf\\' => 5,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -29,6 +33,10 @@ class ComposerStaticInit40aa654f2e66c20881ae0572fe987a10
         'PHPMailer\\PHPMailer\\' =>
         array (
             0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
+        ),
+        'Fpdf\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/fpdf/fpdf/src/Fpdf',
         ),
     );
 

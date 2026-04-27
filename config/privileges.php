@@ -63,5 +63,6 @@
     $GLOBALS['inscripcion']['search'] = [1, 2, 3];
     $GLOBALS['inscripcion']['order'] = [1, 2, 3];
     $GLOBALS['inscripcion']['export'] = [1, 2];
+    $GLOBALS['inscripcion']['exportPdf'] = [1, 2];
     
 ?>

@@ -30,6 +30,12 @@ public/
             - Inscripción a evento.
             - Eliminación de una inscripción (solo por admin u organizador).
 
+27/04/26: Refactor de dos tablas de la base de datos:
+    Eventos: elimino columnas -> edad max y edad min (pasan a la tabla de modalidades).
+    Eventos: añado columnas -> fecha_fin_inscripciones y estado.
+          Integración de Exportación en pdf (FPDF con composer).
+          Otros pequeños arreglos para el funcionamiento normal de la web.
+
 MEJORAS:
     - En la documentación se podría hacer unas matrices de control de acceso de cada controlador para que se vean los permisos de una manera mas visual. PE:
     Método,Usuario (3),Organizador (2),Admin (1),Condición Extra

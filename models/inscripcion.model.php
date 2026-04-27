@@ -383,16 +383,18 @@ class InscripcionModel extends Model {
     public function getInscritosExport($evento_id){
         try{
             $sql = "SELECT  i.dorsal,
-                            CONCAT_WS(' ', u.apellidos, u.name),
+                            CONCAT_WS(' ', u.apellidos, u.name) AS nombre,
                             u.email,
+                            m.nombre AS modalidad,
                             c.nombre AS categoria,
                             i.metodo_pago,
                             i.fecha_inscripcion
                     FROM inscripciones i 
                     INNER JOIN users u ON i.user_id = u.id
+                    INNER JOIN modalidades m ON i.modalidad_id = m.id
                     LEFT JOIN categorias c ON i.categoria_id = c.id
                     WHERE i.evento_id = :evento_id
-                    ORDER BY i.dorsal ASC";
+                    ORDER BY m.nombre ASC, i.dorsal ASC";
             
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);

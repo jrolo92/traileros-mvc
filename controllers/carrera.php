@@ -416,15 +416,14 @@ class Carrera extends Controller {
             $ocupadas = $this->model->getPlazasOcupadas($mod['id']);
             $modalidades[$key]['plazas_libres'] = $mod['cupo_maximo'] - $ocupadas;
         }
-        // Preparamos variables para la vista
 
+        // Preparamos variables para la vista
         $this->view->modalidades = $modalidades;
         $this->view->carrera = $carrera;
-        if ($carrera && isset($carrera['nombre'])) {
+        if ($carrera && isset($carrera['nombre'])) 
             $this->view->title = $carrera['nombre'] . " - Traileros";
-        } else {
+        else 
             $this->view->title = "Carrera no encontrada";
-        }
 
         $this->view->render('carrera/show/index');
     }
@@ -444,6 +443,7 @@ class Carrera extends Controller {
             exit();
         }
 
+        // Obtenemos el id de la carrera a eliminar
         $id = (int) $params[0];
 
         // 2. Obtener datos para borrar la imagen

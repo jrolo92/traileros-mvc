@@ -566,6 +566,59 @@ class Inscripcion extends Controller
 
     }
 
+    /*
+        Descripción: exporta en PDF la lista de inscritos a una carrera.
+    */
+    public function exportPdf($params) {
+        $this->requireLogin();
+        $evento_id = (int) $params[0];
+
+
+        $carrera = $this->model->getNombreEvento($evento_id);
+        $inscritos = $this->model->getInscritosExport($evento_id);
+
+        // Instancia de FPDF (Composer autoload)
+        $pdf = new \Fpdf\Fpdf();
+        $pdf->AddPage();
+        
+        if (!$carrera) {
+            header('Location: ' . URL . 'carrera');
+            return;
+        }
+
+        // Título
+        $pdf->SetFont('Arial', 'B', 16);
+        $pdf->Cell(0, 10, utf8_decode('LISTADO GENERAL DE INSCRITOS'), 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 12);
+        $pdf->Cell(0, 10, utf8_decode($carrera), 0, 1, 'C');
+        $pdf->Ln(10);
+
+        // Encabezados de la tabla (Ancho total: 190)
+        $pdf->SetFillColor(46, 204, 113); 
+        $pdf->SetTextColor(255);
+        $pdf->SetFont('Arial', 'B', 9);
+        
+        $pdf->Cell(15, 7, 'Dorsal', 1, 0, 'C', true);
+        $pdf->Cell(65, 7, 'Nombre y Apellidos', 1, 0, 'C', true);
+        $pdf->Cell(40, 7, 'Modalidad', 1, 0, 'C', true); 
+        $pdf->Cell(40, 7, 'Categoria', 1, 0, 'C', true);
+        $pdf->Cell(30, 7, 'Fecha', 1, 1, 'C', true);
+
+        // Datos
+        $pdf->SetTextColor(0);
+        $pdf->SetFont('Arial', '', 8);
+        
+        foreach ($inscritos as $row) {
+            $pdf->Cell(15, 6, $row['dorsal'] ?? '-', 1, 0, 'C');
+            $pdf->Cell(65, 6, utf8_decode($row['nombre']), 1);
+            $pdf->Cell(40, 6, utf8_decode($row['modalidad']), 1); 
+            $pdf->Cell(40, 6, utf8_decode($row['categoria'] ?? 'General'), 1);
+            $pdf->Cell(30, 6, date('d/m/Y', strtotime($row['fecha_inscripcion'])), 1, 1, 'C');
+        }
+
+        $pdf->Output('I', 'Inscritos_' . $carrera . '.pdf');
+    }
+
     /* --- Métodos privados de seguridad --- */
     private function requirePrivilege($allowedRoles)
     {

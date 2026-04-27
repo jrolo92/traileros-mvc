@@ -18,6 +18,11 @@
                 </div>
 
                 <div class="carrera-info-panel">
+                    <!-- Notificaciones -->
+                    <?php require_once "template/partials/mensaje.partial.php" ?>
+                    <?php require_once "template/partials/error.partial.php" ?>
+
+                    <!-- Volver atrás -->
                     <div class="back-navigation">
                         <a href="<?= URL ?>carrera" class="btn-back">
                             <i class="fas fa-arrow-left"></i>
@@ -65,7 +70,7 @@
 
                             <div class="disponibilidad-container" style="grid-column: 1 / -1;">
                                 <?php 
-                                    $libres = $mod['cupo_maximo']; // Asegúrate de pasar esto desde el controlador
+                                    $libres = $mod['plazas_libres'];
                                     $cupo = $mod['cupo_maximo'];
                                     $porcentaje_ocupado = (($cupo - $libres) / $cupo) * 100;
                                     
@@ -133,10 +138,14 @@
                                     </a>
 
                                     <?php if ($_SESSION['role_id'] < 3): ?>
-                                        <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar CSV para cronometraje">
+                                        <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar CSV">
                                             <i class="fas fa-file-csv"></i> Exportar CSV
                                         </a>
+                                        <a href="<?= URL ?>inscripcion/exportPdf/<?= $this->carrera['id'] ?>" class="btn-secondary" title="Exportar PDF">
+                                            <i class="fas fa-file-csv"></i> Exportar PDF
+                                        </a>
                                     <?php endif; ?>
+
 
                                     <form method="POST" action="<?php echo URL ?>carrera/delete/<?php echo $this->carrera['id'] ?>" style="display:inline;">
                                         <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token'] ?>">

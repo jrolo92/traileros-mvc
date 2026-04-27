@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'Stripe\\' => array($vendorDir . '/stripe/stripe-php/lib'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
+    'Fpdf\\' => array($vendorDir . '/fpdf/fpdf/src/Fpdf'),
 );
