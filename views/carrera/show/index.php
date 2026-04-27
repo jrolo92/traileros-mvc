@@ -36,13 +36,8 @@
                     </header>
                     <div class="description"><h3>Modalidades</h3></div>
                     <?php foreach ($this->modalidades as $mod): ?>
+                        <h3 style="text-align:center;"><?php echo $mod['nombre'] ?></h3>
                         <div class="stats-grid">
-                            <div class="stat-item">
-                                <i class="fas fa-tag"></i>
-                                <div class="stat-text">
-                                    <span class="value"><?php echo $mod['nombre'] ?></span>
-                                </div>
-                            </div>
                             
                             <div class="stat-item">
                                 <i class="fas fa-route"></i>
@@ -59,23 +54,41 @@
                                     <span class="value">+<?php echo $mod['desnivel'] ?> m</span>
                                 </div>
                             </div>
+
+                            <div class="stat-item">
+                                <i class="fas fa-user-clock"></i>
+                                <div class="stat-text">
+                                    <span class="label">Edad</span>
+                                    <span class="value"><?= $mod['edad_minima'] ?> - <?= $mod['edad_maxima'] ?> <small>años</small></span>
+                                </div>
+                            </div>
+
+                            <div class="disponibilidad-container" style="grid-column: 1 / -1;">
+                                <?php 
+                                    $libres = $mod['cupo_maximo']; // Asegúrate de pasar esto desde el controlador
+                                    $cupo = $mod['cupo_maximo'];
+                                    $porcentaje_ocupado = (($cupo - $libres) / $cupo) * 100;
+                                    
+                                    $clase_disponibilidad = '';
+                                    if ($libres <= 0) $clase_disponibilidad = 'full';
+                                    elseif ($libres <= 10) $clase_disponibilidad = 'danger';
+                                    elseif ($libres <= 25) $clase_disponibilidad = 'warning';
+                                ?>
+                                
+                                <div class="disponibilidad-header">
+                                    <small><i class="fas fa-users"></i> Plazas: <strong><?= $libres ?></strong> de <?= $cupo ?></small>
+
+                                </div>
+                                <div class="progress-bar-container" style="height: 8px;">
+                                    <div class="progress-bar-fill <?php echo $clase_disponibilidad ?>" style="width: <?php echo $porcentaje_ocupado ?>%"></div>
+                                </div>
+                            </div>
                         </div>
                     <?php endforeach; ?>
 
                     <div class="description">
                         <h3>Sobre la carrera</h3>
                         <p><?php echo nl2br($this->carrera['descripcion']) ?></p>
-                    </div>
-
-                    <div class="carrera-specs-minimal">
-                        <div class="spec-item">
-                            <div class="spec-content">
-                            <span class="spec-label">Requisito de Edad: </span>
-                            <span class="spec-value">
-                                <?= $this->carrera['edad_minima'] ?> – <?= $this->carrera['edad_maxima'] ?> <small>años</small>
-                            </span>
-                        </div>
-                        </div>
                     </div>
 
                     <?php if (isset($this->usuario) && $this->edad_usuario < $this->carrera['edad_minima']): ?>
@@ -89,39 +102,12 @@
                         <p>Organizado por: <strong><?php echo $this->carrera['organizador'] ?></strong></p>
                     </div>
 
-                    <div class="disponibilidad-container">
-                        <div class="disponibilidad-header">
-                            <span><i class="fas fa-users"></i> Plazas disponibles</span>
-                            <span class="plazas-cuenta">
-                                <strong><?php echo $this->plazas_libres ?></strong> de <?php echo $this->carrera['cupo_maximo'] ?>
-                            </span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <?php
-                                // Calculamos el porcentaje de plazas ocupadas
-                                $porcentaje_ocupado = (($this->carrera['cupo_maximo'] - $this->plazas_libres) / $this->carrera['cupo_maximo']) * 100;
-                                // Lógica para decidir la clase
-                                $clase_disponibilidad = '';
-                                if ($this->plazas_libres <= 0) {
-                                    $clase_disponibilidad = 'full';
-                                } elseif ($this->plazas_libres <= 10) {
-                                    $clase_disponibilidad = 'danger';
-                                } elseif ($this->plazas_libres <= 25) {
-                                    $clase_disponibilidad = 'warning';
-                                }
-
-                            ?>
-                            <div class="progress-bar-fill <?php echo $clase_disponibilidad ?>" style="width: <?php echo $porcentaje_ocupado ?>%"></div>
-                        </div>
-
-                        <?php if ($this->plazas_libres <= 20 && $this->plazas_libres > 0): ?>
-                            <p class="alert-ultimas-plazas">¡Últimas <?php echo $this->plazas_libres ?> plazas disponibles!</p>
-                        <?php endif; ?>
-                    </div>
-
                     <section class="carrera-actions">
                         <?php if (isset($_SESSION['role_id'])): ?>
-                            <?php if ($this->plazas_libres > 0): ?>
+                            <?php 
+                                $total_libres = array_sum(array_column($this->modalidades, 'plazas_libres')); 
+                            ?>
+                            <?php if ($total_libres > 0): ?>
                                 <a href="<?php echo URL ?>inscripcion/new/<?php echo $this->carrera['id'] ?>" class="btn-primary">
                                     <i class="fas fa-edit"></i> Inscribirme ahora
                                 </a>

@@ -10,6 +10,7 @@ class carreraModel extends Model {
     /*
         Método: get()
         Descripción: Obtiene todos los eventos con el nombre del organizador
+        Uso: en búsqueda de vista principal de carreras.
     */
     public function get() {
         try {
@@ -39,6 +40,7 @@ class carreraModel extends Model {
         Método: getProximas()
         Descripción: Devuelve las 4 próximas carreras ordenadas por fecha mas cercana 
         a partir de la fecha actual.
+        Uso: en render del controlador Main (Vista inicio)
     */
     public function getProximas() {
         $items = [];
@@ -73,6 +75,7 @@ class carreraModel extends Model {
     /*
         Método: create(classCarrera $carrera)
         Descripción: Inserta un nuevo evento
+        Uso: en método create del controlador carrera
     */
     public function create($carrera, $modalidades) {
         try {
@@ -81,41 +84,43 @@ class carreraModel extends Model {
 
             // 1. Insertar en tabla EVENTOS
             $sqlEvento = "INSERT INTO Eventos 
-                    (nombre, fecha, ubicacion, dificultad, descripcion, imagen, organizador_id, edad_minima, edad_maxima)
+                    (nombre, fecha, fecha_cierre_inscripcion, ubicacion, dificultad, descripcion, imagen, organizador_id, estado)
                     VALUES
-                    (:nombre, :fecha, :ubicacion, :dificultad, :descripcion, :imagen, :organizador_id, :edad_minima, :edad_maxima)";
+                    (:nombre, :fecha, :fecha_cierre, :ubicacion, :dificultad, :descripcion, :imagen, :organizador_id, :estado)";
 
             
             $stmt = $db->prepare($sqlEvento);
 
             $stmt->bindParam(':nombre',         $carrera['nombre'], PDO::PARAM_STR);
             $stmt->bindParam(':fecha',          $carrera['fecha']);
+            $stmt->bindValue(':fecha_cierre',   $carrera['fecha_cierre_inscripcion'] ?? $carrera['fecha']);
             $stmt->bindParam(':ubicacion',      $carrera['ubicacion'], PDO::PARAM_STR);
             $stmt->bindParam(':dificultad',     $carrera['dificultad'], PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera['descripcion'], PDO::PARAM_STR);
             $stmt->bindParam(':imagen',         $carrera['imagen'], PDO::PARAM_STR);
             $stmt->bindParam(':organizador_id', $carrera['organizador_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':edad_minima',    $carrera['edad_minima'], PDO::PARAM_INT);
-            $stmt->bindParam(':edad_maxima',    $carrera['edad_maxima'], PDO::PARAM_INT);
+            $stmt->bindValue(':estado',         $carrera['estado'] ?? 'borrador');
 
             $stmt->execute();
             $idEvento = $db->lastInsertId();
 
             // 2. Insertar en tabla MODALIDADES
-            $sqlMod = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo)
-                       VALUES (:evento_id, :nombre_mod, :distancia, :desnivel, :precio, :cupo_maximo)";
+            $sqlMod = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima)
+                       VALUES (:evento_id, :nombre_mod, :distancia, :desnivel, :precio, :cupo_maximo, :edad_min, :edad_max)";
             
             $stmt = $db->prepare($sqlMod);
 
             foreach ($modalidades as $mod) {
-                $stmt->bindParam(':evento_id',      $idEvento, PDO::PARAM_INT);
-                $stmt->bindParam(':nombre_mod',     $mod['nombre'], PDO::PARAM_STR);
-                $stmt->bindParam(':distancia',      $mod['distancia'], PDO::PARAM_INT);
-                $stmt->bindParam(':desnivel',       $mod['desnivel'], PDO::PARAM_INT);
-                $stmt->bindParam(':precio',         $mod['precio'], PDO::PARAM_INT);
-                $stmt->bindParam(':cupo_maximo',    $mod['cupo_maximo'], PDO::PARAM_INT);
-
-                $stmt->execute();
+                $stmt->execute([
+                    ':evento_id'   => $idEvento,
+                    ':nombre_mod'  => $mod['nombre'],
+                    ':distancia'   => $mod['distancia'],
+                    ':desnivel'    => $mod['desnivel'],
+                    ':precio'      => $mod['precio'],
+                    ':cupo_maximo' => $mod['cupo_maximo'],
+                    ':edad_min'    => $mod['edad_minima'] ?? 18,
+                    ':edad_max'    => $mod['edad_maxima'] ?? 99
+                ]);
             }
             
 
@@ -133,12 +138,13 @@ class carreraModel extends Model {
     /*
         Método: read(int $id)
         Descripción: Obtiene un evento por su ID con su modalidad principal
+        Uso: en métodos edit, show y delete del controlador carrera
     */
     public function read(int $id) {
         try {
             $sql = "SELECT 
                     e.*,
-                    m.distancia, m.desnivel, m.precio, m.cupo_maximo, m.id as modalidad_id,
+                    m.distancia, m.desnivel, m.precio, m.cupo_maximo, m.id as modalidad_id, m.edad_minima, m.edad_maxima,
                     u.name AS organizador 
                 FROM Eventos e
                 INNER JOIN Users AS u ON e.organizador_id = u.id
@@ -162,8 +168,9 @@ class carreraModel extends Model {
     /*
         Método: update(classCarrera $carrera, $id)
         Descripción: Actualiza los datos de un evento
+        Uso: en método update del controlador carrera
     */
-    public function update(class_carrera $carrera, $id) {
+    public function update(class_carrera $carrera, $id, $modalidades) {
         try {
 
             $db = $this->db->connect();
@@ -180,10 +187,12 @@ class carreraModel extends Model {
                     SET 
                         nombre = :nombre,
                         fecha = :fecha,
+                        fecha_cierre_inscripcion = :fecha_cierre,
                         ubicacion = :ubicacion, 
                         dificultad = :dificultad,
-                        descripcion = :descripcion       
-                        $updateImagen
+                        descripcion = :descripcion                            
+                        $updateImagen,
+                        estado = :estado
                     WHERE id = :id 
                     LIMIT 1";
 
@@ -191,32 +200,51 @@ class carreraModel extends Model {
 
             $stmt->bindParam(':nombre',         $carrera->nombre, PDO::PARAM_STR);
             $stmt->bindParam(':fecha',          $carrera->fecha);
+            $stmt->bindParam(':fecha_cierre',   $carrera->fecha_cierre_inscripcion);
             $stmt->bindParam(':ubicacion',      $carrera->ubicacion, PDO::PARAM_STR);
             $stmt->bindParam(':dificultad',     $carrera->dificultad, PDO::PARAM_STR);
             $stmt->bindParam(':descripcion',    $carrera->descripcion, PDO::PARAM_STR);
             if (!empty($updateImagen)) {
                 $stmt->bindParam(':imagen', $carrera->imagen);
             }
+            $stmt->bindParam(':estado',         $carrera->estado, PDO::PARAM_STR);
             $stmt->bindParam(':id',             $id, PDO::PARAM_INT);
 
             $stmt->execute();
 
-            // Update Modalidad (buscamos la primera del evento)
-            $sql2 = "UPDATE modalidades SET distancia=:dist, desnivel=:desn, precio=:pre, cupo_maximo=:cup WHERE evento_id=:id LIMIT 1";
-            $stmt2 = $db->prepare($sql2);
-            $stmt2->execute([
-                ':dist' => $carrera->distancia, 
-                ':desn' => $carrera->desnivel, 
-                ':pre' => $carrera->precio, 
-                ':cup' => $carrera->cupo_maximo, 
-                ':id' => $id
-            ]);
+            // Update MODALIDADES
+            // 1. Borrar modalidades antiguas
+            $sqlDelete = "DELETE FROM modalidades WHERE evento_id = :id";
+            $stmtDel = $db->prepare($sqlDelete);
+            $stmtDel->bindValue(':id', $id, PDO::PARAM_INT);
+            $stmtDel->execute();
 
-            return $db->commit();
+            // 2. Insertar modalidades nuevas
+            $sql2 = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima)
+                     VALUES (:ev_id, :nom, :dist, :des, :pre, :cupo, :e_min, :e_max)";
+
+            $stmt2 = $db->prepare($sql2);
+
+            foreach ($modalidades as $mod) {
+                $stmt2->execute([
+                    ':ev_id' => $id,
+                    ':nom'   => $mod['nombre'],
+                    ':dist'  => $mod['distancia'],
+                    ':des'   => $mod['desnivel'],
+                    ':pre'   => $mod['precio'],
+                    ':cupo'  => $mod['cupo_maximo'],
+                    ':e_min' => $mod['edad_minima'],
+                    ':e_max' => $mod['edad_maxima']
+                ]);
+            }
+
+            $db->commit();
+            return true;
 
         } catch (PDOException $e) {
             $db->rollBack();
             $this->handleError($e);
+            return false;
         }
     }
 
@@ -305,7 +333,11 @@ class carreraModel extends Model {
         }
     }
 
-    // Cuenta el total de carreras disponibles en la tabla eventos
+    /*
+        Método: countTotal()
+        Descripción: Cuenta el total de carreras disponibles en la tabla eventos.
+        Uso: en el método render del controlador de carreras, para la paginación.
+    */
     public function countTotal(){
         $sql = "SELECT COUNT(*) FROM eventos";
         $db = $this->db->connect();
@@ -314,18 +346,29 @@ class carreraModel extends Model {
         return $stmt->fetchColumn();
     }
 
-    public function getPlazasOcupadas($evento_id) {
+    /*
+        Descripción: Obtiene el numero de plazas disponibles para cada modalidad
+        Uso: En método show de controlador carrera. Vista detalles de carrera
+    */
+    public function getPlazasOcupadas($modalidad_id) {
 
-        // Contamos todos menos los cancelados y fallidos
-        $sql = "SELECT COUNT(*) FROM Inscripciones 
-                WHERE evento_id = :id AND estado_pago NOT IN ('cancelado', 'fallido')";
-        $db = $this->db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->execute(['id' => $evento_id]);
-        return $stmt->fetchColumn();
+        try {
+            // Contamos todos menos los cancelados y fallidos
+            $sql = "SELECT COUNT(*) FROM Inscripciones 
+                    WHERE modalidad_id = :id AND estado_pago NOT IN ('cancelado', 'fallido')";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id' => $modalidad_id]);
+            return $stmt->fetchColumn();
+        } catch (PDOException $e) {
+            return 0;
+        }
     }
 
-    // Método para obtener todas las modalidades de un evento
+    /*
+        Método para obtener todas las modalidades de un evento
+        Uso: En método show de controlador carrera. Vista detalles de carrera
+    */
     public function getModalidadesByEvento($evento_id) {
         try {
             $sql = "SELECT * FROM modalidades WHERE evento_id = :id ORDER BY distancia ASC";

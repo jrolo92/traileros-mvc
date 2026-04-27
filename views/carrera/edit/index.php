@@ -4,6 +4,7 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?> </title>
+    <script src="<?= URL ?>public/js/modalidades.js" defer></script>
 </head>
 
 <body>
@@ -47,28 +48,36 @@
 
                 <div class="form-row">
                     <div class="form-group col">
-                        <label for="distancia">Distancia (km)</label>
-                        <input type="number" step="0.01" name="distancia" 
-                               value="<?= htmlspecialchars($this->carrera['distancia'] ?? '') ?>">
+                        <label for="fecha">Fecha del Evento</label>
+                        <input type="date" name="fecha" value="<?= htmlspecialchars($this->carrera['fecha'] ?? '') ?>">
                     </div>
                     <div class="form-group col">
-                        <label for="desnivel">Desnivel (m+)</label>
-                        <input type="number" name="desnivel" 
-                               value="<?= htmlspecialchars($this->carrera['desnivel'] ?? '') ?>">
+                        <label for="fecha_cierre_inscripcion">Cierre de Inscripciones</label>
+                        <input type="date" name="fecha_cierre_inscripcion" 
+                            value="<?= (!empty($this->carrera['fecha_cierre_inscripcion'])) ? substr($this->carrera['fecha_cierre_inscripcion'], 0, 10) : '' ?>">
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="form-group col">
-                        <label for="fecha">Fecha del Evento</label>
-                        <input type="date" name="fecha" value="<?= htmlspecialchars($this->carrera['fecha'] ?? '') ?>">
-                    </div>
                     <div class="form-group col">
                         <label for="dificultad">Dificultad</label>
                         <select name="dificultad">
                             <?php foreach (['Baja', 'Media', 'Alta', 'Muy Alta'] as $nivel): ?>
                                 <option value="<?= $nivel ?>" <?= (($this->carrera['dificultad'] ?? '') == $nivel) ? 'selected' : '' ?>>
                                     <?= $nivel ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group col">
+                        <label for="estado">Estado</label>
+                        <select name="estado">
+                            <?php 
+                                $estados = ['borrador' => 'Borrador', 'abierto' => 'Abierto', 'cerrado' => 'Cerrado', 'finalizado' => 'Finalizado', 'cancelado' => 'Cancelado'];
+                                foreach ($estados as $val => $label): 
+                            ?>
+                                <option value="<?= $val ?>" <?= (($this->carrera['estado'] ?? '') == $val) ? 'selected' : '' ?>>
+                                    <?= $label ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -80,29 +89,65 @@
                     <textarea name="descripcion" rows="4"><?= htmlspecialchars($this->carrera['descripcion'] ?? '') ?></textarea>
                 </div>
 
-                <div class="form-group">
-                    <label for="cupo_maximo">Cupo Máximo de Corredores</label>
-                    <input type="number" 
-                        name="cupo_maximo" 
-                        id="cupo_maximo" 
-                        
-                        value="<?= $this->carrera['cupo_maximo'] ?>" 
-                        min="1" 
-                        required>
-                    <small class="text-muted">Número total de dorsales disponibles.</small>
-                </div>
+                <div class="modalidades-section">
+                    <div class="modalidad-header">
+                        <h3><i class="fas fa-list-ol"></i> Modalidades del Evento</h3>
+                        <button type="button" id="add-modalidad" class="add-modalidad">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
 
-                <div class="form-group">
-                    <label for="precio">Precio de Inscripción (€)</label>
-                    <input type="number" 
-                        name="precio" 
-                        id="precio" 
-                        
-                        value="<?= $this->carrera['precio'] ?>" 
-                        step="0.01" 
-                        min="0" 
-                        required>
-                    <small class="text-muted">Precio base para la inscripción.</small>
+                    <div id="modalidades-container">
+                        <?php foreach ($this->modalidades as $index => $mod): ?>
+                        <div class="modalidad-block card">
+                            <div class="modalidad-header">
+                                <span class="mod-number">Modalidad #<?= $index + 1 ?></span>
+                                <button type="button" class="remove-mod btn-account-delete" 
+                                        style="<?= (count($this->modalidades) <= 1) ? 'display:none;' : 'display:block;' ?>"
+                                        onclick="this.closest('.modalidad-block').remove(); updateNumbers();">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label>Nombre Modalidad</label>
+                                    <input type="text" name="mod_nombre[]" value="<?= htmlspecialchars($mod['nombre']) ?>" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Precio (€)</label>
+                                    <input type="number" step="0.01" name="mod_precio[]" value="<?= $mod['precio'] ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label>Distancia (Km)</label>
+                                    <input type="number" step="0.01" name="mod_distancia[]" value="<?= $mod['distancia'] ?>" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Desnivel (m+)</label>
+                                    <input type="number" name="mod_desnivel[]" value="<?= $mod['desnivel'] ?>" required>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label>Cupo</label>
+                                    <input type="number" name="mod_cupo[]" value="<?= $mod['cupo_maximo'] ?>" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Edad Mín</label>
+                                    <input type="number" name="mod_edad_minima[]" value="<?= $mod['edad_minima'] ?>" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label>Edad Máx</label>
+                                    <input type="number" name="mod_edad_maxima[]" value="<?= $mod['edad_maxima'] ?>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
 
                 <div class="form-group">

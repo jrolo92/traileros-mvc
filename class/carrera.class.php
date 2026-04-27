@@ -9,6 +9,7 @@ class class_carrera {
     public $id;
     public $nombre;
     public $fecha;
+    public $fecha_cierre_inscripcion;
     public $ubicacion;
     public $distancia;
     public $desnivel;
@@ -20,11 +21,13 @@ class class_carrera {
     public $edad_maxima;
     public $imagen;
     public $organizador_id;
+    public $estado;
 
     public function __construct(
         $id = null,
         $nombre = null,
         $fecha = null,
+        $fecha_cierre_inscripcion = null,
         $ubicación = null,
         $distancia = null,
         $desnivel = null,
@@ -35,11 +38,13 @@ class class_carrera {
         $edad_minima = null,
         $edad_maxima = null,
         $imagen = null,
-        $organizador_id = null
+        $organizador_id = null,
+        $estado = null
     ) {
         $this->id = $id;
         $this->nombre = $nombre;
         $this->fecha = $fecha;
+        $this->fecha_cierre_inscripcion = $fecha_cierre_inscripcion;
         $this->ubicacion = $ubicación;
         $this->distancia = $distancia;
         $this->desnivel = $desnivel;
@@ -51,5 +56,6 @@ class class_carrera {
         $this->edad_maxima = $edad_maxima;
         $this->imagen = $imagen;
         $this->organizador_id = $organizador_id;
+        $this->estado = $estado;
     }
 }

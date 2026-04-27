@@ -87,13 +87,13 @@ CREATE TABLE eventos (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   nombre varchar(200) NOT NULL,
   fecha date NOT NULL,
+  fecha_cierre_inscripcion datetime DEFAULT NULL,
   ubicacion varchar(255) DEFAULT NULL,
   dificultad varchar(20) DEFAULT NULL,
   descripcion text DEFAULT NULL,
-  edad_minima tinyint(3) unsigned DEFAULT 18,
-  edad_maxima tinyint(3) unsigned DEFAULT 99,
   imagen varchar(255) DEFAULT NULL,
   organizador_id int(10) unsigned NOT NULL,
+  estado enum('borrador', 'abierto', 'cerrado', 'finalizado', 'cancelado') DEFAULT 'borrador',
   PRIMARY KEY (id),
   FOREIGN KEY (organizador_id) REFERENCES users (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -118,6 +118,8 @@ CREATE TABLE modalidades (
   desnivel int(11) DEFAULT NULL,
   precio decimal(10,2) NOT NULL DEFAULT 0.00,
   cupo_maximo int(10) unsigned DEFAULT 100,
+  edad_minima tinyint(3) unsigned DEFAULT 18,
+  edad_maxima tinyint(3) unsigned DEFAULT 99,
   PRIMARY KEY (id),
   FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

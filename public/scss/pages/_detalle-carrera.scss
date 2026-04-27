@@ -124,11 +124,15 @@
     margin-bottom: 30px;
     line-height: 1.6;
     color: var(--text-sec);
+    
     h3 {
       margin-bottom: 10px;
       font-size: 1.25rem;
     }
+    
   }
+
+  
 
   .admin-controls {
     margin-top: 40px;
@@ -277,8 +281,8 @@
 
 // Disponibilidad plazas
 .disponibilidad-container {
-  margin: 1.5rem 0;
-  padding: 1rem 0;
+  margin: 10px 0 0 0;
+  padding: 10px 0 0 0;
   border-bottom: 1px solid #eee;
 }
 

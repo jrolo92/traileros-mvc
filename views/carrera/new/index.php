@@ -28,7 +28,7 @@
                     <label for="nombre">Nombre de la Carrera</label>
                     <input type="text" name="nombre"
                         class="<?php echo (isset($this->errors['nombre'])) ? 'input-error' : '' ?>"
-                        value="<?php echo htmlspecialchars($this->carrera->nombre) ?>" placeholder="Ej: Ultra Trail Mont Blanc">
+                        value="<?php echo htmlspecialchars($this->carrera['nombre']) ?>" placeholder="Ej: Ultra Trail Mont Blanc">
                     <?php if (isset($this->errors['nombre'])): ?>
                         <small class="error-text"><?php echo $this->errors['nombre'] ?></small>
                     <?php endif; ?>
@@ -37,56 +37,70 @@
                 <div class="form-group">
                     <label for="ubicacion">Ciudad / Ubicación</label>
                     <input type="text" name="ubicacion"
-                        value="<?php echo htmlspecialchars($this->carrera->ubicacion) ?>" placeholder="Ej: Chamonix, Francia">
+                        value="<?php echo htmlspecialchars($this->carrera['ubicacion']) ?>" placeholder="Ej: Chamonix, Francia">
                 </div>
 
                 <div class="form-row">
                     <div class="form-group col">
                         <label for="fecha">Fecha del Evento</label>
-                        <input type="date" name="fecha" value="<?php echo htmlspecialchars($this->carrera->fecha) ?>">
+                        <input type="date" name="fecha" value="<?php echo htmlspecialchars($this->carrera['fecha']) ?>" required>
                     </div>
+                    <div class="form-group col">
+                        <label for="fecha_cierre_inscripcion">Cierre de Inscripciones</label>
+                        <input type="date" name="fecha_cierre_inscripcion" 
+                            value="<?php echo htmlspecialchars($this->carrera->fecha_cierre_inscripcion ?? '') ?>">
+                        <small class="text-muted">Por defecto, el mismo día del evento.</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
                     <div class="form-group col">
                         <label for="dificultad">Dificultad</label>
                         <select name="dificultad">
                             <option selected disabled>Seleccionar...</option>
                             <?php foreach (['Baja', 'Media', 'Alta', 'Muy Alta'] as $nivel): ?>
-                                <option value="<?php echo $nivel ?>" <?php echo ($this->carrera->dificultad == $nivel) ? 'selected' : '' ?>>
+                                <option value="<?php echo $nivel ?>" <?php echo ($this->carrera['dificultad'] == $nivel) ? 'selected' : '' ?>>
                                     <?php echo $nivel ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
+                    <div class="form-group col">
+                        <label for="estado">Estado Inicial</label>
+                        <select name="estado">
+                            <option selected disabled>Seleccionar...</option>
+                            <option value="borrador" <?php echo ($this->carrera['estado'] == 'borrador') ? 'selected' : '' ?>>Borrador (Oculto)</option>
+                            <option value="abierto" <?php echo ($this->carrera['estado'] == 'abierto') ? 'selected' : '' ?>>Abierto (Publicado)</option>
+                        </select>
+                        <small class="text-muted">"Borrador": podrás publicarlo en cualquier momento mas adelante</small>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="descripcion">Descripción</label>
-                    <textarea name="descripcion" rows="4" placeholder="Describe la ruta, el terreno..."><?php echo htmlspecialchars($this->carrera->descripcion) ?></textarea>
+                    <textarea name="descripcion" rows="4" placeholder="Describe la ruta, el terreno..."><?php echo htmlspecialchars($this->carrera['descripcion']) ?></textarea>
                 </div>
 
-                <div class="form-group">
+                <!-- <div class="form-group">
                     <label for="cupo_maximo">Cupo Máximo de Corredores</label>
                     <input type="number"
                         name="cupo_maximo"
                         id="cupo_maximo"
                         placeholder="Número total de dorsales disponibles."
-                        value="<?php echo $this->carrera->cupo_maximo ?>"
+                        value="<?php echo $this->carrera['cupo_maximo'] ?>"
                         min="1"
                         required>
-                </div>
+                </div> -->
 
-                <div class="form-row">
-                    <div class="form-group col">
-                        <label for="edad_minima">Edad mínima</label>
-                        <input type="number" step="1" name="edad_minima" min="0" max="99"
-                            value="<?php echo htmlspecialchars($this->carrera->edad_minima) ?? 18 ?>" required>
-                        <small class="text-muted">Edad mínima el día del evento.</small>
+                <div class="form-group">
+                    <label for="imagen">Imagen del Evento</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
+                        <small class="form-text text-muted">Formatos admitidos: JPG, PNG. Máx 5MB.</small>
                     </div>
-                    <div class="form-group col">
-                        <label for="edad_maxima">Edad máxima</label>
-                        <input type="number" step="1" name="edad_maxima" min="0" max="99"
-                            value="<?php echo htmlspecialchars($this->carrera->edad_maxima) ?? 99 ?>" required>
-                        <small class="text-muted">Edad máxima el día del evento</small>
-                    </div>
+                    <?php if (isset($this->errors['imagen'])): ?>
+                        <small class="error-text"><?php echo $this->errors['imagen'] ?></small>
+                    <?php endif; ?>
                 </div>
 
                 <div class="modalidades-section">
@@ -127,22 +141,29 @@
                                     <input type="number" name="mod_desnivel[]" required>
                                 </div>
                             </div>
+
+                            <div class="form-row">
+                                <div class="form-group col">
+                                    <label for="cupo_maximo">Cupo Max.</label>
+                                    <input type="number" step="1" name="cupo_maximo" 
+                                        value="<?php echo htmlspecialchars($this->carrera['cupo_maximo'])?>" required>
+                                </div>
+                                <div class="form-group col">
+                                    <label for="edad_minima">Edad mín.</label>
+                                    <input type="number" step="1" name="edad_minima" min="0" max="99"
+                                        value="<?php echo htmlspecialchars($this->carrera['edad_minima']) ?? 18 ?>" required>
+                                    <small class="text-muted">Edad mínima el día del evento.</small>
+                                </div>
+                                <div class="form-group col">
+                                    <label for="edad_maxima">Edad máx.</label>
+                                    <input type="number" step="1" name="edad_maxima" min="0" max="99"
+                                        value="<?php echo htmlspecialchars($this->carrera['edad_maxima']) ?? 99 ?>" required>
+                                    <small class="text-muted">Edad máxima el día del evento</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="imagen">Imagen del Evento</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" name="imagen" id="imagen" accept="image/*" class="custom-file-input">
-                        <small class="form-text text-muted">Formatos admitidos: JPG, PNG. Máx 5MB.</small>
-                    </div>
-                    <?php if (isset($this->errors['imagen'])): ?>
-                        <small class="error-text"><?php echo $this->errors['imagen'] ?></small>
-                    <?php endif; ?>
-                </div>
-
-
 
                 <div class="form-group readonly-group">
                     <label>Organizador</label>

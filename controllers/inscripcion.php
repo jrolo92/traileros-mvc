@@ -110,25 +110,36 @@ class Inscripcion extends Controller
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        // Comprobación de plazas antes de mostrar el formulario
-        $plazas_libres = $evento['cupo_maximo'] - $eventoModel->getPlazasOcupadas($evento_id);
-        if ($plazas_libres <= 0) {
-            $_SESSION['notify'] = "Lo sentimos, no quedan plazas libres.";
+        // Lógica de modalidades y plazas: Obtneemos todas las modalidades
+        $modalidades = $eventoModel->getModalidadesByEvento($evento_id);
+        $modalidades_disponibles = [];
+
+        foreach ($modalidades as $mod) {
+            // Calculamos plazas para cada modalidad
+            $ocupadas = $eventoModel->getPlazasOcupadas($mod['id']);
+            $libres = $mod['cupo_maximo'] - $ocupadas;
+
+            if ($libres > 0) {
+                // Inyectamos el dato de plazas libres para mostrarlo en el select
+                $mod['plazas_libres'] = $libres;
+                $modalidades_disponibles[] = $mod;
+            }
+        }
+
+        //  Si después de filtrar no queda ninguna modalidad con plazas
+        if (empty($modalidades_disponibles)) {
+            $_SESSION['notify'] = "Lo sentimos, ya no quedan plazas libres en ninguna modalidad.";
             header('location:' . URL . 'carrera/show/' . $evento_id);
             exit;
         }
 
-
-
         $this->view->title  = "Inscripción: " . $evento['nombre'];
-
         $this->view->evento = $evento;
 
-        $this->view->modalidades = $eventoModel->getModalidadesByEvento($evento_id);
+        $this->view->modalidades = $modalidades_disponibles;
 
         $this->view->inscripcion = new class_inscripcion();
         $this->view->inscripcion->evento_id = $evento_id;
-
         $this->view->usuario = $usuario;
 
         $this->view->render('inscripcion/new/index');
