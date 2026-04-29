@@ -303,15 +303,15 @@ class Carrera extends Controller {
 
             // Compruebo que la extensión esta permitida
             if (in_array($fileExtension, $allowedExtensions)) {
-                // Si se pasa de tamaño la redimensiona
+                // Si se pasa de tamaño (5mb) la redimensionamos
                 if ($fileSize <= 5 * 1024 * 1024) {                  
                     $nuevoNombreImagen = md5(time() . $fileName) . '.' . $fileExtension;
                     $uploadFileDir = 'public/assets/img/carreras/';
                     $dest_path = $uploadFileDir . $nuevoNombreImagen;
 
                     if ($this->resizeImage($fileTmpPath, $dest_path, 1200, null)) {                       
-                        // Si se subió la nueva borra la vieja (siempre que no sea la por defecto)
-                        if (!empty($nombreImagen) && $nombreImagen !== 'default.png') {
+                        // Borra imagen vieja si no es la default y tiene un nombre distinto al nuevo
+                        if ($nombreImagen !== 'default.png' && $nombreImagen !== $nuevoNombreImagen) {
                             $oldFile = $uploadFileDir . $nombreImagen;
                             // Verificar que es un archivo
                             if (is_file($oldFile)) {
@@ -417,9 +417,23 @@ class Carrera extends Controller {
             $modalidades[$key]['plazas_libres'] = $mod['cupo_maximo'] - $ocupadas;
         }
 
+        // Lógica para saber si hay plazas libres
+        $total_libres = array_sum(array_column($modalidades, 'plazas_libres'));
+
+        // Lógica para saber si la carrera ya ha terminado
+        $hoy = date('Y-m-d');
+        $fecha_carrera = date('Y-m-d', strtotime($carrera['fecha']));
+
+        // Lógica para saber si existen resultados publicados (T/F)
+        $tiene_resultados = $this->model->hasResults($id);
+        $this->view->tiene_resultados = $tiene_resultados;
+
         // Preparamos variables para la vista
         $this->view->modalidades = $modalidades;
         $this->view->carrera = $carrera;
+        $this->view->finalizada = ($hoy >= $fecha_carrera);
+        $this->view->hay_plazas = ($total_libres>0);
+
         if ($carrera && isset($carrera['nombre'])) 
             $this->view->title = $carrera['nombre'] . " - Traileros";
         else 
@@ -459,9 +473,18 @@ class Carrera extends Controller {
                 }
             }
 
-            // 3. Borrar de la base de datos
+            // 3. Borra de la base de datos
             if ($this->model->delete($id)) {
+
+                // Borra tambien el archivo físico del directorio de images
+                if ($imagen && $imagen !== 'default.png'){
+                    $ruta = 'public/assets/img/carreras' . $imagen;
+                    if (file_exists($ruta) && is_file($ruta)) unlink($ruta);
+                }
+
                 $_SESSION['notify'] = "Carrera eliminada permanentemente.";
+            } else {
+                $_SESSION['error'] = "Error al eliminar la carrera.";
             }
         }
 
@@ -541,6 +564,57 @@ class Carrera extends Controller {
         
         header('Location: ' . URL . 'carrera');
         exit();
+    }
+
+    // Panel de control de eventos
+    public function gestion(){
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['carrera']['gestion']);
+
+        $this->view->title = "Panel de Gestión de Carreras";
+
+        $this->model->actualizarEstados();
+
+        $this->view->eventos = $this->model->getEventosPorRol($_SESSION['user_id'], $_SESSION['role_id']);
+
+        $this->view->render('carrera/gestion/index');
+    }
+
+    public function order_gestion($param){
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['carrera']['gestion']);
+
+        // Extrae el criterio de ordenación. Por defecto será 1
+        $criterio = (isset($param[0])) ? (int)$param[0] : 1;
+
+        $this->model->actualizarEstados();
+
+        $this->view->title = "Panel de Gestión de Carreras";
+
+        $this->view->eventos = $this->model->getEventosPorRolOrdenados($_SESSION['user_id'], $_SESSION['role_id'], (int)$criterio);
+
+        $this->view->render('carrera/gestion/index');
+    }
+
+    public function search_gestion($param = null) {
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['carrera']['gestion']);
+        
+        // Obtenemos el término de búsqueda del POST (formulario)
+        $term = $param[0] ?? $_POST['term'] ?? $_GET['term'] ?? '';
+
+        // si no hay termino de búsqueda vamos a la vista normal
+        if (trim($term) === '') {
+            header('location: ' . URL . 'carrera/gestion');
+            exit;
+        }
+        
+        $this->view->title = "Buscando: " . htmlspecialchars($term);
+
+        // Llamamos a un método específico del modelo para buscar en la gestión
+        $this->view->eventos = $this->model->searchEventosPorRol($_SESSION['user_id'], $_SESSION['role_id'], $term);
+
+        $this->view->render('carrera/gestion/index');
     }
 
     /* --- Métodos privados de seguridad --- */

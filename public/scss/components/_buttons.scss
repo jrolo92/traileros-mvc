@@ -39,6 +39,12 @@
             transform: translateY(0);
         }
     }
+
+    @media (max-width: 1930px ){
+        .btn-primary{
+            margin-bottom: 15px;
+        }
+    }
     
     .btn-secondary {
         display: inline-block;
@@ -254,6 +260,7 @@
             &.view-btn { background: #f0f4f8; color: #2980b9; }
             &.edit-btn { background: #fff9db; color: #f39c12; }
             &.delete-btn { background: #fff5f5; color: #e74c3c; }
+            &.result-btn { background: #f0f4f8; color: #f1c40f; }
 
             &:hover:not(.disabled) {
                 transform: translateY(-2px);

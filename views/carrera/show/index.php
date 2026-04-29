@@ -108,25 +108,34 @@
                     </div>
 
                     <section class="carrera-actions">
-                        <?php if (isset($_SESSION['role_id'])): ?>
-                            <?php 
-                                $total_libres = array_sum(array_column($this->modalidades, 'plazas_libres')); 
-                            ?>
-                            <?php if ($total_libres > 0): ?>
-                                <a href="<?php echo URL ?>inscripcion/new/<?php echo $this->carrera['id'] ?>" class="btn-primary">
-                                    <i class="fas fa-edit"></i> Inscribirme ahora
+                        <?php if ($this->finalizada): ?>
+                            <?php if ($this->tiene_resultados): ?>
+                                <a href="<?= URL ?>resultado/render/<?= $this->carrera['id'] ?>" class="btn-primary" style="background-color: #27ae60;">
+                                    <i class="fas fa-trophy"></i> Ver Clasificaciones Oficiales
                                 </a>
                             <?php else: ?>
                                 <div class="sold-out-badge-minimal">
-                                    <i class="fas fa-exclamation-circle"></i>
-                                    <span>Inscripciones agotadas para este evento</span>
+                                    <i class="fas fa-clock"></i>
+                                    <span>Evento finalizado. Resultados próximamente.</span>
                                 </div>
                             <?php endif; ?>
-                        <?php else: ?>
+
+                        <?php elseif (!isset($_SESSION['user_id'])): ?>
                             <div class="login-alert">
                                 <p>Para participar en este evento es necesario estar registrado.</p><br>
-                                <a href="<?php echo URL ?>auth/login" class="btn-primary">Iniciar Sesión / Registro</a>
+                                <a href="<?= URL ?>auth/login" class="btn-primary">Iniciar Sesión / Registro</a>
                             </div>
+
+                        <?php elseif (!$this->hay_plazas): ?>
+                            <div class="sold-out-badge-minimal">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Inscripciones agotadas para este evento</span>
+                            </div>
+
+                        <?php else: ?>
+                            <a href="<?= URL ?>inscripcion/new/<?= $this->carrera['id'] ?>" class="btn-primary">
+                                <i class="fas fa-edit"></i> Inscribirme ahora
+                            </a>
                         <?php endif; ?>
 
                         <?php if (isset($_SESSION['role_id']) && in_array($_SESSION['role_id'], $GLOBALS['carrera']['edit'])): ?>
@@ -160,7 +169,6 @@
                         <?php endif; ?>
                     </section>
                 </div>
-
             </div>
         </div>
     </main>

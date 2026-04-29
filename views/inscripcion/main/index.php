@@ -141,11 +141,18 @@
                                                        title="Ver detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="<?= URL ?>inscripcion/edit/<?= $i->user_id ?>/<?= $i->evento_id ?>" 
-                                                    class="action-btn edit-btn <?= !in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['edit']) ? 'disabled' : '' ?>"
-                                                    title="Editar">
-                                                        <i class="fas fa-pencil-alt"></i>
+                                                    <a href="<?= URL ?>resultado/render/<?= $i->evento_id ?>" 
+                                                        class="action-btn result-btn" 
+                                                        title="Ver Clasificación">
+                                                        <i class="fas fa-trophy"></i>
                                                     </a>
+                                                    <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['edit'])): ?>
+                                                        <a href="<?= URL ?>inscripcion/edit/<?= $i->user_id ?>/<?= $i->evento_id ?>" 
+                                                        class="action-btn edit-btn <?= !in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['edit']) ? 'disabled' : '' ?>"
+                                                        title="Editar">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                        </a>
+                                                    <?php endif; ?>
                                                     <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['cancel'])): ?>
                                                         <form method="POST" action="<?= URL ?>inscripcion/cancel/<?= $i->id ?>" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">

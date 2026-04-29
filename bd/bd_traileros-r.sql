@@ -170,6 +170,9 @@ CREATE TABLE resultados (
   tiempo time DEFAULT NULL,
   posicion_general int(11) DEFAULT NULL,
   posicion_categoria int(11) DEFAULT NULL,
+  estado enum('FINISHER', 'DNS', 'DNF', 'DNP', 'DESC') DEFAULT 'DNS',
+  ritmo_medio VARCHAR(10) DEFAULT NULL,
+  comentarios TEXT DEFAULT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (inscripcion_id) REFERENCES inscripciones (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

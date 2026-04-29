@@ -29,6 +29,19 @@
             border-bottom: 1px solid #f0f0f0;
             vertical-align: middle;
             color: var(--text-main);
+
+            a.table-link {
+                color: var(--text-main); 
+                text-decoration: none;
+                display: inline-block;
+                width: 100%; 
+            }
+
+            a.table-link:hover,
+            a.table-link:visited{
+                color: var(--text-main);
+                text-decoration: none;
+            }
         }
     }
 }
@@ -44,6 +57,14 @@
     &.admin { background: #fee2e2; color: #dc2626; }
     &.organizador { background: #fef3c7; color: #d97706; }
     &.corredor { background: #ecfdf5; color: #059669; }
+
+    // Reusado para badge de estado de las carreras
+    &.borrador { background: #f3f4f6; color: #4b5563; }
+    &.abierto { background: #ecfdf5; color: #059669; }
+    &.cerrado { background: #fffbeb; color: #d97706; }
+    &.finalizado { background: #fef2f2; color: #2563eb; }
+    &.cancelado { background: #ecfdf5; color: #dc2626; }
+    
 }
 
 .admin-table-footer {

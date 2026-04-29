@@ -10,15 +10,17 @@
         </a>
     </li>
     <li>
-        <a href="<?= URL ?>account/resultados">
-            <i class="fas fa-trophy"></i> Resultados
-        </a>
-    </li>
-    <li>
         <a href="<?= URL ?>account/password">
             <i class="fas fa-key"></i> Seguridad
         </a>
     </li>
+    <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] < 3): ?>
+        <li>
+            <a href="<?= URL ?>carrera/gestion">
+                <i class="fas fa-users-cog"></i> Panel de Eventos
+            </a>
+        </li>
+    <?php endif; ?>
     <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
         <li>
             <a href="<?= URL ?>user">

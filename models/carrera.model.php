@@ -144,7 +144,14 @@ class carreraModel extends Model {
         try {
             $sql = "SELECT 
                     e.*,
-                    m.distancia, m.desnivel, m.precio, m.cupo_maximo, m.id as modalidad_id, m.edad_minima, m.edad_maxima,
+                    m.distancia, 
+                    m.desnivel, 
+                    m.precio, 
+                    m.cupo_maximo, 
+                    m.id as modalidad_id,
+                    m.nombre as modalidad,
+                    m.edad_minima, 
+                    m.edad_maxima,
                     u.name AS organizador 
                 FROM Eventos e
                 INNER JOIN Users AS u ON e.organizador_id = u.id
@@ -425,6 +432,161 @@ class carreraModel extends Model {
         $stmt->execute();
         
         return $stmt;
+    }
+
+    /**
+     * Comprueba si hay resultados en la bd para una carrera
+     * Devuelve T/F
+     */
+    public function hasResults($id) {
+        try{
+            $sql = "SELECT COUNT(*) FROM resultados r
+                    INNER JOIN inscripciones i ON r.inscripcion_id = i.id
+                    INNER JOIN modalidades m ON i.modalidad_id = m.id
+                    WHERE m.evento_id = :id";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id' => $id]);
+
+            $count = $stmt->fetchColumn();
+
+            return $count > 0;
+
+        }catch (PDOException $e){
+            $this->handleError($e);
+        }
+    }
+
+    /*
+        Método que obtiene los eventos en funcion del rol:
+            - Si eres admin los obtiene todos
+            - Si eres organizador solo los que hayas organizado
+        Uso: en gestion de carreras.
+    */
+    public function getEventosPorRol($user_id, $role_id) {
+        try {
+            $db = $this->db->connect();
+            
+            // Si es Admin (role_id = 1), no filtramos por organizador
+            if ($role_id == 1) {
+                $sql = "SELECT e.*, COUNT(i.id) AS total_inscritos 
+                        FROM eventos e
+                        LEFT JOIN inscripciones i ON e.id = i.evento_id
+                        GROUP BY e.id 
+                        ORDER BY e.id ASC";
+                $stmt = $db->prepare($sql);
+                $stmt->execute();
+            } else {
+                // Si es Organizador, filtramos por el campo organizador_id
+                $sql = "SELECT e.*, COUNT(i.id) AS total_inscritos 
+                        FROM eventos e 
+                        LEFT JOIN inscripciones i ON e.id = i.evento_id
+                        WHERE organizador_id = :user_id ORDER BY fecha DESC
+                        GROUP BY e.id 
+                        ORDER BY e.id ASC";
+                $stmt = $db->prepare($sql);
+                $stmt->execute(['user_id' => $user_id]);
+            }
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
+    }
+
+     public function getEventosPorRolOrdenados($user_id, $role_id, int $criterio){
+       $ordenes = [
+            1 => "e.id",
+            2 => "e.nombre",
+            7 => "e.fecha",
+            8 => "e.estado"      
+        ];
+
+        $orderBy = $ordenes[$criterio] ?? "id";
+
+        try{
+
+            $db = $this->db->connect();
+
+            $sql = "SELECT e.*, COUNT(i.id) AS total_inscritos 
+                    FROM eventos e 
+                    LEFT JOIN inscripciones i ON e.id = i.evento_id";  
+            // Filtra por organizador si es el caso
+            if ($role_id == 2) $sql .= " WHERE e.organizador_id = :user_id";
+            // Añade el orden de búsqueda
+            $sql .= " GROUP BY e.id
+                      ORDER BY $orderBy ASC";
+
+            $stmt = $db->prepare($sql);
+            if ($role_id == 2) $stmt->bindParam(':user_id', $user_id);
+            
+            $stmt->execute();
+            $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $resultados;
+
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
+    }
+
+    public function searchEventosPorRol($user_id, $role_id, $term) {
+        try {
+            $db = $this->db->connect();
+            $likeTerm = "%$term%"; 
+
+                $sql = "SELECT e.*, COUNT(i.id) AS total_inscritos 
+                        FROM eventos e 
+                        LEFT JOIN inscripciones i ON e.id = i.evento_id 
+                        WHERE (e.nombre LIKE :term OR e.ubicacion LIKE :term2)";
+
+                if ($role_id == 2) {
+                    $sql .= " AND e.organizador_id = :user_id";
+                }
+
+                $sql .= " GROUP BY e.id ORDER BY e.fecha DESC";
+
+                $stmt = $db->prepare($sql);
+                $params = [':term' => $likeTerm, ':term2' => $likeTerm];
+                if ($role_id == 2) $params[':user_id'] = $user_id;
+
+                $stmt->execute($params);
+                return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        } catch (PDOException $e) {
+            $this->handleError($e);
+            return [];
+        }
+    }
+
+    /**
+     *      Modifica el estado de una carrera automaticamente cuando:
+     *      - Se acaba el plazo de inscripcion pasa a 'cerrado'
+     *      - Se realiza el evento pasa a 'finalizado'
+     *      Uso en panel de control de eventos (vista gestión del controlador carrera)
+     */
+
+    public function actualizarEstados(){
+
+        $ahora = date('Y-m-d H:i:s');   
+
+        try{
+            $db = $this->db->connect();
+            
+            $sql = "UPDATE eventos SET estado = 
+                    CASE 
+                        WHEN fecha < :ahora THEN 'Finalizado'
+                        WHEN fecha_cierre_inscripcion < :ahora2 THEN 'Cerrado'
+                        ELSE estado
+                    END
+                    WHERE estado != 'Finalizado'";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['ahora' => $ahora, 'ahora2' => $ahora]);
+
+        }catch (PDOException $e){
+            $this->handleError($e);
+        }
     }
 
     /*

@@ -301,6 +301,27 @@ class InscripcionModel extends Model {
         return $stmt->fetch();
     }
 
+    public function getInscritosPorEvento($id_evento){
+        try {
+            $db = $this->db->connect();
+
+            $sql = "SELECT  i.id AS inscripcion_id, 
+                            CONCAT_WS(' ', u.apellidos, u.name) AS nombre_completo, 
+                            u.email, 
+                            i.fecha_inscripcion 
+                    FROM inscripciones i
+                    INNER JOIN users u ON i.user_id = u.id
+                    WHERE i.evento_id = :id
+                    ORDER BY nombre_completo ASC";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['id' => $id_evento]);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
+    }
+
     private function generarSiguienteDorsal($evento_id) {
         // Buscamos el dorsal máximo actual para este evento
         $sql = "SELECT MAX(dorsal) FROM Inscripciones WHERE evento_id = :evento_id";

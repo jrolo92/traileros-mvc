@@ -18,9 +18,7 @@ class Account extends Controller
 
     /*
         Método principal
-
         Se  carga siempre que la url contenga sólo el primer parámetro
-
         url: /account
     */
     public function render()
@@ -28,6 +26,7 @@ class Account extends Controller
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['render']);
 
         // Crear un token CSRF para los formularios
         // Por si el usuario abre dos pestañas simultáneas del mismo formulario
@@ -50,19 +49,16 @@ class Account extends Controller
     /*
         Método para actualizar los datos del usuario. 
         Muestra en la vista el formulario con los datos del usuario en modo edición. 
-
         url: /account/edit
-
         @param $id int : id del usuario
 
     */
     public function edit()
     {
-        // inicio o continuo la sesión
-        // sec_session_start();
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['edit']);
 
         // Crear un token CSRF para los formularios
         // Por si el usuario abre dos pestañas simultáneas del mismo formulario
@@ -120,6 +116,7 @@ class Account extends Controller
 
         // Comprobar si hay usuario logueado
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['update']);
 
         // Validación token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -246,8 +243,9 @@ class Account extends Controller
             $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
         }
 
-        // Comprobar si hay un usuario logueado
+        // Comprobar si hay un usuario logueado y tiene privilegios
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['password']);
 
         // Compruebo si hay mensajes
         $this->checkMessages();
@@ -288,6 +286,7 @@ class Account extends Controller
     {
         // Comprobar si hay usuario logueado
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['update_password']);
 
         // Verificar el token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -388,6 +387,7 @@ class Account extends Controller
 
         // Comprobar si hay un usuario logueado
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['account']['delete_confirmed']);
 
         // Validación token CSRF
         if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
@@ -420,6 +420,18 @@ class Account extends Controller
         if (!isset($_SESSION['user_id'])) {
             $_SESSION['notify'] = "Debes iniciar sesión para acceder al sistema";
             header('Location: ' . URL . 'auth/login');
+            exit();
+        }
+    }
+
+    /*
+        Método: requirePrivilege
+        Descripción: Verifica que el usuario tiene permisos para una acción.
+    */
+    private function requirePrivilege($allowedRoles){
+        if (!in_array($_SESSION['role_id'], $allowedRoles)){
+            $_SESSION['notify'] = "No tienes permisos para realizar esta acción";
+            header('Location: ' . URL . 'carrera');
             exit();
         }
     }
@@ -549,20 +561,9 @@ class Account extends Controller
         Método: handleError
         Descripción: Maneja los errores de la base de datos
     */
-
-    private function handleError()
+        private function handleError()
     {
-        // Incluir y cargar el controlador de errores
-        $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
-
-        if (file_exists($errorControllerFile)) {
-            require_once $errorControllerFile;
-            $mensaje = "Error de validación de seguridad del formulario. Intenta acceder de nuevo desde la página principal";
-            $controller = new Errores('403', 'Mensaje de Error: ', $mensaje);
-        } else {
-            // Fallback en caso de que el controlador de errores no exista
-            echo "Error crítico: " . "No se pudo cargar el controlador de errores.";
-            exit();
-        }
+        header('location:' . URL . 'error');
+        exit();
     }
 }

@@ -97,6 +97,11 @@ body {
   transform: translateY(0);
 }
 
+@media (max-width: 1930px) {
+  .btn-primary {
+    margin-bottom: 15px;
+  }
+}
 .btn-secondary {
   display: inline-block;
   padding: 10px 25px;
@@ -315,6 +320,10 @@ body {
 .admin-actions .action-btn.delete-btn {
   background: #fff5f5;
   color: #e74c3c;
+}
+.admin-actions .action-btn.result-btn {
+  background: #f0f4f8;
+  color: #f1c40f;
 }
 .admin-actions .action-btn:hover:not(.disabled) {
   transform: translateY(-2px);
@@ -1422,7 +1431,7 @@ body {
 
 .carrera-detail-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 40% 60%;
   gap: 20px;
   margin-top: 30px;
   align-items: start;
@@ -1432,14 +1441,16 @@ body {
     grid-template-columns: 1fr;
     margin-right: 20px;
   }
+  .carrera-detail-grid .carrera-info-panel {
+    margin: 0 40px;
+  }
 }
 
-.carrera-media {
-  margin-left: 20px;
-}
 .carrera-media .detail-img {
-  width: 100%;
-  max-height: 80vh;
+  margin: auto;
+  display: block;
+  width: 90%;
+  max-height: 85vh;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   object-fit: cover;
@@ -1451,7 +1462,7 @@ body {
 }
 
 .carrera-info-panel {
-  margin: 0 20px;
+  margin-right: 40px;
 }
 .carrera-info-panel .carrera-specs-minimal {
   margin: 1.5rem 0;
@@ -1509,6 +1520,7 @@ body {
 .carrera-info-panel .stats-grid .stat-item {
   display: flex;
   align-items: center;
+  margin: auto;
   gap: 10px;
 }
 .carrera-info-panel .stats-grid .stat-item i {
@@ -1526,6 +1538,7 @@ body {
   font-size: 1rem;
 }
 .carrera-info-panel .stats-grid .stat-item .stat-text {
+  text-align: center;
   color: var(--text-main);
 }
 .carrera-info-panel .description {
@@ -1672,12 +1685,18 @@ body {
 }
 
 .disponibilidad-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: block;
+  text-align: center;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+}
+.disponibilidad-header small {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
 }
 
 .plazas-cuenta strong {
@@ -1685,7 +1704,8 @@ body {
 }
 
 .progress-bar-container {
-  width: 100%;
+  width: 90%;
+  margin: auto;
   height: 8px;
   background-color: var(--text-sec);
   border-radius: 10px;
@@ -2278,6 +2298,17 @@ body {
   vertical-align: middle;
   color: var(--text-main);
 }
+.admin-table tbody tr td a.table-link {
+  color: var(--text-main);
+  text-decoration: none;
+  display: inline-block;
+  width: 100%;
+}
+.admin-table tbody tr td a.table-link:hover,
+.admin-table tbody tr td a.table-link:visited {
+  color: var(--text-main);
+  text-decoration: none;
+}
 
 /* Badges de Rol */
 .role-badge {
@@ -2298,6 +2329,26 @@ body {
 .role-badge.corredor {
   background: #ecfdf5;
   color: #059669;
+}
+.role-badge.borrador {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+.role-badge.abierto {
+  background: #ecfdf5;
+  color: #059669;
+}
+.role-badge.cerrado {
+  background: #fffbeb;
+  color: #d97706;
+}
+.role-badge.finalizado {
+  background: #fef2f2;
+  color: #2563eb;
+}
+.role-badge.cancelado {
+  background: #ecfdf5;
+  color: #dc2626;
 }
 
 .admin-table-footer {

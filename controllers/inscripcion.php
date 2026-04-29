@@ -508,6 +508,21 @@ class Inscripcion extends Controller
         $this->view->render('inscripcion/main/index');
     }
 
+    public function participantes($param){
+        $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['inscripcion']['participantes']);
+
+        $id_carrera = $param[0];
+
+        $this->view->inscritos = $this->model->getInscritosPorEvento($id_carrera);
+
+        $carreraModel = $this->loadModel('carrera');
+        $this->view->carrera = $carreraModel->read($id_carrera);
+    
+        $this->view->title = "Listado de Inscritos - ";
+        $this->view->render('inscripcion/participantes/index');
+    }
+
     /*
         Método para redireccionar a edición del perfil en caso de perfil incompleto
         (Función auxiliar dentro del controlador para no repetir código)
@@ -571,6 +586,7 @@ class Inscripcion extends Controller
     */
     public function exportPdf($params) {
         $this->requireLogin();
+        $this->requirePrivilege($GLOBALS['inscripciones']['export']);
         $evento_id = (int) $params[0];
 
 

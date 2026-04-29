@@ -18,7 +18,8 @@ public/
 
 10/04/2026: Creacion de vistas de inscripciones: main y new
 
-13/04-17/04: Refactorizacion tablas bd
+13/04-17/04: Refactorizacion tablas bd:
+                Añado tabla modalidades
 
 22/04/26: Integra pasarela de pago con Stripe (Modo sandbox).
 23/04/26: Integra paginación en la vista de carreras  y arreglos en los sistemas de búsqueda y orden de los distintos MVC (AJAX para búsqueda sin recargar).
@@ -35,6 +36,9 @@ public/
     Eventos: añado columnas -> fecha_fin_inscripciones y estado.
           Integración de Exportación en pdf (FPDF con composer).
           Otros pequeños arreglos para el funcionamiento normal de la web.
+
+28-29/04/26: Nuevo MVC: Resultados. Los resultados se importarán en formato CSV/Excel (procedente de los servicios de cronometraje) y no serán editables una vez publicados.
+La tabla de resultados se creará de forma dinámica con los campos aportados en el CSV, mapea las columnas de dorsal (y tiempo) y obtiene los datos del corredor con ese dorsal.
 
 MEJORAS:
     - En la documentación se podría hacer unas matrices de control de acceso de cada controlador para que se vean los permisos de una manera mas visual. PE:
