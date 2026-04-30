@@ -9,7 +9,7 @@
         }
         
         // Método común a todos los controladores para cargar otro modelo distinto al suyo (cuando sea necesario)
-        function loadModel($model) {
+        public function loadModel($model) {
 
             $url = 'models/' . $model . '.model.php';
             if (file_exists($url)) {
@@ -41,6 +41,35 @@
                 unset($_SESSION['error']);
             }
         }
+
+        // Metodo para crear token CSRF para los formularios
+        protected function generateTokenCsrf(){
+            if (empty($_SESSION['csrf_token'])) {
+                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            }
+            return $_SESSION['csrf_token'];
+        }
+
+        /*
+            Método checkTokenCsrf()
+            Permite checkear si el token CSRF es válido
+            @param
+                - string $csrf_token: token CSRF
+        */
+        protected function checkTokenCsrf($token){
+
+            // Validación CSRF
+            if (!isset($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+                $this->handleError('Error de validación CSRF: Token no válido');
+            }
+        }
+
+        protected function handleError($mensaje, $codigo = 403) {
+            // Lanzamos la excepción con el código que queramos
+            // El App.php la atrapará automáticamente
+            throw new Exception($mensaje, $codigo);
+        }
+
     }
 
 

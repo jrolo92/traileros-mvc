@@ -32,10 +32,8 @@
             // Capa gestión rol de usuario (Solo los usuario con privilegios pueden acceder a esta función)
             $this->requirePrivilege($GLOBALS['user']['render']);
 
-            // Generar token CSRF:
-            if(empty($_SESSION['csrf_token'])){
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            }
+            // Crear token csrf
+            $this->generateTokenCsrf();
 
             // Compruebo si hay mensajes
             $this->checkMessages();
@@ -60,9 +58,8 @@
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['new']);
 
-            if(empty($_SESSION['csrf_token'])){
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            }
+            // Crear token csrf
+            $this->generateTokenCsrf();
 
             // Compruebo si hay mensajes
             $this->checkMessages();
@@ -95,9 +92,8 @@
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['create']);
 
-            if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-                $this->handleError();
-            }
+            // Validacion token CSRF
+            $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
             // Saneamiento
             $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -177,9 +173,8 @@
 
             $id = (int) $params[0];
 
-            if (empty($_SESSION['csrf_token'])) {
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            }
+            // Crear token csrf
+            $this->generateTokenCsrf();
 
             // Compruebo si hay mensajes
             $this->checkMessages();
@@ -213,9 +208,7 @@
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['update']);
 
-            if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-                $this->handleError();
-            }
+            c
 
             $id = (int) $params[0];
             $user_db = $this->model->read($id);
@@ -330,10 +323,8 @@
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['delete']);
 
-            $csrf_token = $_POST['csrf_token'] ?? '';
-            if(!hash_equals($_SESSION['csrf_token'], $csrf_token)){
-                $this->handleError();
-            }
+            // Validacion token CSRF
+            $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
             $id = (int) $params[0];
 
@@ -530,10 +521,10 @@
             }
         }
 
-        private function handleError() {
-            header('location:' . URL . 'error');
-            exit();
-        }
+        // private function handleError() {
+        //     header('location:' . URL . 'error');
+        //     exit();
+        // }
     }
 
     

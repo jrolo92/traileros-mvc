@@ -72,14 +72,22 @@ class Resultado extends Controller {
                 $this->view->cabecera = $cabecera;
                 $this->view->evento_id = $evento_id;
                 $this->view->title = "Mapeo de Columnas del CSV";
-                $this->view->render('resultado/pre_import');
+                $this->view->render('resultado/pre_import/index');
             }
         }
     }
 
     public function process_import(){
+
+        if (!isset($_SESSION['import_data'])) {
+            $_SESSION['notify'] = "Error: Sesión de importación expirada.";
+            header('Location: ' . URL . 'carrera');
+            exit();
+        }
+
         // Obtiene los datos de la sesión y del formulario de mapeo.
         $datos = $_SESSION['import_data'];
+        $evento_id = $datos['evento_id'];
         $map_dorsal = $_POST['map_dorsal'];
         $map_tiempo =  $_POST['map_tiempo'];
 
@@ -118,10 +126,10 @@ class Resultado extends Controller {
         }
     }
 
-    private function handleError() {
-        header('location:' . URL . 'error');
-        exit();
-    }
+    // private function handleError() {
+    //     header('location:' . URL . 'error');
+    //     exit();
+    // }
 
     // Método de error not found
     private function errorNotFound($id) {

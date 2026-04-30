@@ -37,8 +37,14 @@ public/
           Integración de Exportación en pdf (FPDF con composer).
           Otros pequeños arreglos para el funcionamiento normal de la web.
 
-28-29/04/26: Nuevo MVC: Resultados. Los resultados se importarán en formato CSV/Excel (procedente de los servicios de cronometraje) y no serán editables una vez publicados.
-La tabla de resultados se creará de forma dinámica con los campos aportados en el CSV, mapea las columnas de dorsal (y tiempo) y obtiene los datos del corredor con ese dorsal.
+28-29/04/26: Nuevo MVC: Resultados. Los resultados se importarán en formato CSV/Excel   (procedente de los servicios de cronometraje) y no serán editables una vez publicados.
+    La tabla de resultados se creará de forma dinámica con los campos aportados en el CSV, mapea las columnas de dorsal (y tiempo) y obtiene los datos del corredor con ese dorsal.
+
+    Añade panel de control de carreras
+
+30/04/26: Nuevo controlador: contact. Permite enviar un correo electrónico para contactar con Traileros mediante un formulario de contacto.
+          Mejora DRY: Métodos protegidos para crear, comprobar token csrf y manejo de errores que son reutilizables en todos los controladores hijos.
+          Toast para notificacion de inicio de sesión en vista principal.
 
 MEJORAS:
     - En la documentación se podría hacer unas matrices de control de acceso de cada controlador para que se vean los permisos de una manera mas visual. PE:

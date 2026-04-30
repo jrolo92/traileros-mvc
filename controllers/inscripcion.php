@@ -21,9 +21,8 @@ class Inscripcion extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['render']);
 
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         $user_id = $_SESSION['user_id'];
         $role_id = $_SESSION['role_id'];
@@ -106,9 +105,8 @@ class Inscripcion extends Controller
             exit;
         }
 
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         // Lógica de modalidades y plazas: Obtneemos todas las modalidades
         $modalidades = $eventoModel->getModalidadesByEvento($evento_id);
@@ -154,9 +152,8 @@ class Inscripcion extends Controller
 
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['create']);
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Carga de todos los modelos que vamos a usar en este método
         $userModel = $this->loadModel('user');
@@ -272,8 +269,7 @@ class Inscripcion extends Controller
                 header("Location: " . $checkout_session->url);
                 exit();
             } else {
-                die("El modelo devolvió false. Revisa la consulta SQL.");
-                // $this->handleError();
+                $this->handleError("Fallo al crear la inscripción", 500);
             }
 
         } catch (Exception $e){
@@ -378,7 +374,7 @@ class Inscripcion extends Controller
             header('Location: ' . URL . 'inscripcion');
             exit();
         } else {
-            $this->handleError();
+            $this->handleError("No se ha podido actualizar la inscripcion", 500);
         }
     }
 
@@ -399,7 +395,7 @@ class Inscripcion extends Controller
 
         $inscripcion = $this->model->getDetalleCompleto($user_id, $evento_id);
 
-        if (!$inscripcion) $this->handleError();
+        if (!$inscripcion) $this->handleError("No existe inscripcion para este usuario en este evento", 500);
 
         $this->checkOwnership($inscripcion['user_id'], $inscripcion['organizador_id']);
 
@@ -415,11 +411,8 @@ class Inscripcion extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['cancel']);
 
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
-            ! hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-            exit();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         $inscripcion_id   = (int) $params[0];
 
@@ -678,11 +671,11 @@ class Inscripcion extends Controller
     }
 
     // Metodos para el manejo de errores
-    private function handleError()
-    {
-        header('location:' . URL . 'error');
-        exit();
-    }
+    // private function handleError()
+    // {
+    //     header('location:' . URL . 'error');
+    //     exit();
+    // }
 
     // Método de error not found
     private function errorNotFound($id)

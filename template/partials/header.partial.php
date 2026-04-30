@@ -46,6 +46,9 @@
                         <a class="nav-link" href="<?= URL ?>ayuda">
                             <i class="fas fa-question-circle"></i> Acerca de
                         </a>
+                        <a class="nav-link" href="<?= URL ?>contact ">
+                            <i class="fas fa-paper-plane"></i> Contacto
+                        </a>
                         <hr>
                         <a href="<?= URL ?>auth/logout" class="logout-link">
                             <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -57,4 +60,5 @@
             <?php endif; ?>
         </div>
     </div>
+
 </header>

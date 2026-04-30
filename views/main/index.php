@@ -3,21 +3,33 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?> </title>
+    <script src="<?= URL ?>public/js/close-toast.js" defer></script>    
 </head>
 <body>
 
     <main>
 
         <?php require_once 'template/partials/header.partial.php'; ?>
+       
+        <!-- Comprobar notificaciones y mostrarlas en un toast -->
+        <?php if (isset($_SESSION['notify']) || isset($_SESSION['error'])): ?>
+            <div id="toast-container" class="toast-container">
+                <?php if (isset($_SESSION['notify'])): ?>
+                    <div class="toast success">
+                        <i class="bi bi-check-circle"></i>
+                        <span><?= $_SESSION['notify'] ?></span>
+                    </div>
+                    <?php unset($_SESSION['notify']); ?>
+                <?php endif; ?>
 
-        <!-- Alert primera vez inicio sesión -->
-        <?php if (isset($_SESSION['profile_incomplete'])): ?>
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>¡Hola <?= $_SESSION['user_name'] ?>!</strong> Para poder inscribirte en carreras, necesitamos que completes tu perfil deportivo.
-                <a href="<?= URL ?>user/edit" class="btn btn-sm btn-outline-dark ms-3">Completar ahora</a>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <?php if (isset($_SESSION['error'])): ?>
+                    <div class="toast error">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span><?= $_SESSION['error'] ?></span>
+                    </div>
+                    <?php unset($_SESSION['error']); ?>
+                <?php endif; ?>
             </div>
-            <?php unset($_SESSION['profile_incomplete']); // Para que no salga cada vez que refresque ?>
         <?php endif; ?>
 
         <section class="hero">

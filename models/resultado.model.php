@@ -84,6 +84,16 @@ class ResultadoModel extends Model {
     }
 
     public function saveResultadosCsv ($evento_id, $dorsal, $tiempo) {
+
+        // 1. Limpieza y validación previa
+        $dorsal = trim($dorsal);
+        $tiempo = trim($tiempo);
+
+        // Si no hay tiempo, no podemos marcarlo como FINISHER, así que saltamos la fila
+        if (empty($tiempo) || $tiempo == "" || $tiempo == "00:00:00") {
+            return false;
+        }
+
         try{
             $db = $this->db->connect();
 
@@ -170,8 +180,8 @@ class ResultadoModel extends Model {
                     INNER JOIN inscripciones i ON r.inscripcion_id = i.id
                     INNER JOIN modalidades m ON i.modalidad_id = m.id
                     SET r.posicion_categoria = (
-                        @pos := IF(@cat_actual = i.categoria_id, @pos + 1, 1),
-                        @cat_actual := i.categoria_id
+                        SELECT @pos := IF(@cat_actual = i.categoria_id, @pos + 1, 
+                        GREATEST(0, @cat_actual := i.categoria_id) + 1)
                     )
                     WHERE m.evento_id = :evento_id 
                     AND r.estado = 'FINISHER'

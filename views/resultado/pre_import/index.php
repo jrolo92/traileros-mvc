@@ -14,43 +14,74 @@
     <main class="account-container">
         <div class="account-card">
 
-            <header class="account-header">
-                <div class="user-info-main">
-                    <div class="avatar-circle size-md" style="background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-trophy" style="font-size: 2rem;"></i>
-                    </div>
-                    
-                    <div>
-                        <h2><?php echo $this->title ?></h2>
-                        <p>Indica a qué campo corresponde cada columna de tu archivo</p>
+            <div class="form-page-container">
+    <div class="form-card" style="max-width: 1000px;"> <!-- Un poco más ancha para la tabla -->
+        
+        <header class="form-card-header">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            <h2>Configuración de Importación</h2>
+            <p>Asocia las columnas de tu CSV con los datos del sistema y verifica la vista previa.</p>
+        </header>
+
+        <form action="<?= URL ?>resultado/process_import" method="POST" class="custom-form">
+            
+            <div class="form-row">
+                <!-- Selector Dorsal -->
+                <div class="col">
+                    <div class="form-group">
+                        <label for="map_dorsal">Columna del Dorsal</label>
+                        <select name="map_dorsal" id="map_dorsal" class="form-select" required>
+                            <option value="" disabled selected>Selecciona columna...</option>
+                            <?php if (isset($this->cabecera) && is_array($this->cabecera)): ?>
+                                <?php foreach ($this->cabecera as $i => $nombre): ?>
+                                    <option value="<?= $i ?>"><?= htmlspecialchars($nombre) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
                 </div>
 
-                <div class="back-navigation">
-                        <a href="javascript:window.history.back();" class="btn-back">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>Volver</span>
-                        </a>
+                <!-- Selector Tiempo -->
+                <div class="col">
+                    <div class="form-group">
+                        <label for="map_tiempo">Columna del Tiempo</label>
+                        <select name="map_tiempo" id="map_tiempo" class="form-select" required>
+                            <option value="" disabled selected>Selecciona columna...</option>
+                            <?php if (isset($this->cabecera) && is_array($this->cabecera)): ?>
+                                <?php foreach ($this->cabecera as $i => $nombre): ?>
+                                    <option value="<?= $i ?>"><?= htmlspecialchars($nombre) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
                 </div>
-            </header>
+            </div>
 
-            <div class="csv-preview" style="overflow-x: auto; margin-bottom: 20px;">
-                <table class="table-custom">
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+
+            <div class="form-section-header">
+                <h3>Vista previa de los datos</h3>
+            </div>
+
+            <div class="table-container" style="margin-top: 15px; overflow-x: auto;">
+                <table class="main-table"> <!-- Usamos tu clase global de tablas -->
                     <thead>
                         <tr>
-                            <?php foreach($this->cabecera as $name): ?>
-                                <th><?= htmlspecialchars($name) ?></th>
-                            <?php endforeach; ?>
+                            <?php if (isset($this->cabecera)): ?>
+                                <?php foreach ($this->cabecera as $col): ?>
+                                    <th><?= htmlspecialchars($col) ?></th>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
-                        // Mostramos solo las 3 primeras filas de ejemplo
-                        $filasEjemplo = array_slice($_SESSION['import_data']['filas'], 0, 3);
-                        foreach($filasEjemplo as $fila): 
+                        // Accedemos a las filas guardadas en la sesión para la previa
+                        $filasPrevia = array_slice($_SESSION['import_data']['filas'], 0, 5);
+                        foreach ($filasPrevia as $fila): 
                         ?>
                             <tr>
-                                <?php foreach($fila as $celda): ?>
+                                <?php foreach ($fila as $celda): ?>
                                     <td><?= htmlspecialchars($celda) ?></td>
                                 <?php endforeach; ?>
                             </tr>
@@ -58,33 +89,21 @@
                     </tbody>
                 </table>
             </div>
-            
-            <form action="<?= URL ?>resultado/processImport" method="POST">
 
-                <div class="form-group">
-                    <label>Columna del Dorsal:</label>
-                    <select name="map_dorsal" required>
-                        <?php foreach($this->header as $key => $name): ?>
-                            <option value="<?= $key ?>"><?= htmlspecialchars($name) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+            <div class="form-actions">
+                <div class="info">
+                    <p style="color: var(--text-sec); font-size: 0.9rem;">
+                        <i class="bi bi-info-circle"></i> Se han cargado <strong><?= count($_SESSION['import_data']['filas']) ?></strong> filas.
+                    </p>
                 </div>
-
-                <div class="form-group">
-                    <label>Columna del Tiempo:</label>
-                    <select name="map_tiempo" required>
-                        <?php foreach($this->cabecera as $key => $name): ?>
-                            <option value="<?= $key ?>"><?= htmlspecialchars($name) ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                <div class="main-buttons">
+                    <a href="<?= URL ?>carrera/gestion/<?= $this->evento_id ?>" class="btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn-primary">Finalizar Importación</button>
                 </div>
-
-                <button type="submit" class="btn-primary">Finalizar Importación</button>
-            </form>
-
-            <section class="account-main-content">
-                <?php require_once "template/partials/mensaje.partial.php" ?>
-                <?php require_once "template/partials/error.partial.php" ?>
+            </div>
+        </form>
+    </div>
+</div>
 
 
     <footer class="footer">

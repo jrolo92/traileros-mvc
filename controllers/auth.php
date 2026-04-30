@@ -25,10 +25,8 @@
 
         function login() {
 
-            // Generar token CSRF:
-            if(empty($_SESSION['csrf_token'])){
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            }
+            // Crear token csrf
+            $this->generateTokenCsrf();
 
             // Inicializo los campos del formulario
             $this->view->email = null;
@@ -79,10 +77,8 @@
        */
        public function validate_login() {
 
-        // Verificar el token CSRF
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Recogemos los datos del formulario saneados
         // Prevenir ataques XSS
@@ -179,13 +175,8 @@
 
         function register() {
 
-            // Iniciar o continuar sesión
-            // sec_session_start();
-
-            // Generar token CSRF:
-            if(empty($_SESSION['csrf_token'])){
-                $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-            }
+            // Crear token csrf
+            $this->generateTokenCsrf();
 
             // Inicializo los campos del formulario
             $this->view->name= null;
@@ -240,10 +231,8 @@
        */
        public function validate_register() {
 
-        // Verificar el token CSRF
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Recogemos los datos del formulario saneados
         // Prevenir ataques XSS
@@ -364,11 +353,8 @@
     // Función para generar una contraseña aleatoria en caso de has olvidado tu contraseña
     public function recuperar() {
 
-        // Validar CSRF
-        if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            header('location:' . URL . 'auth/forgot');
-            exit();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
         $user = $this->model->get_user_email($email);
@@ -404,22 +390,22 @@
         Método: handleError
         Descripción: Maneja los errores de la base de datos
     */
-    private function handleError()
-    {
-        // Incluir y cargar el controlador de errores
-        $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
+    // private function handleError()
+    // {
+    //     // Incluir y cargar el controlador de errores
+    //     $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
         
-        if (file_exists($errorControllerFile)) {
-            require_once $errorControllerFile;
-            $mensaje = "Error de validación de seguridad del formulario. Intenta acceder de nuevo desde la página principal";
-            $controller = new Errores('403', 'Mensaje de Error: ', $mensaje);
+    //     if (file_exists($errorControllerFile)) {
+    //         require_once $errorControllerFile;
+    //         $mensaje = "Error de validación de seguridad del formulario. Intenta acceder de nuevo desde la página principal";
+    //         $controller = new Errores('403', 'Mensaje de Error: ', $mensaje);
             
-        } else {
-            // Fallback en caso de que el controlador de errores no exista
-            echo "Error crítico: " . "No se pudo cargar el controlador de errores.";
-            exit();
-        }
-    }
+    //     } else {
+    //         // Fallback en caso de que el controlador de errores no exista
+    //         echo "Error crítico: " . "No se pudo cargar el controlador de errores.";
+    //         exit();
+    //     }
+    // }
 }
 
 ?>

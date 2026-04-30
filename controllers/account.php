@@ -28,11 +28,8 @@ class Account extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['account']['render']);
 
-        // Crear un token CSRF para los formularios
-        // Por si el usuario abre dos pestañas simultáneas del mismo formulario
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         // Compruebo si hay mensaje de éxito
         $this->checkMessages();
@@ -62,9 +59,7 @@ class Account extends Controller
 
         // Crear un token CSRF para los formularios
         // Por si el usuario abre dos pestañas simultáneas del mismo formulario
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        $this->generateTokenCsrf();
 
         // Compruebo si hay mensaje de éxito
         $this->checkMessages();
@@ -118,10 +113,8 @@ class Account extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['account']['update']);
 
-        // Validación token CSRF
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Saneamos los detalles del formulario
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -239,9 +232,8 @@ class Account extends Controller
     public function password()
     {
 
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         // Comprobar si hay un usuario logueado y tiene privilegios
         $this->requireLogin();
@@ -288,10 +280,8 @@ class Account extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['account']['update_password']);
 
-        // Verificar el token CSRF
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Saneamos los detalles del formulario
         $password = $_POST['password'] ??= null;
@@ -364,9 +354,7 @@ class Account extends Controller
 
         // Crear un token CSRF para los formularios
         // Por si el usuario abre dos pestañas simultáneas del mismo formulario
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        $this->generateTokenCsrf();
 
         // Comprobamos si hay algún mensaje para mostrar:
         $this->checkMessages();
@@ -389,10 +377,8 @@ class Account extends Controller
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['account']['delete_confirmed']);
 
-        // Validación token CSRF
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validacion token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Elimino el usuario
         $this->model->delete($_SESSION['user_id']);
@@ -561,9 +547,9 @@ class Account extends Controller
         Método: handleError
         Descripción: Maneja los errores de la base de datos
     */
-        private function handleError()
-    {
-        header('location:' . URL . 'error');
-        exit();
-    }
+    // private function handleError()
+    // {
+    //     header('location:' . URL . 'error');
+    //     exit();
+    // }
 }

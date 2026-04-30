@@ -16,9 +16,8 @@ class Carrera extends Controller {
     */
     function render() {
 
-        if(empty($_SESSION['csrf_token'])){
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         // Compruebo si hay mensajes
         $this->checkMessages();
@@ -54,9 +53,8 @@ class Carrera extends Controller {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['new']);
 
-        if(empty($_SESSION['csrf_token'])){
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
 
         // Objeto vacío para el formulario
         $this->view->carrera = new class_carrera();
@@ -90,9 +88,8 @@ class Carrera extends Controller {
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['carrera']['create']);
 
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validamos token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // 1. Saneamiento de datos de texto
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -206,7 +203,7 @@ class Carrera extends Controller {
             header('Location: ' . URL . 'carrera');
             exit();
         } else {
-            $this->handleError();
+            $this->handleError("Fallo al crear la carrera", 500);
         }
     }
 
@@ -221,9 +218,8 @@ class Carrera extends Controller {
 
         $id = (int) $params[0];
         
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-        }
+        // Crear token csrf
+        $this->generateTokenCsrf();
         
         $carrera = $this->model->read($id);
         $modalidades = $this->model->getModalidadesByEvento($id);
@@ -267,9 +263,8 @@ class Carrera extends Controller {
 
         $id = (int) $params[0];
 
-        if (!hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError();
-        }
+        // Validamos token CSRF
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // 1. Saneamiento de datos
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -386,7 +381,7 @@ class Carrera extends Controller {
             header('Location: ' . URL . 'carrera/show/' . $id);
             exit();
         } else {
-            $this->handleError();
+            $this->handleError("No se ha podido actualizar la carrera o modalidades", 500);
         }
     }
 
@@ -451,11 +446,11 @@ class Carrera extends Controller {
         $this->requirePrivilege($GLOBALS['carrera']['delete']);
 
         // 1. Validar que la petición sea POST y el CSRF sea correcto
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST' || 
-            !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-            $this->handleError(); // O redirigir con un mensaje de error
-            exit();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->handleError("Método de petición no permitido", 405);
         }
+
+        $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
         // Obtenemos el id de la carrera a eliminar
         $id = (int) $params[0];
@@ -680,10 +675,10 @@ class Carrera extends Controller {
         return true;
     }
 
-    private function handleError() {
-        header('location:' . URL . 'error');
-        exit();
-    }
+    // private function handleError() {
+    //     header('location:' . URL . 'error');
+    //     exit();
+    // }
 
     // Método de error not found
     private function errorNotFound($id) {

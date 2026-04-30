@@ -41,22 +41,33 @@ class App {
             }
         } catch (Exception $e) {
             // Manejo centralizado de errores
-            $this->handleError($e);
+            $this->renderErrorPage($e);
         }
     }
 
-    private function handleError(Exception $e)
+    private function renderErrorPage(Exception $e)
     {
         // Incluir y cargar el controlador de errores
         $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
         
         if (file_exists($errorControllerFile)) {
             require_once $errorControllerFile;
-            $controller = new Errores('404', 'Recurso no existente', $e->getMessage());
-            // $controller->renderError($e->getMessage());
+            // Cogemos el código de la excepción (si es 0, ponemos 500)
+            $code = ($e->getCode() !== 0) ? $e->getCode() : 500;
+            
+            $titulos = [
+                403 => 'Acceso Denegado',
+                404 => 'No Encontrado',
+                405 => 'Método no permitido',
+                500 => 'Error Interno'
+            ];
+            $titulo = $titulos[$code] ?? 'Error';
+
+            new Errores($code, $titulo, $e->getMessage());
+            exit;
         } else {
             // Fallback en caso de que el controlador de errores no exista
-            echo "Error crítico: " . $e->getMessage();
+            die("Error crítico: " . $e->getMessage());       
         }
     }
 }

@@ -166,7 +166,7 @@ INSERT INTO inscripciones (user_id, evento_id, modalidad_id, categoria_id, fecha
 DROP TABLE IF EXISTS resultados;
 CREATE TABLE resultados (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
-  inscripcion_id int(10) unsigned NOT NULL,
+  inscripcion_id int(10) unsigned UNIQUE NOT NULL,
   tiempo time DEFAULT NULL,
   posicion_general int(11) DEFAULT NULL,
   posicion_categoria int(11) DEFAULT NULL,
