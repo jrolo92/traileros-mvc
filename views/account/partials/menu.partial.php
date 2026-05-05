@@ -29,6 +29,22 @@
         </li>
     <?php endif; ?>
     
+    <?php if ($_SESSION['role_id'] == 3): ?>
+        <?php if ($this->perfil_completo): ?>
+            <li>
+                <a href="<?= URL ?>account/request_upgrade">
+                    <i class="fas fa-rocket"></i> Solicitar ser Organizador
+                </a>
+            </li>
+        <?php else: ?>
+            <li class="disabled" title="Completa tu perfil para activar esta opción">
+                <span style="color: gray; cursor: not-allowed;">
+                    <i class="fas fa-lock"></i> Ser Organizador (Perfil incompleto)
+                </span>
+            </li>
+        <?php endif; ?>
+    <?php endif; ?>
+    
     <li>
         <a href="<?= URL ?>auth/logout">
             <i class="fas fa-sign-out-alt"></i> Cerrar sesión

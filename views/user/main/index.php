@@ -38,6 +38,39 @@
                 <?php require_once("template/partials/mensaje.partial.php") ?>
                 <?php require_once("template/partials/error.partial.php") ?>
 
+                <?php if ($this->peticiones->rowCount() > 0): ?>
+                    <div class="requests-alert-box" style="background: #fff3cd; border: 1px solid #ffeeba; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                        <h3 style="color: #856404; margin-bottom: 1rem;">
+                            <i class="fas fa-exclamation-circle"></i> Solicitudes de Organizador pendientes
+                        </h3>
+                        <div class="table-responsive">
+                            <table class="admin-table" style="background: white;">
+                                <thead>
+                                    <tr>
+                                        <th>Usuario</th>
+                                        <th>Email</th>
+                                        <th>Fecha Solicitud</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php while ($req = $this->peticiones->fetch()): ?>
+                                        <tr>
+                                            <td><strong><?= htmlspecialchars($req['name'] . ' ' . $req['apellidos']) ?></strong></td>
+                                            <td><?= htmlspecialchars($req['email']) ?></td>
+                                            <td><?= date('d/m/Y H:i', strtotime($req['created_at'])) ?></td>
+                                            <td class="text-center">
+                                                <a href="<?= URL ?>user/approve_role/<?= $req['id'] ?>" class="btn-account-save" style="background: #28a745; padding: 5px 10px; font-size: 0.8rem;">Aprobar</a>
+                                                <a href="<?= URL ?>user/deny_role/<?= $req['id'] ?>" class="btn-secondary" style="background: #dc3545; padding: 5px 10px; font-size: 0.8rem; color: white;">Denegar</a>
+                                            </td>
+                                        </tr>
+                                    <?php endwhile; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <section class="carreras-container">
                     <div class="carreras-toolbar">
                         <form class="carreras-search" action="<?php echo URL ?>inscripcion/search" method="GET">

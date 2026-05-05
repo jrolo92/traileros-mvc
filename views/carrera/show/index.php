@@ -119,13 +119,16 @@
                                     <span>Evento finalizado. Resultados próximamente.</span>
                                 </div>
                             <?php endif; ?>
-
+                        <?php elseif($this->fuera_plazo_ins): ?>
+                            <div class="sold-out-badge-minimal">
+                                <i class="fas fa-calendar-times"></i>
+                                <span>El plazo de inscripciones ha finalizado.</span>
+                            </div>
                         <?php elseif (!isset($_SESSION['user_id'])): ?>
                             <div class="login-alert">
                                 <p>Para participar en este evento es necesario estar registrado.</p><br>
                                 <a href="<?= URL ?>auth/login" class="btn-primary">Iniciar Sesión / Registro</a>
                             </div>
-
                         <?php elseif (!$this->hay_plazas): ?>
                             <div class="sold-out-badge-minimal">
                                 <i class="fas fa-exclamation-circle"></i>

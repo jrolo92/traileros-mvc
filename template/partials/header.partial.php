@@ -10,6 +10,19 @@
         </div>
 
         <div class="header-right">
+            <!-- Acceso a panel de control -->
+            <nav class="header-nav">
+                <?php if (isset($_SESSION['role_id']) && ($_SESSION['role_id'] == 1 || $_SESSION['role_id'] == 2)): ?>
+                    <a href="<?= URL ?>carrera/gestion" title="Gestionar Carreras"> Gestión de Eventos</a>
+                <?php endif; ?>
+            </nav>
+
+            <nav class ="header-nav">
+                <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
+                    <a href="<?= URL ?>user" title="Administrar Usuarios">Gestión de Usuarios</a>
+                <?php endif; ?>
+            </nav>
+
             <nav class="header-nav">
                 <a href="<?= URL ?>carrera" class="<?= (isset($_GET['url']) && strpos($_GET['url'], 'carrera') !== false) ? 'active' : '' ?>">
                     Carreras
@@ -35,14 +48,6 @@
                         <a href="<?= URL ?>account">
                             <i class="fas fa-id-card"></i> Mi Perfil
                         </a>
-                        <div class="theme-switch-item" id="theme-row">
-                            <i class="fas fa-moon" id="theme-icon"></i> 
-                            <span>Modo Oscuro</span>
-                            <label class="switch">
-                                <input type="checkbox" id="theme-toggle">
-                                <span class="slider round"></span>
-                            </label>
-                        </div>
                         <a class="nav-link" href="<?= URL ?>ayuda">
                             <i class="fas fa-question-circle"></i> Acerca de
                         </a>
@@ -58,6 +63,11 @@
             <?php else: ?>
                 <a href="<?= URL ?>auth/login" class="btn-login-header">Iniciar Sesión</a>
             <?php endif; ?>
+
+            <!-- Cambiar modo claro/oscuro -->
+            <button id="theme-toggle-btn" class="theme-toggle-btn" title="Cambiar tema">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
         </div>
     </div>
 

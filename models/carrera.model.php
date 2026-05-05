@@ -423,15 +423,21 @@ class carreraModel extends Model {
                     INNER JOIN users AS u ON e.organizador_id = u.id
                     LEFT JOIN modalidades AS m ON e.id = m.evento_id
                     GROUP BY e.id
-                    ORDER BY $orderBy LIMIT :limit OFFSET :offset";
+                    ORDER BY $orderBy 
+                    LIMIT :limit OFFSET :offset";
         
-        $db = $this->db->connect();
-        $stmt = $db->prepare($sql);
-        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
-        $stmt->execute();
-        
-        return $stmt;
+        try {
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);   
+
+        } catch (PDOException $e){
+            $this->handleError($e);
+        }
     }
 
     /**

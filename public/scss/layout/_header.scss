@@ -219,3 +219,30 @@
         gap: 5px;
     }
 }
+
+// Botón modo claro/oscuro
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color); 
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px 0;
+    // margin: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+#theme-icon {
+    transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.theme-toggle-btn:active #theme-icon {
+    transform: rotate(90deg) scale(0.8);
+}

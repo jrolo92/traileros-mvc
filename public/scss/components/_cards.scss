@@ -119,3 +119,68 @@
 
     }
 }
+
+// Tarjeta de post-pago
+.success-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 2.5rem;
+    text-align: center;
+    max-width: 500px;
+    margin: 2rem auto;
+    border-top: 6px solid var(--primary-green);
+
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        background: rgba($primary-green, 0.1);
+        color: var(--primary-green);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        margin: 0 auto 1.5rem;
+    }
+
+    .dorsal-section {
+        background: var(--bg-body);
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin: 2rem 0;
+        border: 2px dashed var(--border-color);
+
+        .label {
+            font-size: 0.8rem;
+            color: var(--text-sec);
+            letter-spacing: 1px;
+        }
+
+        .number {
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-green);
+            line-height: 1;
+        }
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        color: var(--text-main);
+    }
+
+    .qr-code {
+        img { margin-bottom: 0.5rem; opacity: 0.8; }
+        p { font-size: 0.75rem; color: var(--text-sec); }
+    }
+}
+
+// Ocultar botones al imprimir
+@media print {
+    .success-footer, .nav, .footer { display: none !important; }
+    .success-card { box-shadow: none; border: 1px solid #eee; }
+}

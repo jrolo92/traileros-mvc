@@ -12,7 +12,7 @@ class Carrera extends Controller {
 
     /*
         Método: render
-        Descripción: Renderiza la lista principal de carreras
+        Descripción: Renderiza la lista principal de carreras con paginación y tiene en cuenta un orden para ello
     */
     function render() {
 
@@ -22,20 +22,21 @@ class Carrera extends Controller {
         // Compruebo si hay mensajes
         $this->checkMessages();
 
-        // Lógica para la paginación
+        // Recogemos los parámetros de la url
         $items_pp = 6;  
         $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $order = isset($_GET['order']) ? (int)$_GET['order'] : 1;
 
+        // Seguridad básica para la página
         if ($currentPage < 1) $currentPage = 1;
         $offset = ($currentPage - 1) * $items_pp;
 
+        // total para la paginación
         $totalItems = $this->model->countTotal();
         $totalPages = ceil($totalItems / $items_pp);
 
-
+        // Pasamos datos a la vista
         $this->view->title = "Próximos Eventos - Traileros";
-        
         $this->view->carreras = $this->model->getPaginated($items_pp, $offset, $order);
         $this->view->currentPage = $currentPage;
         $this->view->totalPages = $totalPages;
@@ -417,6 +418,7 @@ class Carrera extends Controller {
 
         // Lógica para saber si la carrera ya ha terminado
         $hoy = date('Y-m-d');
+        $fecha_plazo_ins = date('Y-m-d', strtotime($carrera['fecha_cierre_inscripcion']));
         $fecha_carrera = date('Y-m-d', strtotime($carrera['fecha']));
 
         // Lógica para saber si existen resultados publicados (T/F)
@@ -426,6 +428,7 @@ class Carrera extends Controller {
         // Preparamos variables para la vista
         $this->view->modalidades = $modalidades;
         $this->view->carrera = $carrera;
+        $this->view->fuera_plazo_ins = ($hoy >= $fecha_plazo_ins);
         $this->view->finalizada = ($hoy >= $fecha_carrera);
         $this->view->hay_plazas = ($total_libres>0);
 

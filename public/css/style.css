@@ -501,6 +501,71 @@ body {
   color: #2d5a27;
 }
 
+.success-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  text-align: center;
+  max-width: 500px;
+  margin: 2rem auto;
+  border-top: 6px solid var(--primary-green);
+}
+.success-card .icon-circle {
+  width: 70px;
+  height: 70px;
+  background: rgba(45, 90, 39, 0.1);
+  color: var(--primary-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  margin: 0 auto 1.5rem;
+}
+.success-card .dorsal-section {
+  background: var(--bg-body);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 2rem 0;
+  border: 2px dashed var(--border-color);
+}
+.success-card .dorsal-section .label {
+  font-size: 0.8rem;
+  color: var(--text-sec);
+  letter-spacing: 1px;
+}
+.success-card .dorsal-section .number {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--primary-green);
+  line-height: 1;
+}
+.success-card .info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: var(--text-main);
+}
+.success-card .qr-code img {
+  margin-bottom: 0.5rem;
+  opacity: 0.8;
+}
+.success-card .qr-code p {
+  font-size: 0.75rem;
+  color: var(--text-sec);
+}
+
+@media print {
+  .success-footer, .nav, .footer {
+    display: none !important;
+  }
+  .success-card {
+    box-shadow: none;
+    border: 1px solid #eee;
+  }
+}
 .form-page-container {
   padding: 60px 20px;
   background: var(--bg-body);
@@ -1128,6 +1193,31 @@ body {
     gap: 5px;
   }
 }
+.theme-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.1);
+}
+
+#theme-icon {
+  transition: transform 0.4s ease, opacity 0.3s ease;
+}
+
+.theme-toggle-btn:active #theme-icon {
+  transform: rotate(90deg) scale(0.8);
+}
+
 .footer {
   background-color: var(--footer-bg);
   padding: 30px 0;
@@ -1741,7 +1831,6 @@ body {
 .disponibilidad-container {
   margin: 10px 0 0 0;
   padding: 10px 0 0 0;
-  border-bottom: 1px solid #eee;
 }
 
 .disponibilidad-header {

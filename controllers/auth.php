@@ -156,8 +156,35 @@
         $_SESSION['role_id'] = $this->model->get_id_role_user($user->id);
         $_SESSION['role_name'] = $this->model->get_name_role_user($_SESSION['role_id']);
 
-        // Generar mensaje de inicio de sesión
-        $_SESSION['notify'] = "Usuario ". $user->name. " ha iniciado sesión.";
+        $campos_obligatorios = [
+            'apellidos', 'sexo', 'fecha_nacimiento', 'dni', 
+            'telefono', 'direccion', 'poblacion', 'provincia',
+            'codigo_postal', 'pais', 'club', 'talla_camiseta' 
+        ];
+
+        $perfil_completo = true;
+
+        foreach ($campos_obligatorios as $campo) {
+            // Si el campo no existe en el objeto o está vacío/espacios
+            if (empty($user->$campo) || trim($user->$campo) === '') {
+                $perfil_completo = false;
+                break; 
+            }
+        }
+
+        // si es federado, debe tener número de licencia
+        if ($perfil_completo && $user->federado == 1) {
+            if (empty($user->num_licencia) || trim($user->num_licencia) === '') {
+                $perfil_completo = false;
+            }
+        }
+
+        // Generar mensaje para el Toast
+        if ($perfil_completo) {
+            $_SESSION['notify'] = "¡Bienvenido, " . $user->name . "!";
+        } else {
+            $_SESSION['notify'] = "Hola " . $user->name . ". Deberías rellenar tus datos si quieres inscribirte en una carrera.";
+        }
 
         // Redirigir a la vista de login
         header('Location: ' . URL . 'main');

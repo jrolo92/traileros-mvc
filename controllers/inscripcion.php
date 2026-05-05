@@ -30,6 +30,9 @@ class Inscripcion extends Controller
         // Comprobar si hay mensajes:
         $this->checkMessages();
 
+        // Limpia inscripciones que hayan quedado como pendientes durante un periodo mayor a 60 minutos
+        $this->model->limpiarInscripcionesPendientes(60);
+
         $this->view->title = "Mis Inscripciones - Traileros";
 
         $this->view->inscripciones = $this->model->getInscripcionesByRole($user_id, $role_id);
@@ -57,9 +60,9 @@ class Inscripcion extends Controller
 
         // Campos fijos obligatorios para la inscripción.
         $campos_obligatorios = [
-            'nombre', 'apellidos', 'email', 'sexo',
-            'fecha_nac', 'dni', 'tlf', 'direccion', 
-            'poblacion', 'provincia', 'cp', 'talla'
+            'apellidos', 'sexo', 'fecha_nacimiento', 'dni', 
+            'telefono', 'direccion', 'poblacion', 'provincia',
+            'codigo_postal', 'pais', 'club', 'talla_camiseta'
         ];
 
         foreach ($campos_obligatorios as $campo) {
@@ -82,6 +85,16 @@ class Inscripcion extends Controller
         if (! $evento) {
             $this->errorNotFound($evento_id);
         }
+
+        // VALIDACIÓN DE PLAZO DE INSCRIPCIÓN
+        $hoy = new DateTime();
+        $fecha_cierre = new DateTime($evento['fecha_cierre_inscripcion']);
+
+        if ($hoy > $fecha_cierre) {
+            $_SESSION['notify'] = "Lo sentimos, el plazo de inscripción finalizó el " . $fecha_cierre->format('d/m/Y H:i');
+            header('location:' . URL . 'carrera/show/' . $evento_id);
+            exit;
+        }   
 
         // Calculamos la edad (Comparando fecha de nacimiento con fecha del evento)
         $fecha_nac    = new DateTime($usuario->fecha_nac);
@@ -178,6 +191,16 @@ class Inscripcion extends Controller
         $evento_id = (int)$_POST['evento_id'];
         $evento = $carreraModel->read($evento_id);
         $modalidad_id = (int)$_POST['modalidad_id'];
+
+        // Validación de fecha tope de inscripción previa al pago
+        $hoy = new DateTime();
+        $fecha_cierre = new DateTime($evento['fecha_cierre_inscripcion']);
+
+        if ($hoy > $fecha_cierre) {
+            $_SESSION['error'] = "El plazo de inscripción ha expirado. No se puede procesar el pago.";
+            header('Location: ' . URL . 'carrera/show/' . $evento_id);
+            exit();
+        }
 
         // Comprobamos si existe alguna inscripción previa que se haya cancelado por algun motivo
         $inscripcionPrevia = $inscripcionModel->getInscripcionSimple($user_id, $evento_id);
@@ -296,26 +319,48 @@ class Inscripcion extends Controller
                 // Primero obtenemos los datos del usuario, carrera e inscripcion:
                 $inscripcion = $this->model->getByPagoId($id_pago);
                 if ($inscripcion){
+                    // Enviamos correo de confirmación
                     $asunto = "¡Inscripción confirmada! - " . $inscripcion['evento_nombre'];
+                    // Generamos la URL del QR (usamos el ID de inscripción)
+                    $url_qr = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=INS-" . $inscripcion['id'];
                     $texto = "
-                                <p>Hola <strong>{$inscripcion['usuario_nombre']}</strong>,</p>
-                                <p>¡Ya es oficial! Tienes una cita con la montaña.</p>
-                                <div style='background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;'>
-                                    <p><strong>Carrera:</strong> {$inscripcion['evento_nombre']}</p>
-                                    <p><strong>Dorsal asignado:</strong> <span style='font-size: 24px; color: #e67e22;'>{$inscripcion['dorsal']}</span></p>
-                                    <p><strong>Fecha:</strong> " . date('d/m/Y', strtotime($inscripcion['evento_fecha'])) . "</p>
-                                </div>
-                                <p>Prepárate bien, ¡nos vemos en la salida!</p>
+                        <div style='font-family: sans-serif; color: #333; max-width: 600px; margin: auto;'>
+                            <p>Hola <strong>{$inscripcion['usuario_nombre']}</strong>,</p>
+                            <p>¡Ya es oficial! Tienes una cita con la montaña.</p>
+                            
+                            <div style='background: #f9f9f9; padding: 20px; border-radius: 10px; border: 1px solid #eee; margin: 20px 0; text-align: center;'>
+                                <h2 style='margin-top: 0; color: #2ecc71;'>{$inscripcion['evento_nombre']}</h2>
+                                <p style='font-size: 16px;'>Tu dorsal asignado es:</p>
+                                <div style='font-size: 48px; font-weight: bold; color: #2ecc71; margin: 10px 0;'>#{$inscripcion['dorsal']}</div>
+                                
+                                <div style='margin-top: 20px;'>
+                                    <img src='{$url_qr}' alt='Código QR Check-in' style='border: 10px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.1);'>
+                                    <p style='font-size: 12px; color: #777; margin-top: 10px;'>Muestra este QR en el control de firmas</p>
+                                </div>  
+                                
+                                <p style='margin-top: 20px;'><strong>Fecha:</strong> " . date('d/m/Y', strtotime($inscripcion['evento_fecha'])) . "</p>
+                            </div>
+                            
+                            <p>¡Nos vemos en la salida!</p>
+                        </div>
                     ";
 
                     Email::enviar($inscripcion['email'], $asunto, $texto);
+
+                    // Pasamos los datos a la vista de post-pago:
+                    $this->view->datos = $inscripcion;
+                    $this->view->title = "¡Inscripción confirmada!";
+
+                    // Renderizamos la vista de post-pago:
+                    $this->view->render('inscripcion/success/index');
+                    return; // Nos asegura que acaba aquí si todo va bien
                 }
                 
             } else {
                 $_SESSION['notify'] = "Hubo un problema al confirmar tu pago.";
             }
         }
-
+        // Si algo falla redirige a la lista de inscripciones
         header('Location: ' . URL . 'inscripcion');
         exit();
     }
@@ -483,9 +528,15 @@ class Inscripcion extends Controller
         
         // Obtenemos el criterio
         $criterio = $param[0] ?? 'fecha';
-        $this->view->inscripciones = $this->model->order($criterio);
+
+        // Obtenemos datos de sesión para filtrar por rol del usuario
+        $user_id = $_SESSION['user_id'];
+        $role_id = $_SESSION['role_id'];
+
+        $this->view->inscripciones = $this->model->order($criterio, $user_id, $role_id);
 
         $titulos = [
+            'id' => 'Id',
             'usuario' => 'Participante',
             'evento'  => 'Evento',
             'dorsal'  => 'Dorsal',
@@ -496,7 +547,8 @@ class Inscripcion extends Controller
 
         $this->view->title = "Mis Inscripciones - Traileros";
         
-        $this->view->subtitle = "Inscripciones ordenadas por: " . $nombre_criterio;
+        $this->view->notify = "Inscripciones ordenadas por: " . $nombre_criterio;
+        // $this->view->subtitle = "Inscripciones ordenadas por: " . $nombre_criterio;
 
         $this->view->render('inscripcion/main/index');
     }
@@ -669,13 +721,6 @@ class Inscripcion extends Controller
         header('Location: ' . URL . 'inscripcion');
         exit();
     }
-
-    // Metodos para el manejo de errores
-    // private function handleError()
-    // {
-    //     header('location:' . URL . 'error');
-    //     exit();
-    // }
 
     // Método de error not found
     private function errorNotFound($id)

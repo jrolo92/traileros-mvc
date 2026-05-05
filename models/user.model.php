@@ -553,38 +553,152 @@
 
         // Método para actualizar la foto de perfil
         public function updateAvatar($id, $path) {
+            try {
+                $sql = "UPDATE users SET avatar = :avatar WHERE id = :id";
+                $db = $this->db->connect();
+                $stmt = $db->prepare($sql);
+                $stmt->bindValue(':avatar', $path, PDO::PARAM_STR);
+                $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                $this->handleError($e);
+            }
+        }
+
+    // MÉTODOS PARA EL CAMBIO DE ROL
+    // Crea una solicitud de cambio de rol a organizador
+    public function create_upgrade_request($user_id) {
         try {
-            $sql = "UPDATE users SET avatar = :avatar WHERE id = :id";
+            // Primero comprobamos si ya existe una solicitud pendiente para no duplicar
+            $sql_check = "SELECT id FROM upgrade_requests WHERE user_id = :user_id AND status = 'pendiente'";
             $db = $this->db->connect();
+            $stmt_check = $db->prepare($sql_check);
+            $stmt_check->execute([':user_id' => $user_id]);
+
+            if ($stmt_check->rowCount() > 0) return true; // Ya hay una pendiente
+
+            $sql = "INSERT INTO upgrade_requests (user_id) VALUES (:user_id)";
             $stmt = $db->prepare($sql);
-            $stmt->bindValue(':avatar', $path, PDO::PARAM_STR);
-            $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
+            return $stmt->execute([':user_id' => $user_id]);
         } catch (PDOException $e) {
             $this->handleError($e);
         }
-}
+    }
 
-        /*
-            Método: handleError
-            Descripción: Maneja los errores de la base de datos
-        */
-        private function handleError(PDOException $e)
-        {
-            // Incluir y cargar el controlador de errores
-            $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
-            
-            if (file_exists($errorControllerFile)) {
-                require_once $errorControllerFile;
-                $mensaje = $e->getMessage() . " en la línea " . $e->getLine() . " del archivo " . $e->getFile();
-                $controller = new Errores('DE BASE DE DATOS', 'Mensaje de Error: ', $mensaje);
-                
-            } else {
-                // Fallback en caso de que el controlador de errores no exista
-                echo "Error crítico: " . $e->getMessage();
-                exit();
-            }
+    // Cuenta las peticiones de mejora de rol a organizador que están pendientes
+    public function count_pending_requests() {
+        $sql = "SELECT COUNT(id) as total FROM upgrade_requests WHERE status = 'pendiente'";
+        $db = $this->db->connect();
+        return $db->query($sql)->fetch(PDO::FETCH_OBJ)->total;
+    }
+
+    // Aprobar solicitud
+    public function approve_upgrade($request_id, $user_id) {
+        try {
+            $db = $this->db->connect();
+            $db->beginTransaction(); // Usamos transacciones para que se hagan los dos cambios o ninguno
+
+            // 1. Cambiamos el rol en la tabla de roles
+            $sqlRole = "UPDATE roles_users SET role_id = 2 WHERE user_id = :user_id";
+            $stmt1 = $db->prepare($sqlRole);
+            $stmt1->execute([':user_id' => $user_id]);
+
+            // 2. Marcamos la solicitud como aprobada
+            $sqlReq = "UPDATE upgrade_requests SET status = 'aprobado' WHERE id = :id";
+            $stmt2 = $db->prepare($sqlReq);
+            $stmt2->execute([':id' => $request_id]);
+
+            $db->commit();
+            return true;
+        } catch (PDOException $e) {
+            $db->rollBack();
+            return false;
         }
     }
+
+    // Denegar solicitud
+    public function deny_upgrade($request_id) {
+        try {
+            $sql = "UPDATE upgrade_requests SET status = 'denegado' WHERE id = :id";
+            $db = $this->db->connect();
+            $stmt = $db->prepare($sql);
+            return $stmt->execute([':id' => $request_id]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Devuelve todas las solicitudes pendientes para mostrarlas en una tabla
+    public function get_pending_requests() {
+        try {
+            $sql = "SELECT r.id, r.user_id, r.created_at, u.name, u.apellidos, u.email 
+                    FROM upgrade_requests r
+                    INNER JOIN users u ON r.user_id = u.id
+                    WHERE r.status = 'pendiente'
+                    ORDER BY r.created_at ASC";
+            
+            $db = $this->db->connect();
+            return $db->query($sql);
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
+    }
+
+    public function get_request_by_id($id) {
+        $sql = "SELECT user_id FROM upgrade_requests WHERE id = :id";
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    // Método para comprobar si el perfil está completo
+    public function isProfileComplete($id) {
+        $user = $this->read($id);
+        if (!$user) return false;
+
+        // Campos que NO pueden ser NULL ni estar vacíos ""
+        $campos = ['apellidos', 'sexo', 'fecha_nac', 'dni', 'tlf', 'direccion', 'poblacion', 'provincia', 'cp', 'talla'];
+
+        foreach ($campos as $campo) {
+            // Usam strlen + trim para asegurar que no hay solo espacios
+            if (!isset($user->$campo) || strlen(trim((string)$user->$campo)) === 0) {
+                // error_log("Campo incompleto: " . $campo);
+                return false; 
+            }
+        }
+
+        // Lógica federado: Solo obliga si es estrictamente 1
+        // Si NO es federado (0) NO pedimos licencia
+        if (isset($user->es_federado) && $user->es_federado == 1) {
+            if (!isset($user->num_licencia) || strlen(trim((string)$user->num_licencia)) === 0) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /*
+        Método: handleError
+        Descripción: Maneja los errores de la base de datos
+    */
+    private function handleError(PDOException $e)
+    {
+        // Incluir y cargar el controlador de errores
+        $errorControllerFile = CONTROLLER_PATH . ERROR_CONTROLLER . '.php';
+        
+        if (file_exists($errorControllerFile)) {
+            require_once $errorControllerFile;
+            $mensaje = $e->getMessage() . " en la línea " . $e->getLine() . " del archivo " . $e->getFile();
+            $controller = new Errores('DE BASE DE DATOS', 'Mensaje de Error: ', $mensaje);
+            
+        } else {
+            // Fallback en caso de que el controlador de errores no exista
+            echo "Error crítico: " . $e->getMessage();
+            exit();
+        }
+    }
+}
 
 ?>

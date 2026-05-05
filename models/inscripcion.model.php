@@ -367,12 +367,15 @@ class InscripcionModel extends Model {
         }
     }
 
-    /* Método: order
-    Descripción: Ordena el listado según la columna solicitada.
+    /* 
+    Método: order
+    Descripción: Ordena el listado según la columna solicitada. En función del rol del usuario muestra todas las inscripciones (admin)
+                 o solo las suyas (organizador o corredor).
     */
-    public function order($criterio) {
+    public function order($criterio, $user_id, $role_id) {
         
         $columnas_permitidas = [
+            'id' => 'i.id ASC',
             'dorsal' => 'i.dorsal',
             'usuario' => 'u.apellidos ASC, u.name ASC',
             'evento' => 'e.nombre ASC',
@@ -382,20 +385,45 @@ class InscripcionModel extends Model {
 
         $orden = $columnas_permitidas[$criterio] ?? 'i.fecha_inscripcion DESC';
 
+        // Consulta base
         $sql = "SELECT i.*, 
-                    e.nombre as evento_nombre, 
-                    e.fecha as evento_fecha,
-                    u.name as usuario_nombre, 
-                    u.apellidos as usuario_apellidos,
-                    c.nombre as categoria_nombre
-                FROM Inscripciones i
-                INNER JOIN Eventos e ON i.evento_id = e.id
-                INNER JOIN users u ON i.user_id = u.id
-                LEFT JOIN Categorias c ON i.categoria_id = c.id
-                ORDER BY $orden";
+                   e.nombre as evento_nombre, 
+                   e.fecha as evento_fecha,
+                   u.name as usuario_nombre, 
+                   u.apellidos as usuario_apellidos,
+                   c.nombre as categoria_nombre
+            FROM Inscripciones i
+            INNER JOIN Eventos e ON i.evento_id = e.id
+            INNER JOIN users u ON i.user_id = u.id
+            LEFT JOIN Categorias c ON i.categoria_id = c.id";
+
+        // Filtro por rol
+        $params = [];
+        if ($role_id == 1) { 
+            // ADMIN: lo ve todo.
+        } 
+        elseif ($role_id == 2) { 
+            // ORGANIZADOR: Solo ve inscripciones de sus eventos
+            $sql .= " WHERE e.organizador_id = :user_id";
+            $params['user_id'] = $user_id;
+        } 
+        else { 
+            // USUARIO: Solo ve sus propias inscripciones
+            $sql .= " WHERE i.user_id = :user_id";
+            $params['user_id'] = $user_id;
+        }
+
+        // Añade el orden al final de la consulta
+        $sql .= " ORDER BY $orden";
         
-        $db = $this->db->connect();
-        return $db->query($sql)->fetchAll(PDO::FETCH_OBJ);
+        try {
+            $db = $this->db->connect();
+            $query = $db->prepare($sql);
+            $query->execute($params);
+            return $query->fetchAll(PDO::FETCH_OBJ);
+        } catch (PDOException $e) {
+            $this->handleError($e);
+        }
     }
 
     /*
@@ -442,6 +470,30 @@ class InscripcionModel extends Model {
         $res = $stmt->fetch();
         return ($res) ? $res->nombre : 'evento';
 
+    }
+
+    /*
+     Método para limpiar inscripciones cuyo pago no se ha completado y han quedado en pendiente.
+     Permite liberar dorsales en un plazo de 60 minutos tran un intento de inscripción no completado
+    */
+    public function limpiarInscripcionesPendientes($minutos = 60) {
+        try {
+            $db = $this->db->connect();
+            
+            // Buscamos inscripciones con estado 'PENDIENTE' 
+            // cuya fecha de creación sea anterior al intervalo definido.
+            $sql = "DELETE FROM Inscripciones 
+                    WHERE estado_pago = 'PENDIENTE' 
+                    AND fecha_inscripcion < DATE_SUB(NOW(), INTERVAL :minutos MINUTE)";
+            
+            $query = $db->prepare($sql);
+            $query->execute(['minutos' => $minutos]);
+            
+            return $query->rowCount(); // Devuelve cuántas se han borrado
+        } catch (PDOException $e) {
+            $this->handleError($e);
+            return false;
+        }
     }
 
     /*

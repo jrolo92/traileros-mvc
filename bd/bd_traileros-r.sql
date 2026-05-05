@@ -64,6 +64,15 @@ CREATE TABLE roles_users (
 
 INSERT INTO roles_users (user_id, role_id) VALUES (2,3), (1,1);
 
+DROP TABLE IF EXISTS upgrade_requests;
+CREATE TABLE upgrade_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT(10) unsigned NOT NULL,
+    status ENUM('pendiente', 'aprobado', 'denegado') DEFAULT 'pendiente',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
 -- 4. TABLA CATEGORIAS
 DROP TABLE IF EXISTS categorias;
 CREATE TABLE categorias (

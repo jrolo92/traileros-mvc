@@ -44,6 +44,7 @@
 
             // Obtengo los datos del modelo
             $this->view->users = $this->model->get();
+            $this->view->peticiones = $this->model->get_pending_requests();
 
             // Llama a la vista para renderizar la página
             $this->view->render('user/main/index');
@@ -207,8 +208,6 @@
             // sec_session_start();
             $this->requireLogin();
             $this->requirePrivilege($GLOBALS['user']['update']);
-
-            c
 
             $id = (int) $params[0];
             $user_db = $this->model->read($id);
@@ -495,6 +494,35 @@
             imagedestroy($source);
 
             return true;
+        }
+
+        // URL: user/approve_role/ID_PETICION/ID_USUARIO
+        public function approve_role($param) {
+            $this->requireLogin();
+            $this->requirePrivilege($GLOBALS['user']['render']); // Solo admin
+
+            $request_id = $param[0];
+            
+            // Necesitamos saber qué usuario es para cambiarle el rol
+            // Podrías obtenerlo del modelo si no quieres pasarlo por URL
+            $request = $this->model->get_request_by_id($request_id); 
+
+            if ($this->model->approve_upgrade($request_id, $request->user_id)) {
+                $_SESSION['notify'] = "Usuario ascendido a Organizador correctamente.";
+            } else {
+                $_SESSION['error'] = "Error al procesar la aprobación.";
+            }
+            header('Location: ' . URL . 'user');
+        }
+
+        public function deny_role($param) {
+            $this->requireLogin();
+            $request_id = $param[0];
+
+            if ($this->model->deny_upgrade($request_id)) {
+                $_SESSION['notify'] = "Solicitud denegada.";
+            }
+            header('Location: ' . URL . 'user');
         }
 
         /*

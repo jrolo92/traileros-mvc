@@ -63,6 +63,7 @@
                             </button>
 
                             <ul class="dropdown-list">
+                                <li><a href="<?php echo URL ?>inscripcion/order/id">Id</a></li>
                                 <li><a href="<?php echo URL ?>inscripcion/order/usuario">Participante</a></li>
                                 <li><a href="<?php echo URL ?>inscripcion/order/evento">Evento</a></li>
                                 <li><a href="<?php echo URL ?>inscripcion/order/dorsal">Dorsal</a></li>

@@ -14,20 +14,16 @@ class authModel extends Model {
             - email
         Devuelve:
             - Objeto de la clase  user
-                - id
-                - name
-                - email
-                - password
-            - False. Si el email no corresponde a nigún usuario
+            - False. Si el email no corresponde a ningún usuario
     */
     public function get_user_email($email) {
         try {
         // Generamos select 
-        $sql = "SELECT id, name, email, password, avatar FROM users WHERE email = :email LIMIT 1";
+        $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
         // Conectar con la base de datos
-        $geslibros = $this->db->connect();
+        $db = $this->db->connect();
         // Preparar la consulta obteniendo el objeto PDOStatement
-        $stmt = $geslibros->prepare($sql);
+        $stmt = $db->prepare($sql);
         // Tipo fetch
          $stmt->setFetchMode(PDO::FETCH_OBJ);
         // Vincular los parámetros
@@ -58,9 +54,9 @@ class authModel extends Model {
         // Generamos select 
         $sql = "SELECT email FROM users WHERE email = :email";
         // Conectar con la base de datos
-        $geslibros = $this->db->connect();
+        $db = $this->db->connect();
         // Preparar la consulta obteniendo el objeto PDOStatement
-        $stmt = $geslibros->prepare($sql);
+        $stmt = $db->prepare($sql);
         // Vincular los parámetros
         $stmt->bindParam(':email', $email, PDO::PARAM_STR, 50);
         // Ejecutamos sql
@@ -97,10 +93,10 @@ class authModel extends Model {
 
 
             // conectamos con la base de datos
-            $geslibros = $this->db->connect();
+            $db = $this->db->connect();
 
             // ejecuto prepare
-            $stmt = $geslibros->prepare($sql);
+            $stmt = $db->prepare($sql);
 
             // vinculamos parámetros
             $stmt->bindParam(':name', $name, PDO::PARAM_STR, 50);
@@ -140,10 +136,10 @@ class authModel extends Model {
             $sql = "SELECT role_id FROM roles_users WHERE user_id = :user_id LIMIT 1"; 
 
             // conectamos con la base de datos
-            $geslibros = $this->db->connect();
+            $db = $this->db->connect();
 
             // ejecuto prepare
-            $stmt = $geslibros->prepare($sql);
+            $stmt = $db->prepare($sql);
 
             // Tipo de fetch
             $stmt->setFetchMode(PDO::FETCH_OBJ);
@@ -185,10 +181,10 @@ class authModel extends Model {
             $sql = "SELECT name FROM roles WHERE id = :role_id LIMIT 1"; 
 
             // conectamos con la base de datos
-            $geslibros = $this->db->connect();
+            $db = $this->db->connect();
 
             // ejecuto prepare
-            $stmt = $geslibros->prepare($sql);
+            $stmt = $db->prepare($sql);
 
             // Tipo de fetch
             $stmt->setFetchMode(PDO::FETCH_OBJ);
@@ -229,13 +225,13 @@ class authModel extends Model {
                     VALUES (:name, :email, :password)";
 
             // Conexion con la bd
-            $geslibros = $this->db->connect();
+            $db = $this->db->connect();
 
             // Iniciamos transacción
-            $geslibros->beginTransaction();
+            $db->beginTransaction();
 
             // Ejecuto prepare
-            $stmt = $geslibros->prepare($sql);
+            $stmt = $db->prepare($sql);
 
             // Vinculamos parámetros
             $stmt->bindParam(":name", $name, PDO::PARAM_STR, 50);
@@ -246,14 +242,14 @@ class authModel extends Model {
             $stmt->execute();
 
             // Obtenemos el id del ultimo registro
-            $ultimo_id = $geslibros->lastInsertId();
+            $ultimo_id = $db->lastInsertId();
 
             // SEGUNDO PROCEDIMIENTO
             // Añadir rol del usuario registrado
             $sql2 = "INSERT INTO roles_users (user_id, role_id) VALUES (:user_id, :role_id)";
 
             // Ejecuto prepare
-            $stmt = $geslibros->prepare($sql2);
+            $stmt = $db->prepare($sql2);
 
             // Rol de usuario registrado (id=3)
             $role_id = 3;
@@ -266,7 +262,7 @@ class authModel extends Model {
             $stmt->execute();
 
             // Confirmamos transacción
-            $geslibros->commit();
+            $db->commit();
 
             // Devolvermos el último id del usuario registrado
             return $ultimo_id;
@@ -274,7 +270,7 @@ class authModel extends Model {
         } catch (PDOException $e){
 
             // Deshacer transacción
-            $geslibros->rollBack();
+            $db->rollBack();
 
             // Manejo de errores
             $this->handleError($e); 

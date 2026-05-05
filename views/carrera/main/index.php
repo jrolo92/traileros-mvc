@@ -33,10 +33,10 @@
                 </button>
 
                 <ul class="dropdown-list">
-                    <li><a href="<?php echo URL ?>carrera/order/2">Nombre (A-Z)</a></li>
-                    <li><a href="<?php echo URL ?>carrera/order/3">Ciudad</a></li>
-                    <li><a href="<?php echo URL ?>carrera/order/4">Distancia</a></li>
-                    <li><a href="<?php echo URL ?>carrera/order/5">Fecha</a></li>
+                    <li><a href="?page=1&order=2">Nombre (A-Z)</a></li>
+                    <li><a href="?page=1&order=3">Ciudad</a></li>
+                    <li><a href="?page=1&order=4">Distancia</a></li>
+                    <li><a href="?page=1&order=5">Fecha</a></li>
                 </ul>
             </div>
         </div>
