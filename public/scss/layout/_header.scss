@@ -24,11 +24,14 @@
 
     .header-nav {
         a {
+            position: relative;
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
             font-weight: 600;
             font-size: 0.95rem;
             transition: all 0.3s ease;
+
+            display: inline-block;
 
             &:hover, &.active {
                 color: $primary-green;
@@ -37,6 +40,27 @@
             &.active {
                 font-weight: 700;
                 padding-bottom: 4px;
+            }
+
+            .badge-notificacion {
+                background-color: $primary-green; 
+                color: white;
+                font-size: 0.50rem; 
+                font-weight: bold;
+                border-radius: 50%;
+                position: absolute;
+                
+                top: -12px;   
+                right: -20px;  
+                
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 18px;
+                height: 18px;
+                border: 2px solid var(--header-bg); 
+                pointer-events: none;
             }
         }
     }
@@ -245,4 +269,22 @@
 
 .theme-toggle-btn:active #theme-icon {
     transform: rotate(90deg) scale(0.8);
+}
+
+.badge-notificacion {
+    background-color: #ff4757; 
+    color: white;
+    font-size: 0.7rem;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 50%;
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
 }

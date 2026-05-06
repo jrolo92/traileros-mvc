@@ -18,6 +18,8 @@
             // Comprobar si hay mensajes en la sesión y pasarlos a la vista
             $this->checkMessages();
 
+            $this->cargarDatosMenu();
+
             if (isset($_SESSION['errors'])) {
                 $this->view->error = $_SESSION['errors'];
                 $this->view->contact = $_SESSION['contact'];

@@ -80,18 +80,7 @@
                     <label for="descripcion">Descripción</label>
                     <textarea name="descripcion" rows="4" placeholder="Describe la ruta, el terreno..."><?php echo htmlspecialchars($this->carrera['descripcion']) ?></textarea>
                 </div>
-
-                <!-- <div class="form-group">
-                    <label for="cupo_maximo">Cupo Máximo de Corredores</label>
-                    <input type="number"
-                        name="cupo_maximo"
-                        id="cupo_maximo"
-                        placeholder="Número total de dorsales disponibles."
-                        value="<?php echo $this->carrera['cupo_maximo'] ?>"
-                        min="1"
-                        required>
-                </div> -->
-
+                
                 <div class="form-group">
                     <label for="imagen">Imagen del Evento</label>
                     <div class="file-input-wrapper">
@@ -160,6 +149,12 @@
                                         value="<?php echo htmlspecialchars($this->carrera['edad_maxima']) ?? 99 ?>" required>
                                     <small class="text-muted">Edad máxima el día del evento</small>
                                 </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="track_url">URL de Wikiloc (Opcional)</label>
+                                <input type="url" name="mod_track_url[]"
+                                    value="<?= $this->carrera['track_url'] ?? '' ?>" 
+                                    placeholder="https://es.wikiloc.com/...">
                             </div>
                         </div>
                     </div>

@@ -42,6 +42,8 @@ class Carrera extends Controller {
         $this->view->totalPages = $totalPages;
         $this->view->currentOrder = $order;
 
+        $this->cargarDatosMenu();
+
         $this->view->render('carrera/main/index');
     }
 
@@ -99,8 +101,6 @@ class Carrera extends Controller {
         $ubicacion = filter_var($_POST['ubicacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $dificultad = filter_var($_POST['dificultad'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $descripcion = filter_var($_POST['descripcion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-        $edad_minima = filter_var($_POST['edad_minima'] ?? 18, FILTER_SANITIZE_NUMBER_INT);
-        $edad_maxima = filter_var($_POST['edad_maxima'] ?? 99, FILTER_SANITIZE_NUMBER_INT);
         $organizador_id = (int) ($_POST['organizador_id'] ?? $_SESSION['user_id']);
         $estado = $_POST['estado'] ?? 'borrador';
 
@@ -160,6 +160,7 @@ class Carrera extends Controller {
         $mod_cupos = $_POST['mod_cupo'] ?? [];
         $mod_edades_min = $_POST['mod_edad_minima'] ?? []; 
         $mod_edades_max = $_POST['mod_edad_maxima'] ?? [];
+        $mod_tracks = $_POST['mod_track_url'] ?? [];
 
         foreach ($mod_nombres as $i => $val) {
             $modalidades[] = [
@@ -169,7 +170,8 @@ class Carrera extends Controller {
                 'precio'      => filter_var($mod_precios[$i], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
                 'cupo_maximo' => filter_var($mod_cupos[$i] ?? $_POST['cupo_maximo'], FILTER_SANITIZE_NUMBER_INT),
                 'edad_minima' => filter_var($mod_edades_min[$i] ?? 18, FILTER_SANITIZE_NUMBER_INT),
-                'edad_maxima' => filter_var($mod_edades_max[$i] ?? 99, FILTER_SANITIZE_NUMBER_INT)
+                'edad_maxima' => filter_var($mod_edades_max[$i] ?? 99, FILTER_SANITIZE_NUMBER_INT),
+                'track_url'   => filter_var($mod_tracks[$i] ?? '', FILTER_SANITIZE_URL)
             ];
         }
 
@@ -267,7 +269,7 @@ class Carrera extends Controller {
         // Validamos token CSRF
         $this->checkTokenCsrf($_POST['csrf_token'] ?? '');
 
-        // 1. Saneamiento de datos
+        // Saneamiento de datos
         $nombre = filter_var($_POST['nombre'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $fecha = filter_var($_POST['fecha'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
         $ubicacion = filter_var($_POST['ubicacion'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -283,7 +285,7 @@ class Carrera extends Controller {
         $edad_minima = filter_var($_POST['edad_minima'] ?? 18, FILTER_SANITIZE_NUMBER_INT);
         $edad_maxima = filter_var($_POST['edad_maxima'] ?? 99, FILTER_SANITIZE_NUMBER_INT);
 
-        // 2. Gestión de la Imagen
+        // Gestión de la Imagen
         // Por defecto cojo el nombre que viene del campo oculto
         $nombreImagen = (!empty($_POST['imagen_actual'])) ? $_POST['imagen_actual'] : 'default.png';
         $error = [];
@@ -327,12 +329,13 @@ class Carrera extends Controller {
             }
         }
 
-        // 3. Recoger y sanear MODALIDADES (Arrays del formulario)
+        // Recoger y sanear MODALIDADES (Arrays del formulario)
         $modalidades = [];
         $mod_nombres = $_POST['mod_nombre'] ?? [];
         $mod_distancias = $_POST['mod_distancia'] ?? [];
         $mod_desniveles = $_POST['mod_desnivel'] ?? [];
         $mod_precios = $_POST['mod_precio'] ?? [];
+        $mod_tracks = $_POST['mod_track_url'] ?? [];
 
         foreach ($mod_nombres as $i => $val) {
             $modalidades[] = [
@@ -342,11 +345,12 @@ class Carrera extends Controller {
                 'precio'    => filter_var($mod_precios[$i], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION),
                 'cupo_maximo' => filter_var($_POST['mod_cupo'][$i], FILTER_SANITIZE_NUMBER_INT),
                 'edad_minima' => filter_var($_POST['mod_edad_minima'][$i], FILTER_SANITIZE_NUMBER_INT),
-                'edad_maxima' => filter_var($_POST['mod_edad_maxima'][$i], FILTER_SANITIZE_NUMBER_INT)
+                'edad_maxima' => filter_var($_POST['mod_edad_maxima'][$i], FILTER_SANITIZE_NUMBER_INT),
+                'track_url'   => filter_var($mod_tracks[$i] ?? '', FILTER_SANITIZE_URL)
             ];
         }
 
-        // 4. Crear objeto para validación y persistencia
+        // Crear objeto para validación y persistencia
         $carrera = new class_carrera(
             $id, 
             $nombre, 
@@ -365,7 +369,7 @@ class Carrera extends Controller {
             $organizador_id, 
             $estado);
 
-        // 5. Validaciones
+        // Validaciones
         if(empty($nombre)) $error['nombre'] = "El nombre es obligatorio";
         if(empty($fecha)) $error['fecha'] = "La fecha es obligatoria";
 
@@ -376,7 +380,7 @@ class Carrera extends Controller {
             exit();
         }
 
-        // 6. Actualizar en BD
+        // Actualizar en BD
         if ($this->model->update($carrera, $id, $modalidades)) {
             $_SESSION['notify'] = "¡Carrera y modalidades actualizadas correctamente!";
             header('Location: ' . URL . 'carrera/show/' . $id);
@@ -407,10 +411,22 @@ class Carrera extends Controller {
         // Obtener las modalidades para este evento
         $modalidades = $this->model->getModalidadesByEvento($id);
 
-        // Calculamos las plazas libres para cada modalidad
+        // Para cada modalidad
         foreach ($modalidades as $key => $mod) {
+            // Calculamos plazas disponibles
             $ocupadas = $this->model->getPlazasOcupadas($mod['id']);
             $modalidades[$key]['plazas_libres'] = $mod['cupo_maximo'] - $ocupadas;
+
+            // Obtenemos el id de la URL de wikiloc
+            $modalidades[$key]['track_embed'] = null; // Valor por defecto
+            if (!empty($mod['track_url'])) {
+                $url_limpia = rtrim(trim($mod['track_url']), '/');
+                // Buscamos el ID numérico al final de la URL
+                if (preg_match('/(\d+)$/', $url_limpia, $matches)) {
+                    $track_id = $matches[1];
+                    $modalidades[$key]['track_embed'] = "https://es.wikiloc.com/wikiloc/embedv2.do?id=" . $track_id . "&elevation=on&images=off&maptype=H&title=off";
+                }
+            }
         }
 
         // Lógica para saber si hay plazas libres
@@ -677,11 +693,6 @@ class Carrera extends Controller {
 
         return true;
     }
-
-    // private function handleError() {
-    //     header('location:' . URL . 'error');
-    //     exit();
-    // }
 
     // Método de error not found
     private function errorNotFound($id) {

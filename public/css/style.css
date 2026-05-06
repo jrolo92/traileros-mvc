@@ -1010,11 +1010,13 @@ body {
   gap: 30px;
 }
 .header-right .header-nav a {
+  position: relative;
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.95rem;
   transition: all 0.3s ease;
+  display: inline-block;
 }
 .header-right .header-nav a:hover, .header-right .header-nav a.active {
   color: #2d5a27;
@@ -1022,6 +1024,24 @@ body {
 .header-right .header-nav a.active {
   font-weight: 700;
   padding-bottom: 4px;
+}
+.header-right .header-nav a .badge-notificacion {
+  background-color: #2d5a27;
+  color: white;
+  font-size: 0.5rem;
+  font-weight: bold;
+  border-radius: 50%;
+  position: absolute;
+  top: -12px;
+  right: -20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  border: 2px solid var(--header-bg);
+  pointer-events: none;
 }
 .header-right .btn-login-header {
   text-decoration: none;
@@ -1216,6 +1236,24 @@ body {
 
 .theme-toggle-btn:active #theme-icon {
   transform: rotate(90deg) scale(0.8);
+}
+
+.badge-notificacion {
+  background-color: #ff4757;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  position: absolute;
+  top: -5px;
+  right: -10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
 }
 
 .footer {
@@ -1826,6 +1864,61 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.perfil-elevacion-container {
+  grid-column: 1/-1;
+  margin: 20px auto 0;
+  width: 90%;
+}
+.perfil-elevacion-container .perfil-titulo {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.perfil-elevacion-container .perfil-wrapper {
+  width: 100%;
+  height: 100px;
+  overflow: hidden;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  position: relative;
+  background: #fff;
+}
+.perfil-elevacion-container .perfil-wrapper iframe {
+  width: 100%;
+  height: 550px;
+  position: absolute;
+  top: -390px;
+  left: 0;
+  border: none;
+}
+.perfil-elevacion-container .perfil-footer {
+  margin-top: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.perfil-elevacion-container .perfil-footer .perfil-info {
+  font-size: 0.75rem;
+  color: #888;
+}
+.perfil-elevacion-container .perfil-footer .perfil-link {
+  font-size: 0.8rem;
+  color: #4a7c2c;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+.perfil-elevacion-container .perfil-footer .perfil-link:hover {
+  color: rgb(51.5357142857, 86.3571428571, 30.6428571429);
+  text-decoration: underline;
+}
+.perfil-elevacion-container .perfil-footer .perfil-link i {
+  margin-left: 4px;
 }
 
 .disponibilidad-container {
@@ -2448,15 +2541,23 @@ body {
   color: var(--text-main);
 }
 .admin-table tbody tr td a.table-link {
-  color: var(--text-main);
   text-decoration: none;
-  display: inline-block;
-  width: 100%;
+  color: var(--text-main);
+  background-color: rgba(45, 90, 39, 0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
 }
-.admin-table tbody tr td a.table-link:hover,
-.admin-table tbody tr td a.table-link:visited {
-  color: var(--text-main);
-  text-decoration: none;
+.admin-table tbody tr td a.table-link:hover {
+  background-color: #2d5a27;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Badges de Rol */

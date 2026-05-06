@@ -51,6 +51,31 @@ class InscripcionModel extends Model {
         }
     }
 
+    /*
+        Filtra las inscripciones por usuario y solo muestra las de cada uno.
+        Permite mantener la privacidad de cada usuario
+        Se usa en la vista principal de inscripciones ("Mis Carreras").
+    */
+    public function getInscripcionesByUser($user_id) {
+        try {
+            $db = $this->db->connect();
+            // Solo traemos las inscripciones donde el ID de usuario coincida
+            $sql = "SELECT i.*, e.nombre as evento_nombre, e.fecha as evento_fecha 
+                    FROM inscripciones i
+                    INNER JOIN eventos e ON i.evento_id = e.id
+                    WHERE i.user_id = :user_id
+                    ORDER BY e.fecha DESC";
+            
+            $stmt = $db->prepare($sql);
+            $stmt->execute(['user_id' => $user_id]);
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log($e->getMessage());
+            return [];
+        }
+    }
+
     // Metodo get para el envío de correos al hacer una inscripción exitosa
     public function getByPagoId($id_pago) {
         $sql = "SELECT i.*,

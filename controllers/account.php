@@ -35,7 +35,7 @@ class Account extends Controller
         $this->checkMessages();
 
         // Comprobar si el perfil está completo
-        $this->view->perfil_completo = $this->model->isProfileComplete($_SESSION['user_id']);
+        $this->cargarDatosMenu();
 
         // Obtenemos los detalles completos del usuario
         $this->view->account = $this->model->read($_SESSION['user_id']);
@@ -66,6 +66,9 @@ class Account extends Controller
 
         // Compruebo si hay mensaje de éxito
         $this->checkMessages();
+
+        // Comprobar si el perfil está completo
+        $this->cargarDatosMenu();
 
         // Obtenemos el id del usuario
         $id = $_SESSION['user_id'];
@@ -245,6 +248,9 @@ class Account extends Controller
         // Compruebo si hay mensajes
         $this->checkMessages();
 
+        // Comprobar si el perfil está completo
+        $this->cargarDatosMenu();
+
         // Capa no validación del formulario
         if (isset($_SESSION['errors'])) {
 
@@ -361,6 +367,9 @@ class Account extends Controller
 
         // Comprobamos si hay algún mensaje para mostrar:
         $this->checkMessages();
+
+        // Comprobar si el perfil está completo
+        $this->cargarDatosMenu();
 
          # Obtenemos los detalles completos del usuario
         $this->view->account = $this->model->read($_SESSION['user_id']);
@@ -547,35 +556,35 @@ class Account extends Controller
     }
 
 
-        public function request_upgrade() {
-            $this->requireLogin();
+    public function request_upgrade() {
+        $this->requireLogin();
 
-            // 1. Obtenemos los datos frescos del usuario desde el modelo
-            $id_usuario = $_SESSION['user_id'];
+        // 1. Obtenemos los datos frescos del usuario desde el modelo
+        $id_usuario = $_SESSION['user_id'];
 
-            // Comprobamos que el perfil está completo
-            if (!$this->model->isProfileComplete($id_usuario)) {
-                $_SESSION['error'] = "No puedes solicitar ser organizador sin completar tu perfil primero.";
-                header('Location: ' . URL . 'account');
-                exit();
-            }
-
-            // Comprobamos que no es usuario organizador o admin
-            if ($_SESSION['role_id'] < 3) {
-                $_SESSION['error'] = "Ya tienes privilegios de gestión.";
-                header('Location: ' . URL . 'account');
-                exit();
-            }
-
-            // Registra la solicitud en la tabla 'upgrade_requests'
-            if ($this->model->create_upgrade_request($_SESSION['user_id'])) {
-                $_SESSION['notify'] = "Solicitud enviada con éxito. El administrador la revisará pronto.";
-            } else {
-                $_SESSION['error'] = "Hubo un error al procesar tu solicitud.";
-            }
-
+        // Comprobamos que el perfil está completo
+        if (!$this->model->isProfileComplete($id_usuario)) {
+            $_SESSION['error'] = "No puedes solicitar ser organizador sin completar tu perfil primero.";
             header('Location: ' . URL . 'account');
             exit();
-        }   
+        }
+
+        // Comprobamos que no es usuario organizador o admin
+        if ($_SESSION['role_id'] < 3) {
+            $_SESSION['error'] = "Ya tienes privilegios de gestión.";
+            header('Location: ' . URL . 'account');
+            exit();
+        }
+
+        // Registra la solicitud en la tabla 'upgrade_requests'
+        if ($this->model->create_upgrade_request($_SESSION['user_id'])) {
+            $_SESSION['notify'] = "Solicitud enviada con éxito. El administrador la revisará pronto.";
+        } else {
+            $_SESSION['error'] = "Hubo un error al procesar tu solicitud.";
+        }
+
+        header('Location: ' . URL . 'account');
+        exit();
+    }   
 
 }

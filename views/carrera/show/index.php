@@ -68,6 +68,27 @@
                                 </div>
                             </div>
 
+                            <!-- Bloque del Track / Mapa -->
+                            <?php if ($mod['track_embed']): ?>
+                                <div class="perfil-elevacion-container">
+                                    <h4><i class="fas fa-mountain"></i> Perfil de Elevación</h4>
+
+                                    <div class="perfil-wrapper">
+                                        <iframe 
+                                            src="<?= $mod['track_embed'] ?>" 
+                                            scrolling="no">
+                                        </iframe>
+                                    </div>
+                                    
+                                    <div class="perfil-footer">
+                                        <span class="perfil-info"></span>
+                                        <a href="<?= $mod['track_url'] ?>" target="_blank" class="perfil-link">
+                                            Ver track completo en Wikiloc <i class="fas fa-external-link-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
                             <div class="disponibilidad-container" style="grid-column: 1 / -1;">
                                 <?php 
                                     $libres = $mod['plazas_libres'];

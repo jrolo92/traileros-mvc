@@ -10,6 +10,8 @@
 
         function render() {
 
+            $this->cargarDatosMenu();
+            
             $this->view->render('ayuda/index');
         }
     }

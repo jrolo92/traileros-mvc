@@ -31,16 +31,24 @@
             color: var(--text-main);
 
             a.table-link {
-                color: var(--text-main); 
                 text-decoration: none;
-                display: inline-block;
-                width: 100%; 
+                color: var(--text-main); 
+                background-color: rgba($primary-green, 0.10); 
+                padding: 4px 10px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.3s ease;
+                border: 1px solid transparent;
             }
 
-            a.table-link:hover,
-            a.table-link:visited{
-                color: var(--text-main);
-                text-decoration: none;
+            a.table-link:hover {
+                background-color: $primary-green;     
+                color: white; 
+                transform: translateY(-2px); 
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                border-color: rgba(255, 255, 255, 0.1);
             }
         }
     }

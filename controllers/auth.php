@@ -183,7 +183,9 @@
         if ($perfil_completo) {
             $_SESSION['notify'] = "¡Bienvenido, " . $user->name . "!";
         } else {
-            $_SESSION['notify'] = "Hola " . $user->name . ". Deberías rellenar tus datos si quieres inscribirte en una carrera.";
+            $url_edit = URL . "/account/edit/";
+            $_SESSION['notify'] = "Hola " . $user->name . ". Deberías rellenar tus datos si quieres inscribirte en una carrera." . 
+                                  "<br><a href='$url_edit' class='btn-primary'>Completar Perfil</a>";
         }
 
         // Redirigir a la vista de login

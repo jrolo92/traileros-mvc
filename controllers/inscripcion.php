@@ -25,7 +25,6 @@ class Inscripcion extends Controller
         $this->generateTokenCsrf();
 
         $user_id = $_SESSION['user_id'];
-        $role_id = $_SESSION['role_id'];
 
         // Comprobar si hay mensajes:
         $this->checkMessages();
@@ -35,7 +34,10 @@ class Inscripcion extends Controller
 
         $this->view->title = "Mis Inscripciones - Traileros";
 
-        $this->view->inscripciones = $this->model->getInscripcionesByRole($user_id, $role_id);
+        $this->view->inscripciones = $this->model->getInscripcionesByUser($user_id);
+
+        // Cargamos datos que se repiten en todas las vistas
+        $this->cargarDatosMenu();
 
         $this->view->render('inscripcion/main/index');
     }
@@ -731,4 +733,6 @@ class Inscripcion extends Controller
         $this->view->render('error/index');
         exit;
     }
+
+    
 }

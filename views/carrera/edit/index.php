@@ -145,6 +145,12 @@
                                     <input type="number" name="mod_edad_maxima[]" value="<?= $mod['edad_maxima'] ?>" required>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="track_url">URL de Wikiloc (Opcional)</label>
+                                <input type="url" name="mod_track_url[]"
+                                    value="<?= htmlspecialchars($mod['track_url'] ?? '') ?>" 
+                                    placeholder="https://es.wikiloc.com/...">
+                            </div>
                         </div>
                         <?php endforeach; ?>
                     </div>

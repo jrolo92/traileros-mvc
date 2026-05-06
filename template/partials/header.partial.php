@@ -19,7 +19,13 @@
 
             <nav class ="header-nav">
                 <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
-                    <a href="<?= URL ?>user" title="Administrar Usuarios">Gestión de Usuarios</a>
+                    <a href="<?= URL ?>user" title="Administrar Usuarios">Gestión de Usuarios
+                        <?php if (isset($this->solicitudes_pendientes) && $this->solicitudes_pendientes > 0): ?>
+                            <span class="badge-notificacion">
+                                <?= $this->solicitudes_pendientes ?>
+                            </span>
+                        <?php endif; ?>
+                    </a>
                 <?php endif; ?>
             </nav>
 

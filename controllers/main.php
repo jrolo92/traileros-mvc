@@ -19,6 +19,8 @@
 
             $this->view->carreras = $carreraModel->getProximas();
 
+            $this->cargarDatosMenu();
+
             $this->view->title = "Inicio - Traileros";
 
             $this->view->render('main/index');

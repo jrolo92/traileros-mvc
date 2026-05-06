@@ -661,9 +661,9 @@
         $campos = ['apellidos', 'sexo', 'fecha_nac', 'dni', 'tlf', 'direccion', 'poblacion', 'provincia', 'cp', 'talla'];
 
         foreach ($campos as $campo) {
-            // Usam strlen + trim para asegurar que no hay solo espacios
+            // Usa strlen + trim para asegurar que no hay solo espacios
             if (!isset($user->$campo) || strlen(trim((string)$user->$campo)) === 0) {
-                // error_log("Campo incompleto: " . $campo);
+                // error_log("Campo incompleto: " . $campo);    
                 return false; 
             }
         }

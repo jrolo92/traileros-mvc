@@ -25,6 +25,8 @@ class Resultado extends Controller {
         // Obtenemos datos de los inscritos a la carrera
         $inscritos = $this->model->getClasificacion($evento_id);
 
+        $this->cargarDatosMenu();
+
         // Creamos vv para la vista
         $this->view->carrera = $carrera;
         $this->view->resultados = $inscritos;

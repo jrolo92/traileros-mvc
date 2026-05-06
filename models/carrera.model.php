@@ -105,8 +105,8 @@ class carreraModel extends Model {
             $idEvento = $db->lastInsertId();
 
             // 2. Insertar en tabla MODALIDADES
-            $sqlMod = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima)
-                       VALUES (:evento_id, :nombre_mod, :distancia, :desnivel, :precio, :cupo_maximo, :edad_min, :edad_max)";
+            $sqlMod = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima, track_url)
+                       VALUES (:evento_id, :nombre_mod, :distancia, :desnivel, :precio, :cupo_maximo, :edad_min, :edad_max, :track_url)";
             
             $stmt = $db->prepare($sqlMod);
 
@@ -119,7 +119,8 @@ class carreraModel extends Model {
                     ':precio'      => $mod['precio'],
                     ':cupo_maximo' => $mod['cupo_maximo'],
                     ':edad_min'    => $mod['edad_minima'] ?? 18,
-                    ':edad_max'    => $mod['edad_maxima'] ?? 99
+                    ':edad_max'    => $mod['edad_maxima'] ?? 99,
+                    ':track_url'   => $mod['track_url'] ?? null
                 ]);
             }
             
@@ -152,6 +153,7 @@ class carreraModel extends Model {
                     m.nombre as modalidad,
                     m.edad_minima, 
                     m.edad_maxima,
+                    m.track_url,
                     u.name AS organizador 
                 FROM Eventos e
                 INNER JOIN Users AS u ON e.organizador_id = u.id
@@ -227,8 +229,8 @@ class carreraModel extends Model {
             $stmtDel->execute();
 
             // 2. Insertar modalidades nuevas
-            $sql2 = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima)
-                     VALUES (:ev_id, :nom, :dist, :des, :pre, :cupo, :e_min, :e_max)";
+            $sql2 = "INSERT INTO modalidades (evento_id, nombre, distancia, desnivel, precio, cupo_maximo, edad_minima, edad_maxima, track_url)
+                     VALUES (:ev_id, :nom, :dist, :des, :pre, :cupo, :e_min, :e_max, :track_url)";
 
             $stmt2 = $db->prepare($sql2);
 
@@ -241,7 +243,8 @@ class carreraModel extends Model {
                     ':pre'   => $mod['precio'],
                     ':cupo'  => $mod['cupo_maximo'],
                     ':e_min' => $mod['edad_minima'],
-                    ':e_max' => $mod['edad_maxima']
+                    ':e_max' => $mod['edad_maxima'],
+                    ':track_url' => $mod['track_url'] ?? null
                 ]);
             }
 
@@ -487,7 +490,7 @@ class carreraModel extends Model {
                 $sql = "SELECT e.*, COUNT(i.id) AS total_inscritos 
                         FROM eventos e 
                         LEFT JOIN inscripciones i ON e.id = i.evento_id
-                        WHERE organizador_id = :user_id ORDER BY fecha DESC
+                        WHERE organizador_id = :user_id
                         GROUP BY e.id 
                         ORDER BY e.id ASC";
                 $stmt = $db->prepare($sql);

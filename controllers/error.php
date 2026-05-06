@@ -13,6 +13,7 @@
         }
 
         function render() {
+            $this->cargarDatosMenu();
             $this->view->render('error/index');
             exit();
         }

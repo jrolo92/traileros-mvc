@@ -129,6 +129,7 @@ CREATE TABLE modalidades (
   cupo_maximo int(10) unsigned DEFAULT 100,
   edad_minima tinyint(3) unsigned DEFAULT 18,
   edad_maxima tinyint(3) unsigned DEFAULT 99,
+  track_url VARCHAR(255) DEFAULT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (evento_id) REFERENCES eventos (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -28,9 +28,11 @@
             </a>
         </li>
     <?php endif; ?>
+
     
     <?php if ($_SESSION['role_id'] == 3): ?>
-        <?php if ($this->perfil_completo): ?>
+        <?php $completado = $this->perfil_completo ?? false; ?>
+        <?php if ($completado): ?>
             <li>
                 <a href="<?= URL ?>account/request_upgrade">
                     <i class="fas fa-rocket"></i> Solicitar ser Organizador

@@ -46,6 +46,8 @@
             $this->view->users = $this->model->get();
             $this->view->peticiones = $this->model->get_pending_requests();
 
+            $this->cargarDatosMenu();
+
             // Llama a la vista para renderizar la página
             $this->view->render('user/main/index');
         }

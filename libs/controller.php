@@ -70,6 +70,32 @@
             throw new Exception($mensaje, $codigo);
         }
 
+        // Método para cargar datos para varias vistas
+        protected function cargarDatosMenu(){
+            if (isset($_SESSION['user_id'])) {
+                // Notificación panel de control de usuarios
+                if ($_SESSION['role_id'] == 1) {
+                    // Cargamos el modelo
+                    require_once 'models/user.model.php';
+                    $userModel = new userModel();
+                    $this->view->solicitudes_pendientes = $userModel->count_pending_requests();
+                    
+                }
+                // Menu parcial del perfil
+                if (!isset($this->userModel)) {
+                    // Comprobamos si exite el método en el modelo actual (solo existe en userModel)
+                    if (isset($this->model) && method_exists($this->model, 'isProfileComplete')) {
+                        $this->view->perfil_completo = $this->model->isProfileComplete($_SESSION['user_id']);
+                    } else {
+                        // Y si no lo cargamos
+                        require_once 'models/user.model.php';
+                        $userModel = new userModel();
+                        $this->view->perfil_completo = $userModel->isProfileComplete($_SESSION['user_id']);
+                    }   
+                }
+            }
+        }
+
     }
 
 
