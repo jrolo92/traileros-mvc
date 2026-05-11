@@ -3,7 +3,7 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?></title>
-    <script src="<?= URL ?>public/js/search-user.js" defer></script>
+    <script src="<?= URL ?>public/js/search-ajax.js" defer></script>
     <script src="<?= URL ?>public/js/menu-order.js" defer></script>
 </head>
 <body>
@@ -80,7 +80,7 @@
                                     type="search"
                                     id="search" 
                                     name="term"
-                                    placeholder="Buscar inscripción..."
+                                    placeholder="Buscar usuario..."
                                     value="<?php echo htmlspecialchars($this->term ?? '') ?>"
                                     autocomplete="off"
                                 >
@@ -100,7 +100,7 @@
                             </ul>
                         </div>
                     </div>
-                </section>
+                
 
                 <div class="account-content">
                     <div class="table-responsive">
@@ -189,6 +189,7 @@
                 <div>
                     
                 </div>
+                </section>
             </section>
         </div>
     </main>

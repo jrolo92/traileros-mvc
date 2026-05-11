@@ -14,7 +14,7 @@ class Inscripcion extends Controller
 
     /*
         Método: render()
-        Descripción: Renderiza la lista principal de inscripciones
+        Descripción: Renderiza la lista principal de inscripciones en funcion del rol de usuario
     */
     public function render()
     {
@@ -25,6 +25,7 @@ class Inscripcion extends Controller
         $this->generateTokenCsrf();
 
         $user_id = $_SESSION['user_id'];
+        $role_id = $_SESSION['role_id'];
 
         // Comprobar si hay mensajes:
         $this->checkMessages();
@@ -32,9 +33,10 @@ class Inscripcion extends Controller
         // Limpia inscripciones que hayan quedado como pendientes durante un periodo mayor a 60 minutos
         $this->model->limpiarInscripcionesPendientes(60);
 
-        $this->view->title = "Mis Inscripciones - Traileros";
+        $this->view->title = "Gestión de Inscripciones - Traileros";
 
-        $this->view->inscripciones = $this->model->getInscripcionesByUser($user_id);
+        $inscripciones = $this->model->getInscripcionesByRole($user_id, $role_id);
+        $this->view->inscripciones = json_decode(json_encode($inscripciones), true);
 
         // Cargamos datos que se repiten en todas las vistas
         $this->cargarDatosMenu();
@@ -506,17 +508,20 @@ class Inscripcion extends Controller
         $term = isset($_GET['term']) ? trim($_GET['term']) : '';
         $this->view->term = $term;
 
-        // Si el término está vacío, cargamos todas las inscripciones (método main/get)
+        // Si el término está vacío, cargamos todas las inscripciones (render)
         if ($term === '') {
-            $this->view->inscripciones = $this->model->getInscripcionesByRole($user_id,$role_id);
-            $this->view->subtitle = null;
+            $this->render(); 
+            return;
         } else {
-            $this->view->inscripciones = $this->model->search($term);
+            $inscripciones = $this->model->search($term);
             $this->view->subtitle = "Resultados de búsqueda: " . htmlspecialchars($term);
         }
 
-        $this->view->title = "Resultados de búsqueda: " . $term;
+        // Pasamos a array para que no de problemas en las vistas
+        $inscripcionesArray = json_decode(json_encode($inscripciones), true);
 
+        $this->view->inscripciones = $inscripcionesArray;
+        $this->view->title = "Resultados de búsqueda: " . $term;
         $this->view->render('inscripcion/main/index');
     }
 

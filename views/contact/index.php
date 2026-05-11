@@ -89,7 +89,27 @@
                         </button>
                     </div>
                 </div>
-
+                <br>
+                <!-- Dirección y Mapa -->
+                 <header class="form-card-header">
+                    <i class="bi bi-envelope-paper"></i>
+                    <h2>Dirección</h2>
+                    <p>Visitanos en nuestra sede</p>
+                </header>
+                <div class="contact-map" style="margin-top: 30px; border-radius: 8px; overflow: hidden; border: 1px solid #ddd;">
+                    <iframe 
+                        width="100%" 
+                        height="300" 
+                        frameborder="0" 
+                        scrolling="no" 
+                        marginheight="0" 
+                        marginwidth="0" 
+                        src="https://maps.google.com/maps?q=Ubrique,España&t=&z=15&ie=UTF8&iwloc=&output=embed">
+                    </iframe>
+                    <br>
+                    <p><i class="fas fa-map-marker-alt"></i> Calle Falsa 123, Ubrique, España</p>
+                    <p><i class="fas fa-phone"></i> +34 600 000 000</p>
+                </div>
             </form>
         </div>
     </div>

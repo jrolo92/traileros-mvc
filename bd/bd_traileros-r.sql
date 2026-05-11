@@ -36,7 +36,7 @@ CREATE TABLE users (
   provincia varchar(50) DEFAULT NULL,
   codigo_postal varchar(10) DEFAULT NULL,
   pais varchar(50) DEFAULT 'España',
-  club varchar(100) DEFAULT NULL,
+  club varchar(100) DEFAULT 'Independiente',
   talla_camiseta enum('XS','S','M','L','XL','XXL') DEFAULT NULL,
   federado tinyint(1) DEFAULT 0,
   num_licencia varchar(50) DEFAULT NULL,
@@ -177,11 +177,11 @@ DROP TABLE IF EXISTS resultados;
 CREATE TABLE resultados (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,
   inscripcion_id int(10) unsigned UNIQUE NOT NULL,
-  tiempo time DEFAULT NULL,
+  tiempo TIME DEFAULT NULL,
   posicion_general int(11) DEFAULT NULL,
   posicion_categoria int(11) DEFAULT NULL,
   estado enum('FINISHER', 'DNS', 'DNF', 'DNP', 'DESC') DEFAULT 'DNS',
-  ritmo_medio VARCHAR(10) DEFAULT NULL,
+  ritmo_medio TIME DEFAULT NULL,
   comentarios TEXT DEFAULT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (inscripcion_id) REFERENCES inscripciones (id) ON DELETE CASCADE

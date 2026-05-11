@@ -5,7 +5,7 @@
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
     <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
-    <script src="<?php echo URL ?>public/js/search-ges-eventos.js" defer></script>
+    <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 
 <body>
@@ -86,10 +86,9 @@
                                         <th>Nombre del Evento</th>
                                         <th>Fecha</th>
                                         <th class="text-center">Estado</th>
-                                        <th class="text-end">Nº Inscritos</th>
                                         <th class="text-center">Acciones</th>
-                                        <th class="text-center">Exportar Inscritos</th>
-                                        <th class="text-center">Importar resultados</th>
+                                        <th class="text-center">Inscritos</th>
+                                        <th class="text-center">Resultados</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -103,11 +102,6 @@
                                                     <?= $e['estado'] ?>
                                                 </span>
                                             </td>
-                                            <td>
-                                                <a href="<?= URL ?>inscripcion/participantes/<?= $e['id'] ?>" class="table-link" title="Ver listado de inscritos">
-                                                    <strong><?= $e['total_inscritos']?></strong>
-                                                </a>
-                                            </td>
                                             
                                             <td class="action-columns">
                                                 <div class="admin-actions" style="justify-content: center;">
@@ -118,14 +112,14 @@
                                                     <a href="<?= URL ?>carrera/edit/<?= $e['id'] ?>" class="action-btn edit-btn" title="Editar Carrera">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
-                                                
-                                                    <a href="<?= URL ?>resultado/render/<?= $e['id'] ?>" class="action-btn result-btn" title="Ver Clasificación">
-                                                        <i class="fas fa-trophy"></i>
-                                                    </a>
+                                            
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="admin-actions" style="justify-content: center;">
+                                                    <a href="<?= URL ?>inscripcion/participantes/<?= $e['id'] ?>" class="table-link" title="Ver listado de inscritos">
+                                                        <strong><?= $e['total_inscritos']?></strong>
+                                                    </a>
                                                     <a href="<?= URL ?>inscripcion/export/<?= $this->carrera['id'] ?>" class="action-btn view-btn" title="Exportar CSV">
                                                         <i class="fas fa-file-csv"></i>
                                                     </a>
@@ -146,6 +140,10 @@
                                                         <input type="file" id="csv_<?= $e['id'] ?>" name="csv_file" accept=".csv" 
                                                             onchange="document.getElementById('form_csv_<?= $e['id'] ?>').submit()">
                                                     </form>
+
+                                                    <a href="<?= URL ?>resultado/render/<?= $e['id'] ?>" class="action-btn result-btn" title="Ver Clasificación">
+                                                        <i class="fas fa-trophy"></i>
+                                                    </a>
                                                 </div>   
                                             </td>
                                         </tr>

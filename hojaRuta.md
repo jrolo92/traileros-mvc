@@ -54,7 +54,11 @@ public/
             - Posibilidad de pasar a ser usuario organizador mediante una petición pulsando un botón (requiere tener los datos del perfil completos). La petición le llega al panel de control de usuarios de administrador y podrá decidir si aceptarlo o no.
             - Ahora hay un acceso directo en el header al panel de gestión de eventos (para usuarios administrador y organizador) y de usuarios (solo para el admin).
 
-06/05/05: Integración dinámica de tracks de las distintas modalidades de las carreras mediante el visor embebido de wikiloc.
+06/05/26: Integración dinámica de tracks de las distintas modalidades de las carreras mediante el visor embebido de wikiloc.
+
+07-08/05/26: Creación y configuración del server para el despliegue usando AWS (free-tier). Finalización y entrega de la documentación del proyecto. Readme de proyecto y del despliegue.
+
+11/05/26: Reorganización de los archivos de funcionalidades de javascript (un único search-AJAX que sirve para todas las vistas).
 
 
 

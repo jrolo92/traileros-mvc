@@ -17,7 +17,7 @@ class InscripcionModel extends Model {
                             e.nombre as evento_nombre, 
                             e.fecha as evento_fecha, 
                             c.nombre as categoria_nombre, 
-                            u.name as usuario_nombre
+                            CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre
                     FROM Inscripciones i
                     LEFT JOIN Eventos e ON i.evento_id = e.id
                     LEFT JOIN Categorias c ON i.categoria_id = c.id
@@ -26,18 +26,18 @@ class InscripcionModel extends Model {
             // --- FILTRADO POR ROL ---
             if ($role_id == 1) { 
                 // ADMIN: ve todo.
-                $query = $db->prepare($sql . " ORDER BY e.fecha DESC, i.user_id ASC");
+                $query = $db->prepare($sql . " ORDER BY i.fecha_inscripcion DESC");
                 $query->execute();
             } 
             elseif ($role_id == 2) { 
                 // ORGANIZADOR: Solo ve inscripciones de SUS eventos
-                $sql .= " WHERE e.organizador_id = :user_id ORDER BY e.fecha DESC, i.user_id ASC";
+                $sql .= " WHERE e.organizador_id = :user_id ORDER BY i.fecha_inscripcion DESC";
                 $query = $db->prepare($sql);
                 $query->execute(['user_id' => $user_id]);
             } 
             else { 
                 // USUARIO: Solo ve SUS propias inscripciones
-                $sql .= " WHERE i.user_id = :user_id ORDER BY e.fecha DESC, i.user_id ASC";
+                $sql .= " WHERE i.user_id = :user_id ORDER BY i.fecha_inscripcion DESC";
                 $query = $db->prepare($sql);
                 $query->execute(['user_id' => $user_id]);
             }
@@ -60,9 +60,10 @@ class InscripcionModel extends Model {
         try {
             $db = $this->db->connect();
             // Solo traemos las inscripciones donde el ID de usuario coincida
-            $sql = "SELECT i.*, e.nombre as evento_nombre, e.fecha as evento_fecha 
+            $sql = "SELECT i.*, e.nombre as evento_nombre, e.fecha as evento_fecha, u.name as usuario_nombre
                     FROM inscripciones i
                     INNER JOIN eventos e ON i.evento_id = e.id
+                    INNER JOIN users u ON i.user_id = u.id
                     WHERE i.user_id = :user_id
                     ORDER BY e.fecha DESC";
             
@@ -331,13 +332,16 @@ class InscripcionModel extends Model {
             $db = $this->db->connect();
 
             $sql = "SELECT  i.id AS inscripcion_id, 
-                            CONCAT_WS(' ', u.apellidos, u.name) AS nombre_completo, 
+                            CONCAT_WS(',', u.apellidos, u.name) AS nombre_completo, 
                             u.email, 
-                            i.fecha_inscripcion 
+                            i.fecha_inscripcion, 
+                            i.dorsal,
+                            m.nombre as modalidad
                     FROM inscripciones i
                     INNER JOIN users u ON i.user_id = u.id
+                    INNER JOIN modalidades m ON i.modalidad_id = m.id
                     WHERE i.evento_id = :id
-                    ORDER BY nombre_completo ASC";
+                    ORDER BY i.id ASC";
 
             $stmt = $db->prepare($sql);
             $stmt->execute(['id' => $id_evento]);
@@ -367,14 +371,13 @@ class InscripcionModel extends Model {
             $sql = "SELECT i.*, 
                     e.nombre as evento_nombre,
                     e.fecha as evento_fecha,
-                    u.name as usuario_nombre, 
-                    u.apellidos as usuario_apellidos,
+                    CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre,
                     c.nombre as categoria_nombre
                 FROM Inscripciones i
                 INNER JOIN Eventos e ON i.evento_id = e.id
                 INNER JOIN users u ON i.user_id = u.id
                 LEFT JOIN Categorias c ON i.categoria_id = c.id
-                WHERE CONCAT_WS('', u.name, u.apellidos, e.nombre, e.fecha, i.dorsal) LIKE :term
+                WHERE CONCAT_WS(' ', u.name, u.apellidos, e.nombre, e.fecha, i.dorsal) LIKE :term
                 ORDER BY i.fecha_inscripcion DESC";
 
             $db = $this->db->connect();
@@ -383,7 +386,7 @@ class InscripcionModel extends Model {
             $term = "%$term%";
 
             $stmt->bindParam(':term', $term, PDO::PARAM_STR);
-            $stmt->setFetchMode(PDO::FETCH_OBJ);
+            $stmt->setFetchMode(PDO::FETCH_ASSOC);
             $stmt->execute();
             return $stmt->fetchAll();
 
@@ -414,8 +417,7 @@ class InscripcionModel extends Model {
         $sql = "SELECT i.*, 
                    e.nombre as evento_nombre, 
                    e.fecha as evento_fecha,
-                   u.name as usuario_nombre, 
-                   u.apellidos as usuario_apellidos,
+                   CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre,
                    c.nombre as categoria_nombre
             FROM Inscripciones i
             INNER JOIN Eventos e ON i.evento_id = e.id
@@ -445,7 +447,7 @@ class InscripcionModel extends Model {
             $db = $this->db->connect();
             $query = $db->prepare($sql);
             $query->execute($params);
-            return $query->fetchAll(PDO::FETCH_OBJ);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             $this->handleError($e);
         }

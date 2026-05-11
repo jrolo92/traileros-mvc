@@ -27,6 +27,17 @@ class Resultado extends Controller {
 
         $this->cargarDatosMenu();
 
+        // Lógica de retorno
+        $user_role = $_SESSION['role_id'] ?? 3;
+
+        if ($user_role == 1 || $user_role == 2) {
+            // Si es Admin u Organizador, lo mandamos a la gestión del evento
+            $this->view->back_url = URL . "carrera/gestion/";
+        } else {
+            // Si es un corredor, lo mandamos a la ficha pública
+            $this->view->back_url = URL . "carrera/show/" . $evento_id;
+        }
+
         // Creamos vv para la vista
         $this->view->carrera = $carrera;
         $this->view->resultados = $inscritos;
@@ -105,10 +116,164 @@ class Resultado extends Controller {
         // Calculamos posición general y por categorias
         $this->model->calcularRankings($datos['evento_id']);
         $this->model->calcularRankingsCategorias($datos['evento_id']);
+        $this->model->calcularRitmoMedio($datos['evento_id']);
 
         unset($_SESSION['import_data']);
         header('Location: ' . URL . 'resultado/render/' . $datos['evento_id']);
         exit();
+    }
+
+    public function search($params) {
+        $this->requireLogin();
+        
+        $evento_id = isset($params[0]) ? (int) $params[0] : 0;
+        
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+
+        $carrera = $this->model->getEvento($evento_id);
+        if(!$carrera) {
+            $this->errorNotFound($evento_id);
+            return;
+        }
+
+        // Si no hay búsqueda
+        if (empty($term)) {
+            // Trae la clasificación completa
+            $inscritos = $this->model->getClasificacion($evento_id);
+        } else {
+            // Si hay texto, buscamos
+            $inscritos = $this->model->search($evento_id, $term);
+        }
+
+        $this->cargarDatosMenu();
+        
+        $user_role = $_SESSION['role_id'] ?? 3;
+        $this->view->back_url = ($user_role <= 2) ? URL . "carrera/gestion/" : URL . "carrera/show/" . $evento_id;
+
+        // Pasamos los datos a la vista
+        $this->view->carrera = $carrera;
+        $this->view->resultados = $inscritos; 
+        $this->view->term = $term;
+        $this->view->title = "Resultados - " . $carrera['nombre'];
+        
+        $this->view->render('resultado/main/index');
+    }
+
+    public function order($params) {
+        $this->requireLogin();
+        
+        $evento_id = (int) $params[0];
+        $criterio = $params[1] ?? 'posicion_general';
+
+        $carrera = $this->model->getEvento($evento_id);
+        if(!$carrera) $this->errorNotFound($evento_id);
+
+        // Obtenemos los datos con el nuevo orden
+        $inscritos = $this->model->order($evento_id, $criterio);
+
+        $this->cargarDatosMenu();
+
+        // Reutilizamos la lógica de back_url y vista del render()
+        $user_role = $_SESSION['role_id'] ?? 3;
+        $this->view->back_url = ($user_role <= 2) ? URL . "carrera/gestion/" : URL . "carrera/show/" . $evento_id;
+
+        $this->view->carrera = $carrera;
+        $this->view->resultados = $inscritos;
+        $this->view->title = "Resultados - " . $carrera['nombre'];
+        
+        // Renderizamos la misma vista que el método render()
+        $this->view->render('resultado/main/index');
+    }
+
+    /**
+     * Descripción: Exporta en PDF la clasificación general de un evento.
+     * URL: resultados/exportPdf/ID_EVENTO
+    */
+    public function exportPdf($params) {
+        // 1. Validaciones de seguridad
+        $this->requireLogin();
+        // $this->requirePrivilege($GLOBALS['resultados']['export'] ?? 1);
+
+        if (!isset($params[0])) {
+            header('Location: ' . URL . 'resultados');
+            return;
+        }
+
+        $evento_id = (int) $params[0];
+
+        // 2. Obtención de datos desde el modelo
+        $evento = $this->model->getEvento($evento_id);
+        $clasificacion = $this->model->getClasificacion($evento_id);
+
+        if (!$evento) {
+            header('Location: ' . URL . 'resultados');
+            return;
+        }
+
+        // 3. Configuración de FPDF
+        $pdf = new \Fpdf\Fpdf();
+        $pdf->AddPage();
+        $pdf->SetAutoPageBreak(true, 20);
+
+        // --- CABECERA ---
+        // Título principal
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(33, 47, 61); // Azul oscuro
+        $pdf->Cell(0, 15, utf8_decode('CLASIFICACIÓN GENERAL'), 0, 1, 'C');
+        
+        // Nombre del evento y fecha
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(0, 7, utf8_decode(strtoupper($evento['nombre'])), 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 10);
+        $fecha_formateada = date('d/m/Y', strtotime($evento['fecha']));
+        $pdf->Cell(0, 7, utf8_decode('Fecha de la prueba: ' . $fecha_formateada), 0, 1, 'C');
+        $pdf->Ln(10);
+
+        // --- TABLA DE RESULTADOS ---
+        // Colores de la cabecera de tabla
+        $pdf->SetFillColor(44, 62, 80); 
+        $pdf->SetTextColor(255);        
+        $pdf->SetDrawColor(128, 128, 128);
+        $pdf->SetFont('Arial', 'B', 10);
+
+        // Anchos de columna (Total: 190)
+        // Pos(15) + Dorsal(15) + Nombre(75) + Modalidad(55) + Tiempo(30) = 190
+        $pdf->Cell(15, 8, 'POS', 1, 0, 'C', true);
+        $pdf->Cell(15, 8, 'DOR', 1, 0, 'C', true);
+        $pdf->Cell(75, 8, 'CORREDOR', 1, 0, 'C', true);
+        $pdf->Cell(55, 8, 'MODALIDAD', 1, 0, 'C', true);
+        $pdf->Cell(30, 8, 'TIEMPO', 1, 1, 'C', true);
+
+        // --- LISTADO DE CORREDORES ---
+        $pdf->SetTextColor(0);
+        $pdf->SetFont('Arial', '', 9);
+        $fill = false; 
+        $pdf->SetFillColor(242, 244, 244); 
+
+        foreach ($clasificacion as $row) {
+            $pdf->Cell(15, 7, $row['posicion_general'], 1, 0, 'C', $fill);
+            $pdf->Cell(15, 7, $row['dorsal'], 1, 0, 'C', $fill);
+            
+            // Usamos utf8_decode
+            $pdf->Cell(75, 7, utf8_decode($row['nombre']), 1, 0, 'L', $fill);
+            $pdf->Cell(55, 7, utf8_decode($row['modalidad']), 1, 0, 'C', $fill);
+            
+            // Destacamos el tiempo en negrita
+            $pdf->SetFont('Arial', 'B', 9);
+            $pdf->Cell(30, 7, $row['tiempo'], 1, 1, 'C', $fill);
+            $pdf->SetFont('Arial', '', 9);
+
+            $fill = !$fill; 
+        }
+
+        // Pie de página con fecha de generación
+        $pdf->Ln(5);
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(0, 10, utf8_decode('Documento generado el ' . date('d/m/Y H:i')), 0, 0, 'R');
+
+        // 4. Salida del PDF (se abre en el navegador)
+        $nombre_archivo = 'Clasificacion_' . str_replace(' ', '_', $evento['nombre']) . '.pdf';
+        $pdf->Output('I', $nombre_archivo);
     }
 
     /* --- Métodos privados de seguridad --- */

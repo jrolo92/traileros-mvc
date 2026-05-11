@@ -10,6 +10,7 @@
 
 <body>
     <?php require_once 'template/partials/header.partial.php'?>
+    <!-- <?php var_dump($this->rol) ?> -->
 
     <main class="account-container">
         <div class="account-card">
@@ -27,7 +28,7 @@
                 </div>
 
                 <div class="back-navigation">
-                        <a href="javascript:window.history.back();" class="btn-back">
+                        <a href="<?= $this->back_url ?>" class="btn-back">
                             <i class="fas fa-arrow-left"></i>
                             <span>Volver</span>
                         </a>
@@ -40,10 +41,29 @@
 
                 <div class="account-content">
                     
-                    <div id="subtitle-container">
-                        <div class="subtitle-badge">
-                            <i class="fas fa-calendar-alt"></i> <?= date('d/m/Y', strtotime($this->carrera['fecha'])) ?>
+                    <div class="carreras-toolbar">
+                        <div id="subtitle-container">
+                            <div class="subtitle-badge">
+                                <i class="fas fa-calendar-alt"></i> <?= $this->title ?>
+                            </div>
+                            <div class="subtitle-badge">
+                                <i class="fas fa-calendar-alt"></i> <?= date('d/m/Y', strtotime($this->carrera['fecha'])) ?>
+                            </div>
                         </div>
+
+                        <form class="carreras-search" action="<?= URL ?>resultado/search/<?= $this->carrera['id'] ?>" method="GET">
+                                <div class="search-wrapper">
+                                    <i class="fas fa-search"></i>
+                                    <input
+                                        type="search"
+                                        id="search" 
+                                        name="term"
+                                        placeholder="Buscar carrera..."
+                                        value="<?php echo htmlspecialchars($this->term ?? '') ?>"
+                                        autocomplete="off"
+                                    >
+                                </div>
+                        </form>
                     </div>
 
                     <?php if (empty($this->resultados)): ?>
@@ -56,11 +76,14 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th class="text-center">Pos.</th>
-                                        <th class="text-center">Dorsal</th>
-                                        <th>Corredor</th>
-                                        <th>Modalidad</th>
-                                        <th>Tiempo</th>
+                                        <th><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/id">Id</th>
+                                        <th class="text-center"><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/posicion_general">Pos. General</th>
+                                        <th><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/modalidad">Modalidad</th>
+                                        <th class="text-center"><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/posicion_categoria">Pos. Categoría</th>  
+                                        <th><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/categoria">Categoría</th>                                  
+                                        <th class="text-center"><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/dorsal">Dorsal</th>
+                                        <th><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/nombre">Corredor</th>                          
+                                        <th><a href="<?= URL ?>resultado/order/<?= $this->carrera['id'] ?>/tiempo">Tiempo</th>
                                         <th>Estado</th>
                                     </tr>
                                 </thead>
@@ -68,11 +91,28 @@
                                     <?php foreach ($this->resultados as $r): ?>
                                         <tr>
                                             <td class="text-center">
+                                                <span class="club-text"><?= htmlspecialchars($r['id']) ?></span>
+                                            </td>
+                                            <td class="text-center">
                                                 <strong style="font-size: 1.1rem;">
                                                     <?= ($r['estado'] == 'FINISHER') ? $r['posicion_general'] . 'º' : '-' ?>
                                                 </strong>
                                             </td>
 
+                                            <td>
+                                                <span class="club-text"><?= htmlspecialchars($r['modalidad']) ?></span>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <strong style="font-size: 1.1rem;">
+                                                    <?= ($r['estado'] == 'FINISHER') ? $r['posicion_categoria'] . 'º' : '-' ?>
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                <span class="club-text"><?= htmlspecialchars($r['categoria']) ?></span>
+                                            </td>
+                                            
                                             <td class="text-center">
                                                 <span class="role-badge" style="background: #e9ecef; color: #495057;">
                                                     #<?= $r['dorsal'] ?>
@@ -84,10 +124,6 @@
                                             </td>
 
                                             <td>
-                                                <span class="club-text"><?= htmlspecialchars($r['modalidad']) ?></span>
-                                            </td>
-
-                                            <td>
                                                 <span style="font-family: monospace; font-weight: bold; font-size: 1rem;">
                                                     <?= ($r['estado'] == 'FINISHER') ? $r['tiempo'] : '--:--:--' ?>
                                                 </span>
@@ -96,9 +132,9 @@
                                             <td>
                                                 <?php
                                                     // Lógica de colores según el estado
-                                                    $clase_badge = 'editor'; // Por defecto (gris/azul)
-                                                    if ($r['estado'] == 'FINISHER') $clase_badge = 'admin'; // Verde
-                                                    if ($r['estado'] == 'DNF' || $r['estado'] == 'DSQ') $clase_badge = 'delete-btn'; // Rojo/Naranja
+                                                    $clase_badge = 'editor'; 
+                                                    if ($r['estado'] == 'FINISHER') $clase_badge = 'admin'; 
+                                                    if ($r['estado'] == 'DNF' || $r['estado'] == 'DSQ') $clase_badge = 'delete-btn';
                                                 ?>
                                                 <span class="role-badge <?= $clase_badge ?>" style="padding: 4px 8px; border-radius: 4px;">
                                                     <?= $r['estado'] ?>
@@ -116,7 +152,7 @@
                 <footer class="admin-table-footer" style="display: flex; justify-content: space-between; align-items: center;">
                     <p>Corredores en meta: <strong><?= count($this->resultados) ?></strong></p>
                     
-                    <a href="<?= URL ?>resultado/pdf/<?= $this->carrera['id'] ?>" class="btn-primary" style="text-decoration: none;">
+                    <a href="<?= URL ?>resultado/exportPdf/<?= $this->carrera['id'] ?>" class="btn-primary" style="text-decoration: none;">
                         <i class="fas fa-file-pdf"></i> Exportar Clasificación
                     </a>
                 </footer>

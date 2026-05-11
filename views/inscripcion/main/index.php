@@ -108,54 +108,54 @@
                                 <tbody>
                                     <?php foreach ($this->inscripciones as $i): ?>
                                         <tr>
-                                            <td><?= $i->id ?></td>
+                                            <td><?= $i['id'] ?></td>
                                             <?php if ($_SESSION['role_id'] < 3): ?>
                                                 <td>
-                                                    <strong><?= htmlspecialchars($i->usuario_nombre) ?></strong>
+                                                    <strong><?= htmlspecialchars($i['usuario_nombre']) ?></strong>
                                                 </td>
                                             <?php endif; ?>
 
                                             <td>
-                                                <span class="club-text" style="font-weight: 600;"><?= htmlspecialchars($i->evento_nombre) ?></span>
+                                                <span class="club-text" style="font-weight: 600;"><?= htmlspecialchars($i['evento_nombre']) ?></span>
                                             </td>
 
                                             <td class="text-center">
                                                 <span class="role-badge" style="background: #e9ecef; color: #495057;">
-                                                    #<?= $i->dorsal ?>
+                                                    #<?= $i['dorsal'] ?>
                                                 </span>
                                             </td>
 
-                                            <td class="text-nowrap"><?= date('d/m/Y', strtotime($i->evento_fecha)) ?></td>
+                                            <td class="text-nowrap"><?= date('d/m/Y', strtotime($i['evento_fecha'])) ?></td>
 
                                             <td>
-                                                <span class="role-badge <?= ($i->estado_pago == 'completado') ? 'admin' : 'editor' ?>">
-                                                    <?= strtoupper($i->estado_pago) ?>
+                                                <span class="role-badge <?= ($i['estado_pago'] == 'completado') ? 'admin' : 'editor' ?>">
+                                                    <?= strtoupper($i['estado_pago']) ?>
                                                 </span>
                                             </td>
 
-                                            <td class="text-right"><strong><?= number_format($i->precio_final, 2) ?>€</strong></td>
+                                            <td class="text-right"><strong><?= number_format($i['precio_final'], 2) ?>€</strong></td>
 
                                             <td class="actions-column">
                                                 <div class="admin-actions">
-                                                    <a href="<?= URL ?>inscripcion/show/<?= $i->user_id ?>/<?= $i->evento_id ?>" 
+                                                    <a href="<?= URL ?>inscripcion/show/<?= $i['user_id'] ?>/<?= $i['evento_id'] ?>" 
                                                        class="action-btn view-btn" 
                                                        title="Ver detalles">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
-                                                    <a href="<?= URL ?>resultado/render/<?= $i->evento_id ?>" 
+                                                    <a href="<?= URL ?>resultado/render/<?= $i['evento_id'] ?>" 
                                                         class="action-btn result-btn" 
                                                         title="Ver Clasificación">
                                                         <i class="fas fa-trophy"></i>
                                                     </a>
                                                     <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['edit'])): ?>
-                                                        <a href="<?= URL ?>inscripcion/edit/<?= $i->user_id ?>/<?= $i->evento_id ?>" 
+                                                        <a href="<?= URL ?>inscripcion/edit/<?= $i['user_id'] ?>/<?= $i['evento_id'] ?>" 
                                                         class="action-btn edit-btn <?= !in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['edit']) ? 'disabled' : '' ?>"
                                                         title="Editar">
                                                             <i class="fas fa-pencil-alt"></i>
                                                         </a>
                                                     <?php endif; ?>
                                                     <?php if (in_array($_SESSION['role_id'], $GLOBALS['inscripcion']['cancel'])): ?>
-                                                        <form method="POST" action="<?= URL ?>inscripcion/cancel/<?= $i->id ?>" class="d-inline">
+                                                        <form method="POST" action="<?= URL ?>inscripcion/cancel/<?= $i['id'] ?>" class="d-inline">
                                                             <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                                                             <button type="submit" class="action-btn delete-btn" 
                                                                     onclick="return confirm('¿Desea cancelar esta inscripción?')"
