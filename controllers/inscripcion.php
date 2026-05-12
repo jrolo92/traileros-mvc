@@ -33,7 +33,11 @@ class Inscripcion extends Controller
         // Limpia inscripciones que hayan quedado como pendientes durante un periodo mayor a 60 minutos
         $this->model->limpiarInscripcionesPendientes(60);
 
-        $this->view->title = "Gestión de Inscripciones - Traileros";
+        if ($role_id < 3){
+            $this->view->title = "Gestión de Inscripciones - " . $_SESSION['user_name'];
+        } else {
+            $this->view->title = "Mis carreras - " . $_SESSION['user_name'];
+        }       
 
         $inscripciones = $this->model->getInscripcionesByRole($user_id, $role_id);
         $this->view->inscripciones = json_decode(json_encode($inscripciones), true);
@@ -64,9 +68,9 @@ class Inscripcion extends Controller
 
         // Campos fijos obligatorios para la inscripción.
         $campos_obligatorios = [
-            'apellidos', 'sexo', 'fecha_nacimiento', 'dni', 
-            'telefono', 'direccion', 'poblacion', 'provincia',
-            'codigo_postal', 'pais', 'club', 'talla_camiseta'
+            'apellidos', 'sexo', 'fecha_nac', 'dni', 
+            'tlf', 'direccion', 'poblacion', 'provincia',
+            'cp', 'pais', 'club', 'talla'
         ];
 
         foreach ($campos_obligatorios as $campo) {
@@ -552,7 +556,11 @@ class Inscripcion extends Controller
         ];
         $nombre_criterio = $titulos[$criterio] ?? 'Fecha';
 
-        $this->view->title = "Mis Inscripciones - Traileros";
+        if ($role_id < 3){
+            $this->view->title = "Gestión de Inscripciones - " . $_SESSION['user_name'];
+        } else {
+            $this->view->title = "Mis carreras - " . $_SESSION['user_name'];
+        }       
         
         $this->view->notify = "Inscripciones ordenadas por: " . $nombre_criterio;
         // $this->view->subtitle = "Inscripciones ordenadas por: " . $nombre_criterio;
@@ -560,18 +568,29 @@ class Inscripcion extends Controller
         $this->view->render('inscripcion/main/index');
     }
 
+    /**
+     * Muestra los participantes que se han inscrito en un evento
+     */
     public function participantes($param){
         $this->requireLogin();
         $this->requirePrivilege($GLOBALS['inscripcion']['participantes']);
 
         $id_carrera = $param[0];
 
-        $this->view->inscritos = $this->model->getInscritosPorEvento($id_carrera);
+        // Capturamos los datos de la URL (enviados por el js o por los enlaces de ordn)
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+        $order = isset($_GET['order']) ? (int)$_GET['order'] : 1;
+
+        // Pasamos variables a la vista
+        $this->view->id_carrera = $id_carrera;
+        $this->view->term = $term;
+        $this->view->order = $order;
+        $this->view->inscritos = $this->model->getInscritosFiltrados($id_carrera, $term, $order);
 
         $carreraModel = $this->loadModel('carrera');
         $this->view->carrera = $carreraModel->read($id_carrera);
     
-        $this->view->title = "Listado de Inscritos - ";
+        $this->view->title = "Listado de Inscritos";
         $this->view->render('inscripcion/participantes/index');
     }
 

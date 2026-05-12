@@ -4,7 +4,6 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
-    <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
     <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 
@@ -42,6 +41,13 @@
 
                 <section class="carreras-container">
                     <div class="carreras-toolbar">
+                        <div id="subtitle-container">
+                            <div class="subtitle-badge">
+                                <i class="fas fa-calendar-alt"></i> <?= $this->title ?>
+                            </div>
+                            
+                        </div>
+
                         <form class="carreras-search" action="<?php echo URL ?>inscripcion/search" method="GET">
                             <div class="search-wrapper">
                                 <i class="fas fa-search"></i>
@@ -56,21 +62,21 @@
                             </div>
                         </form>
 
-                        <div class="carreras-dropdown" id="orderDropdown">
+                        <!-- <div class="carreras-dropdown" id="orderDropdown">
                             <button type="button" class="dropdown-button" id="dropdownBtn">
                                 <span>Ordenar por</span>
                                 <i class="fas fa-chevron-down"></i>
                             </button>
 
                             <ul class="dropdown-list">
-                                <li><a href="<?php echo URL ?>inscripcion/order/id">Id</a></li>
-                                <li><a href="<?php echo URL ?>inscripcion/order/usuario">Participante</a></li>
-                                <li><a href="<?php echo URL ?>inscripcion/order/evento">Evento</a></li>
-                                <li><a href="<?php echo URL ?>inscripcion/order/dorsal">Dorsal</a></li>
-                                <li><a href="<?php echo URL ?>inscripcion/order/fecha">Fecha</a></li>
-                                <li><a href="<?php echo URL ?>inscripcion/order/estado">Estado de Pago</a></li>
+                                <li>Id</a></li>
+                                <li>Participante</a></li>
+                                <li>Evento</a></li>
+                                <li>Dorsal</a></li>
+                                <li>Fecha</a></li>
+                                <li>Estado de Pago</a></li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
 
                 <div class="account-content">
@@ -93,14 +99,14 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
+                                        <th><a href="<?php echo URL ?>inscripcion/order/id">Id</th>
                                         <?php if ($_SESSION['role_id'] < 3): ?>
-                                            <th>Participante</th>
+                                            <th><a href="<?php echo URL ?>inscripcion/order/usuario">Participante</th>
                                         <?php endif; ?>
-                                        <th>Evento / Carrera</th>
-                                        <th class="text-center">Dorsal</th>
-                                        <th>Fecha Evento</th>
-                                        <th>Estado</th>
+                                        <th><a href="<?php echo URL ?>inscripcion/order/evento">Evento / Carrera</th>
+                                        <th class="text-center"><a href="<?php echo URL ?>inscripcion/order/dorsal">Dorsal</th>
+                                        <th><a href="<?php echo URL ?>inscripcion/order/fecha">Fecha Evento</th>
+                                        <th><a href="<?php echo URL ?>inscripcion/order/estado">Estado</th>
                                         <th class="text-right">Importe</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>

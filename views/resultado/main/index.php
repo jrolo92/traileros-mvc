@@ -4,7 +4,6 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
-    <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
     <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 

@@ -26,18 +26,18 @@ class InscripcionModel extends Model {
             // --- FILTRADO POR ROL ---
             if ($role_id == 1) { 
                 // ADMIN: ve todo.
-                $query = $db->prepare($sql . " ORDER BY i.fecha_inscripcion DESC");
+                $query = $db->prepare($sql . " ORDER BY i.id ASC");
                 $query->execute();
             } 
             elseif ($role_id == 2) { 
                 // ORGANIZADOR: Solo ve inscripciones de SUS eventos
-                $sql .= " WHERE e.organizador_id = :user_id ORDER BY i.fecha_inscripcion DESC";
+                $sql .= " WHERE e.organizador_id = :user_id ORDER BY i.id ASC";
                 $query = $db->prepare($sql);
                 $query->execute(['user_id' => $user_id]);
             } 
             else { 
                 // USUARIO: Solo ve SUS propias inscripciones
-                $sql .= " WHERE i.user_id = :user_id ORDER BY i.fecha_inscripcion DESC";
+                $sql .= " WHERE i.user_id = :user_id ORDER BY i.id ASC";
                 $query = $db->prepare($sql);
                 $query->execute(['user_id' => $user_id]);
             }
@@ -348,6 +348,51 @@ class InscripcionModel extends Model {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             $this->handleError($e);
+        }
+    }
+
+    public function getInscritosFiltrados($id_evento, $term = '', $order = 1) {
+        try {
+            $db = $this->db->connect();
+
+            // Mapeo de columnas para ordenación
+            $criterios = [
+                1 => "i.id ASC",
+                2 => "u.apellidos ASC, u.name ASC",
+                3 => "u.email ASC",
+                4 => "m.nombre ASC",
+                5 => "i.dorsal ASC",
+                6 => "i.fecha_inscripcion DESC"
+            ];
+            $orderBy = $criterios[$order] ?? "i.id ASC";
+
+            $sql = "SELECT i.id AS inscripcion_id, 
+                        CONCAT_WS(', ', u.apellidos, u.name) AS nombre_completo, 
+                        u.email, i.fecha_inscripcion, i.dorsal, m.nombre as modalidad
+                    FROM inscripciones i
+                    INNER JOIN users u ON i.user_id = u.id
+                    INNER JOIN modalidades m ON i.modalidad_id = m.id
+                    WHERE i.evento_id = :id";
+
+            if (!empty($term)) {
+                $sql .= " AND CONCAT_WS('', u.name, u.apellidos, u.email, i.dorsal) LIKE :term";
+            }
+
+            $sql .= " ORDER BY " . $orderBy;
+
+            $stmt = $db->prepare($sql);
+
+            $stmt->bindValue(':id', $id_evento, PDO::PARAM_INT);
+            if (!empty($term)) {
+                $stmt->bindValue(':term', '%' . $term . '%', PDO::PARAM_STR);
+            }
+
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+        } catch (PDOException $e) {
+            $this->handleError($e);
+            return [];
         }
     }
 

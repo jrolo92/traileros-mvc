@@ -4,8 +4,6 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
-    <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
-    <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 
 <body>
@@ -97,7 +95,7 @@
                     </p>
                 </div>
                 <div class="main-buttons">
-                    <a href="<?= URL ?>carrera/gestion/<?= $this->evento_id ?>" class="btn-secondary">Cancelar</a>
+                    <a href="<?= URL ?>carrera/gestion/<?= $this->evento_id ?>" class="btn-secondary" style="align-self: center;">Cancelar</a>
                     <button type="submit" class="btn-primary">Finalizar Importación</button>
                 </div>
             </div>

@@ -41,7 +41,7 @@ class Account extends Controller
         $this->view->account = $this->model->read($_SESSION['user_id']);
 
         // Creo la propiedad title de la vista
-        $this->view->title = $_SESSION['user_name'] . " - Mi cuenta - Traileros";
+        $this->view->title = "Mi perfil - " . $_SESSION['user_name'];
 
         $this->view->render('account/main/index');
     }
@@ -96,7 +96,7 @@ class Account extends Controller
         }
 
         // Creo la propiedad title de la vista
-        $this->view->title = "Editar cuenta: " . $_SESSION['user_name'];
+        $this->view->title = "Editar perfil - " . $_SESSION['user_name'];
         $this->view->render('account/edit/index');
     }
 
@@ -375,7 +375,7 @@ class Account extends Controller
         $this->view->account = $this->model->read($_SESSION['user_id']);
 
         // Creo la propiedad title de la vista
-        $this->view->title = "Eliminar Cuenta";
+        $this->view->title = "Eliminar Cuenta - " . $_SESSION['user_name'];
 
         $this->view->render('account/delete/index');
 

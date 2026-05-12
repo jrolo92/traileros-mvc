@@ -8,19 +8,6 @@
         - 2: Organizador
         - 3: Corredor
 
-        Recordamos los controladores o recursos:
-        - 1: Carrera
-        - 2: User
-
-        Los privilegios son:
-        - 1: render
-        - 2: new
-        - 3: edit
-        - 4: delete
-        - 5: show
-        - 6: order
-        - 7: search
-
         Los perfiles se asignarán mediante un array asociativo, 
         donde la clave principal se corresponde con el controlador 
         la clave secundaria con el método.

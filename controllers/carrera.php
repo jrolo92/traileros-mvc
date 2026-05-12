@@ -14,7 +14,7 @@ class Carrera extends Controller {
         Método: render
         Descripción: Renderiza la lista principal de carreras con paginación y tiene en cuenta un orden para ello
     */
-    function render() {
+    public function render() {
 
         // Crear token csrf
         $this->generateTokenCsrf();
@@ -25,22 +25,27 @@ class Carrera extends Controller {
         // Recogemos los parámetros de la url
         $items_pp = 6;  
         $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        // Búsqueda y orden
         $order = isset($_GET['order']) ? (int)$_GET['order'] : 1;
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
 
         // Seguridad básica para la página
         if ($currentPage < 1) $currentPage = 1;
         $offset = ($currentPage - 1) * $items_pp;
 
+        $term = isset($_GET['term']) ? trim($_GET['term']) : '';
+
         // total para la paginación
-        $totalItems = $this->model->countTotal();
+        $totalItems = $this->model->countTotal($term);
         $totalPages = ceil($totalItems / $items_pp);
 
         // Pasamos datos a la vista
         $this->view->title = "Próximos Eventos - Traileros";
-        $this->view->carreras = $this->model->getPaginated($items_pp, $offset, $order);
+        $this->view->carreras = $this->model->getPaginated($items_pp, $offset, $order, $term);
         $this->view->currentPage = $currentPage;
         $this->view->totalPages = $totalPages;
         $this->view->currentOrder = $order;
+        $this->view->term = $term;
 
         $this->cargarDatosMenu();
 
@@ -59,17 +64,17 @@ class Carrera extends Controller {
         // Crear token csrf
         $this->generateTokenCsrf();
 
-        // Objeto vacío para el formulario
-        $this->view->carrera = new class_carrera();
-
         // Compruebo si hay mensajes
         $this->checkMessages();
+
+        // Objeto vacío para el formulario
+        $this->view->carrera = new class_carrera();
 
         // Si hay error mantengo valores del formulario
         if (isset($_SESSION['errors'])){
             $this->view->errors = $_SESSION['errors'];
             unset($_SESSION['errors']);
-            $this->view->carrera = (array) $_SESSION['carrera'];
+            $this->view->carrera = (array) ($_SESSION['carrera'] ?? new class_carrera());
             unset($_SESSION['carrera']);
             $this->view->error = "Errores en el formulario";
         } else {
@@ -183,6 +188,16 @@ class Carrera extends Controller {
         // Si hay errores, redirigir
         if(!empty($error)){
             $_SESSION['errors'] = $error;
+            $_SESSION['carrera'] = [
+                'nombre'      => $nombre,
+                'fecha'       => $fecha,
+                'fecha_cierre_inscripcion' => $fecha_cierre,
+                'ubicacion'   => $ubicacion,
+                'dificultad'  => $dificultad,
+                'descripcion' => $descripcion,
+                'estado'      => $estado,
+                'modalidades' => $modalidades
+            ];
             header('Location: ' . URL . 'carrera/new');
             exit();
         }
@@ -519,6 +534,14 @@ class Carrera extends Controller {
         // Compruebo si hay mensajes
         $this->checkMessages();
 
+        $titulos = [
+            'id' => 'Id',
+            'nombre' => 'Nombre',
+            'fecha'  => 'Fecha de Inscripción',
+            'estado'  => 'Estado de Pago',
+        ];
+        $nombre_criterio = $titulos[$criterio] ?? 'Fecha';
+
         // Título de la página
         $this->view->title = "Explorar Carreras - Traileros";
 
@@ -541,8 +564,9 @@ class Carrera extends Controller {
         $this->view->term = $term;
 
         if ($term === '') {
-            // Si el buscador está vacío, cargamos las carreras normales (con o sin paginación)
-            $this->view->carreras = $this->model->get(); 
+            // Si el buscador está vacío, cargamos las carreras normales (con paginación)
+            $this->render();
+            return; 
         } else {
             // Si hay término, filtramos
             $this->view->carreras = $this->model->search($term);
@@ -589,7 +613,11 @@ class Carrera extends Controller {
 
         $this->model->actualizarEstados();
 
+        $this->view->rol = $_SESSION['role_id'];
+
         $this->view->eventos = $this->model->getEventosPorRol($_SESSION['user_id'], $_SESSION['role_id']);
+
+        $this->checkMessages();
 
         $this->view->render('carrera/gestion/index');
     }
@@ -601,11 +629,25 @@ class Carrera extends Controller {
         // Extrae el criterio de ordenación. Por defecto será 1
         $criterio = (isset($param[0])) ? (int)$param[0] : 1;
 
+        $titulos = [
+            1 => 'Id',
+            2 => 'Nombre',
+            7  => 'Fecha de Inscripción',
+            8  => 'Estado de Pago',
+        ];
+        $nombreCriterio = $titulos[$criterio] ?? 'ID';
+
         $this->model->actualizarEstados();
 
         $this->view->title = "Panel de Gestión de Carreras";
 
+        $this->view->notify = "Eventos ordenados por: " . $nombreCriterio;
+
+        $this->view->rol = $_SESSION['role_id'];
+
         $this->view->eventos = $this->model->getEventosPorRolOrdenados($_SESSION['user_id'], $_SESSION['role_id'], (int)$criterio);
+
+        $this->checkMessages();
 
         $this->view->render('carrera/gestion/index');
     }

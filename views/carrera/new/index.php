@@ -48,7 +48,7 @@
                     <div class="form-group col">
                         <label for="fecha_cierre_inscripcion">Cierre de Inscripciones</label>
                         <input type="date" name="fecha_cierre_inscripcion" 
-                            value="<?php echo htmlspecialchars($this->carrera->fecha_cierre_inscripcion ?? '') ?>">
+                            value="<?php echo htmlspecialchars($this->carrera['fecha_cierre_inscripcion'] ?? '') ?>">
                         <small class="text-muted">Por defecto, el mismo día del evento.</small>
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         <select name="dificultad">
                             <option selected disabled>Seleccionar...</option>
                             <?php foreach (['Baja', 'Media', 'Alta', 'Muy Alta'] as $nivel): ?>
-                                <option value="<?php echo $nivel ?>" <?php echo ($this->carrera['dificultad'] == $nivel) ? 'selected' : '' ?>>
+                                <option value="<?php echo $nivel ?>" <?php echo (($this->carrera['dificultad'] ?? '') == $nivel) ? 'selected' : '' ?>>
                                     <?php echo $nivel ?>
                                 </option>
                             <?php endforeach; ?>
@@ -112,22 +112,26 @@
                             <div class="form-row">
                                 <div class="form-group col">
                                     <label>Nombre Modalidad</label>
-                                    <input type="text" name="mod_nombre[]" placeholder="Ej: Mini Trail, Maratón..." required>
+                                    <input type="text" name="mod_nombre[]" placeholder="Ej: Mini Trail, Maratón..."
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['nombre'] ?? '') ?>" required>
                                 </div>
                                 <div class="form-group col">
                                     <label>Precio (€)</label>
-                                    <input type="number" step="0.01" name="mod_precio[]" placeholder="0.00" required>
+                                    <input type="number" step="0.01" name="mod_precio[]" placeholder="0.00"
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['precio'] ?? '') ?>" required>
                                 </div>
                             </div>
 
                             <div class="form-row">
                                 <div class="form-group col">
                                     <label>Distancia (Km)</label>
-                                    <input type="number" step="0.01" name="mod_distancia[]" required>
+                                    <input type="number" step="0.01" name="mod_distancia[]" 
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['distancia'] ?? '') ?>" required>
                                 </div>
                                 <div class="form-group col">
                                     <label>Desnivel (m+)</label>
-                                    <input type="number" name="mod_desnivel[]" required>
+                                    <input type="number" name="mod_desnivel[]" 
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['desnivel'] ?? '') ?>" required>
                                 </div>
                             </div>
 
@@ -135,18 +139,18 @@
                                 <div class="form-group col">
                                     <label for="cupo_maximo">Cupo Max.</label>
                                     <input type="number" step="1" name="cupo_maximo" 
-                                        value="<?php echo htmlspecialchars($this->carrera['cupo_maximo'])?>" required>
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['cupo_maximo'] ?? '') ?>" required>
                                 </div>
                                 <div class="form-group col">
                                     <label for="edad_minima">Edad mín.</label>
                                     <input type="number" step="1" name="edad_minima" min="0" max="99"
-                                        value="<?php echo htmlspecialchars($this->carrera['edad_minima']) ?? 18 ?>" required>
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['edad_minima'] ?? '18') ?>" required>
                                     <small class="text-muted">Edad mínima el día del evento.</small>
                                 </div>
                                 <div class="form-group col">
                                     <label for="edad_maxima">Edad máx.</label>
                                     <input type="number" step="1" name="edad_maxima" min="0" max="99"
-                                        value="<?php echo htmlspecialchars($this->carrera['edad_maxima']) ?? 99 ?>" required>
+                                        value="<?php echo htmlspecialchars($this->carrera['modalidades'][0]['edad_maxima'] ?? '99') ?>" required>
                                     <small class="text-muted">Edad máxima el día del evento</small>
                                 </div>
                             </div>

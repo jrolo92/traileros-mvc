@@ -111,6 +111,8 @@ body {
   border-radius: 8px;
   font-weight: 600;
   transition: background 0.2s;
+  line-height: 1.2;
+  vertical-align: middle;
 }
 .btn-secondary:hover {
   background: #ddd;

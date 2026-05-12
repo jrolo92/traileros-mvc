@@ -304,8 +304,11 @@
             $ordenes = [
                 1 => "id",
                 2 => "nombre",
-                3 => "email",
-                4 => "rol"
+                3 => "dni",
+                4 => "email",
+                5 => "club",
+                6 => "es_federado",
+                7 => "rol"
             ];
 
             // Si el criterio no existe, ordenamos por id

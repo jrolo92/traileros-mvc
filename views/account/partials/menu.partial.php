@@ -17,14 +17,14 @@
     <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] < 3): ?>
         <li>
             <a href="<?= URL ?>carrera/gestion">
-                <i class="fas fa-users-cog"></i> Panel de Eventos
+                <i class="fas fa-users-cog"></i> Panel de Gestión de Eventos
             </a>
         </li>
     <?php endif; ?>
     <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
         <li>
             <a href="<?= URL ?>user">
-                <i class="fas fa-users-cog"></i> Panel de Usuarios
+                <i class="fas fa-users-cog"></i> Panel de Gestión de Usuarios
             </a>
         </li>
     <?php endif; ?>

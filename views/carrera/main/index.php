@@ -12,7 +12,7 @@
     <?php require_once 'template/partials/header.partial.php'; ?>
     <section class="carreras-container">
         <div class="carreras-toolbar">
-            <form class="carreras-search" action="<?php echo URL ?>carrera/search" method="GET">
+            <form class="carreras-search" action="<?php echo URL ?>carrera/render" method="GET">
                 <div class="search-wrapper">
                     <i class="fas fa-search"></i>
                     <input
@@ -33,10 +33,10 @@
                 </button>
 
                 <ul class="dropdown-list">
-                    <li><a href="?page=1&order=2">Nombre (A-Z)</a></li>
-                    <li><a href="?page=1&order=3">Ciudad</a></li>
-                    <li><a href="?page=1&order=4">Distancia</a></li>
-                    <li><a href="?page=1&order=5">Fecha</a></li>
+                    <li><a href="?page=1&order=2&term=<?= urlencode($this->term ?? '') ?>">Nombre (A-Z)</a></li>
+                    <li><a href="?page=1&order=3&term=<?= urlencode($this->term ?? '') ?>">Ciudad</a></li>
+                    <li><a href="?page=1&order=4&term=<?= urlencode($this->term ?? '') ?>">Distancia</a></li>
+                    <li><a href="?page=1&order=5&term=<?= urlencode($this->term ?? '') ?>">Fecha</a></li>
                 </ul>
             </div>
         </div>
@@ -81,11 +81,11 @@
         </div>
 
         <nav class="pagination-container">
-            <a href="?page=<?= $this->currentPage - 1 ?>&order=<?= $this->currentOrder ?>" class="page-link"><i class="fas fa-angle-double-left"></i></a>
+            <a href="?page=<?= $this->currentPage - 1 ?>&order=<?= $this->currentOrder ?>&term=<?= urlencode($this->term ?? '') ?>" class="page-link"><i class="fas fa-angle-double-left"></i></a>
 
             <div class="page-numbers">
                 <?php for ($i = 1; $i <= $this->totalPages; $i++): ?>
-                    <a href="?page=<?= $i ?>&order=<?= $this->currentOrder ?>" 
+                    <a href="?page=<?= $i ?>&order=<?= $this->currentOrder ?>&term=<?= urlencode($this->term ?? '') ?>" 
                     class="page-number <?= ($i == $this->currentPage) ? 'active' : '' ?>">
                     <?= $i ?>
                     </a>
@@ -93,7 +93,7 @@
             </div>
 
             <?php if ($this->currentPage < $this->totalPages): ?>
-                <a href="?page=<?= $this->currentPage + 1 ?>&order=<?= $this->currentOrder ?>" class="page-link">
+                <a href="?page=<?= $this->currentPage + 1 ?>&order=<?= $this->currentOrder ?>&term=<?= urlencode($this->term ?? '') ?>" class="page-link">
                     <i class="fas fa-angle-right"></i>
                 </a>
             <?php endif; ?>

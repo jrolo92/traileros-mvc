@@ -348,11 +348,24 @@ class carreraModel extends Model {
         Descripción: Cuenta el total de carreras disponibles en la tabla eventos.
         Uso: en el método render del controlador de carreras, para la paginación.
     */
-    public function countTotal(){
-        $sql = "SELECT COUNT(*) FROM eventos";
-        $db = $this->db->connect();
-        $stmt = $db->query($sql);
+    public function countTotal($term = ''){
+        $where = "";
 
+        if($term !== ''){
+           $where = "WHERE CONCAT_WS(' ', e.nombre, e.ubicacion, e.dificultad, u.name) LIKE :term"; 
+        }
+
+        $sql = "SELECT COUNT(DISTINCT e.id) FROM eventos e
+                INNER JOIN users u ON e.organizador_id = u.id
+                $where";
+
+        $db = $this->db->connect();
+        $stmt = $db->prepare($sql);
+
+        if ($term !== '') {
+            $stmt->bindValue(':term', "%$term%", PDO::PARAM_STR);
+        }
+        $stmt->execute();
         return $stmt->fetchColumn();
     }
 
@@ -407,7 +420,7 @@ class carreraModel extends Model {
     /**
      *  Método para llevar a cabo la paginación de carreras
      */
-    public function getPaginated($limit, $offset, $order = 1) {
+    public function getPaginated($limit, $offset, $order = 1, $term = '') {
         // Definimos los criterios de ordenación según tu dropdown
         $criterios = [
             1 => 'fecha DESC',      // Por defecto
@@ -419,12 +432,19 @@ class carreraModel extends Model {
 
         $orderBy = $criterios[$order] ?? $criterios[1];
 
+        // Si hay término de búsqueda, añadimos el WHERE
+        $where = "";
+        if ($term !== '') {
+            $where = "WHERE CONCAT_WS(' ', e.nombre, e.ubicacion, e.dificultad, u.name) LIKE :term";
+        }
+
         $sql = "SELECT e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
                         m.distancia, m.desnivel, m.cupo_maximo, m.precio,
                         u.name AS organizador
                     FROM Eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id
                     LEFT JOIN modalidades AS m ON e.id = m.evento_id
+                    $where
                     GROUP BY e.id
                     ORDER BY $orderBy 
                     LIMIT :limit OFFSET :offset";
@@ -432,6 +452,10 @@ class carreraModel extends Model {
         try {
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
+            if ($term !== ''){
+                $stmt->bindValue(':term', "%$term%", PDO::PARAM_STR);
+            }
+
             $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
             $stmt->execute();

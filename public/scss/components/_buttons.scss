@@ -56,6 +56,9 @@
         font-weight: 600;
         transition: background 0.2s;
 
+        line-height: 1.2;   
+        vertical-align: middle;
+
         &:hover { background: #ddd; }
     }
 

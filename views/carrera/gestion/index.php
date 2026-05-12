@@ -4,7 +4,6 @@
 <head>
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?php echo $this->title ?></title>
-    <script src="<?php echo URL ?>public/js/menu-order.js" defer></script>
     <script src="<?php echo URL ?>public/js/search-ajax.js" defer></script>
 </head>
 
@@ -42,6 +41,20 @@
 
                 <section class="carreras-container">
                     <div class="carreras-toolbar">
+                        <div id="subtitle-container">
+                            <div class="subtitle-badge">
+                                <i class="fas fa-calendar-alt"></i> <?= $this->title ?>
+                            </div>
+                            <div class="subtitle-badge">
+                                <i class="fa-regular fa-circle-user"></i>
+                                <?php if ($this->rol == 2): ?>
+                                    Organizador
+                                <?php else: ?>
+                                    Administrador
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
                         <form class="carreras-search" action="<?php echo URL ?>carrera/search_gestion" method="GET">
                             <div class="search-wrapper">
                                 <i class="fas fa-search"></i>
@@ -53,22 +66,23 @@
                                     value="<?php echo htmlspecialchars($this->term ?? '') ?>"
                                     autocomplete="off"
                                 >
+                                <input type="hidden" name="order" value="<?php echo $this->order ?? 1 ?>">
                             </div>
                         </form>
 
-                        <div class="carreras-dropdown" id="orderDropdown">
+                        <!-- <div class="carreras-dropdown" id="orderDropdown">
                             <button type="button" class="dropdown-button" id="dropdownBtn">
                                 <span>Ordenar por</span>
                                 <i class="fas fa-chevron-down"></i>
                             </button>
 
                             <ul class="dropdown-list">
-                                <li><a href="<?php echo URL ?>carrera/order_gestion/1">Id</a></li>
-                                <li><a href="<?php echo URL ?>carrera/order_gestion/2">Nombre</a></li>
-                                <li><a href="<?php echo URL ?>carrera/order_gestion/7">Fecha</a></li>
-                                <li><a href="<?php echo URL ?>carrera/order_gestion/8">Estado</a></li>
+                                <li>Id</a></li>
+                                <li>Nombre</a></li>
+                                <li>Fecha</a></li>
+                                <li>Estado</a></li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
 
                 <div class="account-content">
@@ -82,10 +96,10 @@
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Id</th>
-                                        <th>Nombre del Evento</th>
-                                        <th>Fecha</th>
-                                        <th class="text-center">Estado</th>
+                                        <th><a href="<?php echo URL ?>carrera/order_gestion/1">Id</th>
+                                        <th><a href="<?php echo URL ?>carrera/order_gestion/2">Nombre del Evento</th>
+                                        <th><a href="<?php echo URL ?>carrera/order_gestion/7">Fecha</th>
+                                        <th class="text-center"><a href="<?php echo URL ?>carrera/order_gestion/8">Estado</th>
                                         <th class="text-center">Acciones</th>
                                         <th class="text-center">Inscritos</th>
                                         <th class="text-center">Resultados</th>
@@ -112,7 +126,16 @@
                                                     <a href="<?= URL ?>carrera/edit/<?= $e['id'] ?>" class="action-btn edit-btn" title="Editar Carrera">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>
-                                            
+                                                    <form method="POST" action="<?= URL ?>carrera/delete/<?= $e['id'] ?>" style="display:inline;">
+                                                        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
+
+                                                        <button type="submit" 
+                                                                class="action-btn delete-btn <?= !in_array($_SESSION['role_id'], $GLOBALS['carrera']['delete']) ? 'disabled' : '' ?>"
+                                                                onclick="return confirm('¿Estás seguro de que deseas eliminar la carrera: <?= htmlspecialchars($e['nombre'], ENT_QUOTES) ?>?')"
+                                                                title="Eliminar carrera">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                             <td>

@@ -4,7 +4,6 @@
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?></title>
     <script src="<?= URL ?>public/js/search-ajax.js" defer></script>
-    <script src="<?= URL ?>public/js/menu-order.js" defer></script>
 </head>
 <body>
     <?php require_once 'template/partials/header.partial.php' ?>
@@ -73,6 +72,20 @@
 
                 <section class="carreras-container">
                     <div class="carreras-toolbar">
+                        <div id="subtitle-container">
+                            <div class="subtitle-badge">
+                                <i class="fas fa-calendar-alt"></i> <?= $this->title ?>
+                            </div>
+                            <div class="subtitle-badge">
+                                <i class="fa-regular fa-circle-user"></i>
+                                <?php if ($this->rol == 2): ?>
+                                    Organizador
+                                <?php else: ?>
+                                    Administrador
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
                         <form class="carreras-search" action="<?php echo URL ?>inscripcion/search" method="GET">
                             <div class="search-wrapper">
                                 <i class="fas fa-search"></i>
@@ -86,7 +99,7 @@
                                 >
                             </div>
                         </form>
-                        <div class="carreras-dropdown" id="orderDropdown">
+                        <!-- <div class="carreras-dropdown" id="orderDropdown">
                             <button type="button" class="dropdown-button" id="dropdownBtn">
                                 <span>Ordenar por</span>
                                 <i class="fas fa-chevron-down"></i>
@@ -98,7 +111,7 @@
                                 <li><a href="<?= URL ?>user/order/3">Email</a></li>
                                 <li><a href="<?= URL ?>user/order/4">Rol</a></li>
                             </ul>
-                        </div>
+                        </div> -->
                     </div>
                 
 
@@ -107,13 +120,13 @@
                         <table class="admin-table">
                             <thead>
                                 <tr>
-                                    <th>Id</th>
-                                    <th>Nombre</th>
-                                    <th>DNI</th>
-                                    <th>Email</th>
-                                    <th>Club</th>
-                                    <th>Fed.</th>
-                                    <th>Rol</th>
+                                    <th><a href="<?= URL ?>user/order/1">Id</th>
+                                    <th><a href="<?= URL ?>user/order/2">Nombre</th>
+                                    <th><a href="<?= URL ?>user/order/3">DNI</th>
+                                    <th><a href="<?= URL ?>user/order/4">Email</th>
+                                    <th><a href="<?= URL ?>user/order/5">Club</th>
+                                    <th><a href="<?= URL ?>user/order/6">Fed.</th>
+                                    <th><a href="<?= URL ?>user/order/7">Rol</th>
                                     <th class="text-center">Acciones</th>
                                 </tr>
                             </thead>

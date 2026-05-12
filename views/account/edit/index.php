@@ -5,6 +5,7 @@
     <?php require_once 'template/layouts/head.layout.php'; ?>
     <title><?= $this->title ?></title>
     <script src="<?= URL ?>public/js/upload-avatar.js" defer></script>
+    <script src="<?= URL ?>public/js/mostrar-lic-federativa.js" defer></script>
 </head>
 
 <body>

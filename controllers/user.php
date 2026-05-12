@@ -40,9 +40,10 @@
                         
             // Obtengo los datos del  modelo para mostrar en la vista      
             // Creo la propiedad  title para la vista
-            $this->view->title = "Gestión de Usuarios - Traileros";
+            $this->view->title = "Panel de Gestión de Usuarios";
 
             // Obtengo los datos del modelo
+            $this->view->rol = $_SESSION['role_id'];
             $this->view->users = $this->model->get();
             $this->view->peticiones = $this->model->get_pending_requests();
 
@@ -421,9 +422,6 @@
         */
         public function order($params) {
 
-            // Iniciar o continuar sesión
-            // sec_session_start();
-
             // Capa de validación de sesión
             $this->requireLogin();
 
@@ -435,10 +433,13 @@
 
             // Mapa de nombres legibles para la vista
             $columnas = [
-                1 => 'Id',
-                2 => 'Nombre',
-                3 => 'Email',
-                4 => 'Rol'
+                1 => "ID",
+                2 => "Nombre",
+                3 => "DNI",
+                4 => "Email",
+                5 => "Club",
+                6 => "Federado",
+                7 => "Rol"
             ];
 
             // Nombre del criterio para mostrar en la vista
@@ -447,9 +448,14 @@
             // Título y notificación
             $this->view->title  = "Usuarios ordenados por $nombreCriterio";
             $this->view->notify = $this->view->title;
+            
+            // Badge de rol
+            $this->view->rol = $_SESSION['role_id'];
 
             // Obtener los usuarios ordenados del modelo
             $this->view->users = $this->model->order($criterio);
+            // Obtener también las peticiones de mejora de cuenta (si las hubiera)
+            $this->view->peticiones = $this->model->get_pending_requests();
 
             // Renderizar la vista principal de usuarios
             $this->view->render('user/main/index');
