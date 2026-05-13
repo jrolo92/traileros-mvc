@@ -93,7 +93,7 @@ Esta tabla resume la configuración de seguridad definida en el sistema para los
 | `new` / `create` | Crear nuevas carreras | ✅ | ✅ | ❌ |
 | `edit` / `update` | Modificar datos de una carrera | ✅ | ✅ | ❌ |
 | `gestion` | Panel de administración de la carrera | ✅ | ✅ | ❌ |
-| `delete` | Borrado definitivo de la carrera | ✅ | ❌ | ❌ |
+| `delete` | Borrado definitivo de la carrera | ✅ | ✅ | ❌ |
 
 ---
 

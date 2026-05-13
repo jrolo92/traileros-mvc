@@ -23,7 +23,7 @@
     $GLOBALS['carrera']['create'] = [1, 2];
     $GLOBALS['carrera']['edit'] = [1, 2];
     $GLOBALS['carrera']['update'] = [1, 2];
-    $GLOBALS['carrera']['delete'] = [1];
+    $GLOBALS['carrera']['delete'] = [1, 2];
     $GLOBALS['carrera']['show'] = [1, 2, 3];
     $GLOBALS['carrera']['search'] = [1, 2, 3];
     $GLOBALS['carrera']['order'] = [1, 2, 3];

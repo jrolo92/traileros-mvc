@@ -19,6 +19,7 @@
     1. Entramos en MySQL: `sudo mysql`
     2. Ejecutamos comandos para crear bd y usuario de la misma. Conceder privilegios al usuario creado (javier_admin@localhost).
     3. Volcamos datos de la BD local (.sql).
+    4. Configuración de seguridad de MySQL de AWS para quitar el modo `ONLY_FULL_GROUP_BY`.
 
 5. Instalación de Composer:
     1. Vamos a generar la carpeta vendor en el server a partir del composer.json:
@@ -45,7 +46,7 @@
 7. Activar URLs amigables:
     1. Activamos modulo rewrite: `sudo a2enmod rewrite`
     2. Modificamos los datos del archivo de config: `sudo nano /var/www/html/config/config.php`
-        - URL: La dirección ip de la instancia.
+        - URL: La dirección ip de la instancia (he creado una ip elástica).
         - Usuario de bd.
     3. Configuramos el sitio: 
         - Ejecutamos: `sudo nano /etc/apache2/sites-available/000-default.conf`

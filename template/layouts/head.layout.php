@@ -4,6 +4,12 @@
     <link rel="stylesheet" href="<?= URL ?>public/css/style.css">
 	<!-- Cargar iconos -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- FAVICON -->
+    <!-- Para navegadores antiguos -->
+    <link rel="icon" href="<?= URL ?>public/assets/img/favicon.ico" sizes="32x32">
+
+    <!-- Formato SVG -->
+    <link rel="icon" href="<?= URL ?>public/assets/img/favicon.svg" type="image/svg+xml">
     <script>
         // fetch de upload-avatar.js
         const RUTA_URL = '<?= URL ?>';
