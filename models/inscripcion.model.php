@@ -18,9 +18,9 @@ class InscripcionModel extends Model {
                             e.fecha as evento_fecha, 
                             c.nombre as categoria_nombre, 
                             CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre
-                    FROM Inscripciones i
-                    LEFT JOIN Eventos e ON i.evento_id = e.id
-                    LEFT JOIN Categorias c ON i.categoria_id = c.id
+                    FROM inscripciones i
+                    LEFT JOIN eventos e ON i.evento_id = e.id
+                    LEFT JOIN categorias c ON i.categoria_id = c.id
                     LEFT JOIN users u ON i.user_id = u.id";
 
             // --- FILTRADO POR ROL ---
@@ -84,8 +84,8 @@ class InscripcionModel extends Model {
                     e.fecha as evento_fecha, 
                     u.name as usuario_nombre, 
                     u.email as email
-                FROM Inscripciones i
-                INNER JOIN Eventos e ON i.evento_id = e.id
+                FROM inscripciones i
+                INNER JOIN eventos e ON i.evento_id = e.id
                 INNER JOIN users u ON i.user_id = u.id
                 WHERE i.id_pago = :id_pago"; 
 
@@ -121,7 +121,7 @@ class InscripcionModel extends Model {
     // Por si ya existe una inscripción cancelada o pendiente
     public function getInscripcionSimple($user_id, $evento_id) {
         $sql = "SELECT id, estado_pago 
-                FROM Inscripciones 
+                FROM inscripciones 
                 WHERE user_id = :u AND evento_id = :e 
                 LIMIT 1";
         $db = $this->db->connect();
@@ -222,7 +222,7 @@ class InscripcionModel extends Model {
     }
 
     public function read($user_id, $evento_id) {
-        $sql = "SELECT * FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
+        $sql = "SELECT * FROM inscripciones WHERE user_id = :u AND evento_id = :e";
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);
         $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
@@ -265,7 +265,7 @@ class InscripcionModel extends Model {
     // Método opcional para eliminar totalmente la inscripción
     public function hardDelete($user_id) {
         try {
-            $sql = "DELETE FROM Inscripciones WHERE id = :id LIMIT 1";
+            $sql = "DELETE FROM inscripciones WHERE id = :id LIMIT 1";
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
             return $stmt->execute(['id' => $user_id]);
@@ -278,7 +278,7 @@ class InscripcionModel extends Model {
     // --- Lógica de Negocio ---
     public function getCategoriaAdecuada($edad, $sexo) {
         // Buscamos la categoría donde encaje la edad y el sexo (o mixto)
-        $sql = "SELECT id FROM Categorias 
+        $sql = "SELECT id FROM categorias 
                 WHERE :edad BETWEEN edad_min AND edad_max 
                 AND (sexo = :sexo OR sexo = 'Mixto') 
                 LIMIT 1";
@@ -289,7 +289,7 @@ class InscripcionModel extends Model {
     }
 
     public function isUserInscribed($user_id, $evento_id) {
-        $sql = "SELECT COUNT(*) FROM Inscripciones WHERE user_id = :u AND evento_id = :e";
+        $sql = "SELECT COUNT(*) FROM inscripciones WHERE user_id = :u AND evento_id = :e";
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);
         $stmt->execute(['u' => $user_id, 'e' => $evento_id]);
@@ -298,7 +298,7 @@ class InscripcionModel extends Model {
 
     public function getAllCategorias() {
         $db = $this->db->connect();
-        return $db->query("SELECT * FROM Categorias ORDER BY edad_min ASC")->fetchAll();
+        return $db->query("SELECT * FROM categorias ORDER BY edad_min ASC")->fetchAll();
     }
 
     public function getDetalleCompleto($user_id, $evento_id) {
@@ -315,10 +315,10 @@ class InscripcionModel extends Model {
                         u.telefono as usuario_telefono,
                         c.nombre as categoria_nombre,
                         m.nombre as modalidad_nombre
-                FROM Inscripciones i
-                INNER JOIN Eventos e ON i.evento_id = e.id
+                FROM inscripciones i
+                INNER JOIN eventos e ON i.evento_id = e.id
                 INNER JOIN users u ON i.user_id = u.id
-                LEFT JOIN Categorias c ON i.categoria_id = c.id
+                LEFT JOIN categorias c ON i.categoria_id = c.id
                 INNER JOIN modalidades m ON i.modalidad_id = m.id
                 WHERE i.user_id = :u AND i.evento_id = :e";
         $db = $this->db->connect();
@@ -398,7 +398,7 @@ class InscripcionModel extends Model {
 
     private function generarSiguienteDorsal($evento_id) {
         // Buscamos el dorsal máximo actual para este evento
-        $sql = "SELECT MAX(dorsal) FROM Inscripciones WHERE evento_id = :evento_id";
+        $sql = "SELECT MAX(dorsal) FROM inscripciones WHERE evento_id = :evento_id";
         $db = $this->db->connect();
         $stmt = $db->prepare($sql);
         $stmt->execute(['evento_id' => $evento_id]);
@@ -418,10 +418,10 @@ class InscripcionModel extends Model {
                     e.fecha as evento_fecha,
                     CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre,
                     c.nombre as categoria_nombre
-                FROM Inscripciones i
-                INNER JOIN Eventos e ON i.evento_id = e.id
+                FROM inscripciones i
+                INNER JOIN eventos e ON i.evento_id = e.id
                 INNER JOIN users u ON i.user_id = u.id
-                LEFT JOIN Categorias c ON i.categoria_id = c.id
+                LEFT JOIN categorias c ON i.categoria_id = c.id
                 WHERE CONCAT_WS(' ', u.name, u.apellidos, e.nombre, e.fecha, i.dorsal) LIKE :term
                 ORDER BY i.fecha_inscripcion DESC";
 
@@ -464,10 +464,10 @@ class InscripcionModel extends Model {
                    e.fecha as evento_fecha,
                    CONCAT_WS(' ', u.name, u.apellidos) as usuario_nombre,
                    c.nombre as categoria_nombre
-            FROM Inscripciones i
-            INNER JOIN Eventos e ON i.evento_id = e.id
+            FROM inscripciones i
+            INNER JOIN eventos e ON i.evento_id = e.id
             INNER JOIN users u ON i.user_id = u.id
-            LEFT JOIN Categorias c ON i.categoria_id = c.id";
+            LEFT JOIN categorias c ON i.categoria_id = c.id";
 
         // Filtro por rol
         $params = [];
@@ -554,7 +554,7 @@ class InscripcionModel extends Model {
             
             // Buscamos inscripciones con estado 'PENDIENTE' 
             // cuya fecha de creación sea anterior al intervalo definido.
-            $sql = "DELETE FROM Inscripciones 
+            $sql = "DELETE FROM inscripciones 
                     WHERE estado_pago = 'PENDIENTE' 
                     AND fecha_inscripcion < DATE_SUB(NOW(), INTERVAL :minutos MINUTE)";
             

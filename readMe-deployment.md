@@ -17,7 +17,7 @@
 
 4. Configuración de la Base de Datos:
     1. Entramos en MySQL: `sudo mysql`
-    2. Ejecutamos comandos para crear bd y usuario de la misma. Conceder privilegios al usuario creado.
+    2. Ejecutamos comandos para crear bd y usuario de la misma. Conceder privilegios al usuario creado (javier_admin@localhost).
     3. Volcamos datos de la BD local (.sql).
 
 5. Instalación de Composer:
@@ -28,7 +28,7 @@
 
 6. Despliegue del código y permisos:
     1. Limpiamos la pagina por defecto de Apache: `cd /var/www/html` + `sudo rm index.html`
-    2. Clonamos repositorio: `sudo git clone https://github.com/tu-usuario/traileros-mvc.git`
+    2. Clonamos repositorio: `sudo git clone https://github.com/tu-usuario/traileros-mvc.git` . (el punto al final es importante para que clone en la carpeta actual)
     3. Instalamos librerias: `sudo composer install --no-dev`
     4. Gestión de permisos (para escritura de imágenes):
 
@@ -44,7 +44,10 @@
 
 7. Activar URLs amigables:
     1. Activamos modulo rewrite: `sudo a2enmod rewrite`
-    2. Configuramos el sitio: 
+    2. Modificamos los datos del archivo de config: `sudo nano /var/www/html/config/config.php`
+        - URL: La dirección ip de la instancia.
+        - Usuario de bd.
+    3. Configuramos el sitio: 
         - Ejecutamos: `sudo nano /etc/apache2/sites-available/000-default.conf`
         - Debajo de la línea "DocumentRoot /var/www/html" pegamos este bloque:
         ```bash
@@ -54,5 +57,5 @@
                 Require all granted
             </Directory>
         ```
-    3. Reiniciamos Apache: `sudo systemctl restart apache2`
+    4. Reiniciamos Apache: `sudo systemctl restart apache2`
 

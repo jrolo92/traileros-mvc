@@ -89,7 +89,7 @@ class authModel extends Model {
         try {
 
             // sentencia sql
-            $sql = "SELECT * FROM Users WHERE name = :name"; 
+            $sql = "SELECT * FROM users WHERE name = :name"; 
 
 
             // conectamos con la base de datos
@@ -127,9 +127,7 @@ class authModel extends Model {
         Observaciones:
             - Sólo va a devolver el primer rol asignado en la tabla roles_users por simplicidad
     */
-    public function get_id_role_user(int $user_id)
-    {
-
+    public function get_id_role_user(int $user_id){
         try {
 
             // sentencia sql
@@ -171,7 +169,6 @@ class authModel extends Model {
             - Sólo va a devolver el primer rol asignado en la tabla roles_users por simplicidad
 
     */
-
     public function get_name_role_user(int $role_id)
     {
 

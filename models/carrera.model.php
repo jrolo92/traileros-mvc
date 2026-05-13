@@ -18,7 +18,7 @@ class carreraModel extends Model {
                         e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
                         m.distancia, m.desnivel, m.cupo_maximo, m.precio,
                         u.name AS organizador
-                    FROM Eventos AS e
+                    FROM eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id
                     LEFT JOIN modalidades AS m ON e.id = m.evento_id
                     GROUP BY e.id
@@ -83,7 +83,7 @@ class carreraModel extends Model {
             $db->beginTransaction();
 
             // 1. Insertar en tabla EVENTOS
-            $sqlEvento = "INSERT INTO Eventos 
+            $sqlEvento = "INSERT INTO eventos 
                     (nombre, fecha, fecha_cierre_inscripcion, ubicacion, dificultad, descripcion, imagen, organizador_id, estado)
                     VALUES
                     (:nombre, :fecha, :fecha_cierre, :ubicacion, :dificultad, :descripcion, :imagen, :organizador_id, :estado)";
@@ -155,8 +155,8 @@ class carreraModel extends Model {
                     m.edad_maxima,
                     m.track_url,
                     u.name AS organizador 
-                FROM Eventos e
-                INNER JOIN Users AS u ON e.organizador_id = u.id
+                FROM eventos e
+                INNER JOIN users AS u ON e.organizador_id = u.id
                 LEFT JOIN modalidades AS m ON e.id = m.evento_id
                 WHERE e.id = :id 
                 LIMIT 1";
@@ -192,7 +192,7 @@ class carreraModel extends Model {
             }
 
             // Update EVENTO
-            $sql = "UPDATE Eventos 
+            $sql = "UPDATE eventos 
                     SET 
                         nombre = :nombre,
                         fecha = :fecha,
@@ -263,7 +263,7 @@ class carreraModel extends Model {
     */
     public function delete(int $id) {
         try {
-            $sql = "DELETE FROM Eventos WHERE id = :id LIMIT 1";
+            $sql = "DELETE FROM eventos WHERE id = :id LIMIT 1";
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -284,7 +284,7 @@ class carreraModel extends Model {
                         e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
                         m.distancia, m.desnivel,
                         u.name AS organizador
-                    FROM Eventos e
+                    FROM eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
                     LEFT JOIN modalidades m ON e.id = m.evento_id
                     WHERE CONCAT_WS(' ', e.nombre, e.ubicacion, e.dificultad, u.name) LIKE :term
@@ -326,7 +326,7 @@ class carreraModel extends Model {
             $sql = "SELECT 
                         e.id, e.nombre, e.fecha, e.ubicacion, m.distancia, m.desnivel, e.dificultad, e.imagen,
                         u.name AS organizador
-                    FROM Eventos e
+                    FROM eventos e
                     INNER JOIN users u ON e.organizador_id = u.id
                     LEFT JOIN modalidades AS m ON e.id = m.evento_id
                     ORDER BY $orderBy ASC";
@@ -355,7 +355,8 @@ class carreraModel extends Model {
            $where = "WHERE CONCAT_WS(' ', e.nombre, e.ubicacion, e.dificultad, u.name) LIKE :term"; 
         }
 
-        $sql = "SELECT COUNT(DISTINCT e.id) FROM eventos e
+        $sql = "SELECT COUNT(DISTINCT e.id) 
+                FROM eventos e
                 INNER JOIN users u ON e.organizador_id = u.id
                 $where";
 
@@ -377,7 +378,7 @@ class carreraModel extends Model {
 
         try {
             // Contamos todos menos los cancelados y fallidos
-            $sql = "SELECT COUNT(*) FROM Inscripciones 
+            $sql = "SELECT COUNT(*) FROM inscripciones 
                     WHERE modalidad_id = :id AND estado_pago NOT IN ('cancelado', 'fallido')";
             $db = $this->db->connect();
             $stmt = $db->prepare($sql);
@@ -441,7 +442,7 @@ class carreraModel extends Model {
         $sql = "SELECT e.id, e.nombre, e.fecha, e.ubicacion, e.dificultad, e.imagen,
                         m.distancia, m.desnivel, m.cupo_maximo, m.precio,
                         u.name AS organizador
-                    FROM Eventos AS e
+                    FROM eventos AS e
                     INNER JOIN users AS u ON e.organizador_id = u.id
                     LEFT JOIN modalidades AS m ON e.id = m.evento_id
                     $where

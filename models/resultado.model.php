@@ -48,7 +48,6 @@ class ResultadoModel extends Model {
 
     /**
      *  Descripción: Obtiene todos los inscritos y sus resultados (incluso si no tienen)
-     *  Uso: 
      */
     public function getInscritosConResultado($evento_id) {
         try{

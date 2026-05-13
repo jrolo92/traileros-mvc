@@ -356,14 +356,13 @@
         */
         public function update_pass($password, $id)
         {
-
             try {
 
                 // encriptar password
                 $password = password_hash($password, PASSWORD_DEFAULT);
 
                 // sentencia sql
-                $sql = "UPDATE Users SET password = :password WHERE id = :id";
+                $sql = "UPDATE users SET password = :password WHERE id = :id";
 
                 // conectamos con la base de datos
                 $db = $this->db->connect();
@@ -413,15 +412,10 @@
         public function get_user_role_name($id) {
             try {
                 // Consulta para obtener el nombre del rol a través de la tabla intermedia roles_users
-                $sql = "
-                    SELECT 
-                        r.name 
-                    FROM 
-                        roles AS r
-                    INNER JOIN 
-                        roles_users AS ru ON r.id = ru.role_id
-                    WHERE 
-                        ru.user_id = :id
+                $sql = "SELECT r.name 
+                    FROM roles AS r
+                    INNER JOIN roles_users AS ru ON r.id = ru.role_id
+                    WHERE ru.user_id = :id
                     LIMIT 1
                 ";
 
@@ -486,12 +480,10 @@
         */
         public function validate_unique_name($name)
         {
-
             try {
 
                 // sentencia sql
-                $sql = "SELECT * FROM Users WHERE name = :name"; 
-
+                $sql = "SELECT * FROM users WHERE name = :name"; 
 
                 // conectamos con la base de datos
                 $db = $this->db->connect();

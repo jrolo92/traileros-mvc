@@ -69,7 +69,7 @@ Registro detallado de hitos, mejoras técnicas y despliegue del sistema de gesti
 * **11/05/2026** - **Limpieza de Código:**
     * Reorganización final de JS: Unificación de `search-AJAX` como módulo global.
 * **12/05/2026** - **QA & Testing:**
-    * Pruebas de estrés y funcionales de todo el sistema. Corrección de errores de última hora.
+    * Pruebas de estrés y funcionales de todo el sistema. Corrección de errores de última hora (case sensitive de linux en las consultas de los modelos).
 
 ---
 
