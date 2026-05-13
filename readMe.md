@@ -4,6 +4,10 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479a1.svg?style=flat-square&logo=mysql)
 ![Stripe](https://img.shields.io/badge/Stripe-API-635bff.svg?style=flat-square&logo=stripe)
 ![AWS](https://img.shields.io/badge/AWS-EC2-232f3e.svg?style=flat-square&logo=amazon-aws&logoColor=white&v=1)
+![Estado](https://img.shields.io/badge/Status-Live-brightgreen)
+![SSL](https://img.shields.io/badge/Security-HTTPS-blue)
+
+> **Acceso a la Demo en vivo:** [https://traileros.duckdns.org](https://traileros.duckdns.org)
 
 **Traileros** es una plataforma web robusta diseñada para centralizar la gestión de eventos de Trail Running. Desde la creación de eventos por parte de organizadores hasta la inscripción y pago seguro de los corredores, Traileros ofrece una solución completa bajo una arquitectura MVC personalizada.
 
@@ -66,10 +70,10 @@ traileros-mvc/
 
 | Vista Principal | Proceso de Inscripción |
 | :---: | :---: |
-| ![Inicio](public/img/screenshots/home.png) | ![Inscripcion](public/img/screenshots/checkout.png) |
+| ![Inicio](public/assets/img/screenshots/home.png) | ![Inscripcion](public/assets/img/screenshots/checkout.png) |
 | *Landing page* | *Integración con la pasarela Stripe* |
 
 | Detalles de carreras | Vista de Postpago |
 | :---: | :---: |
-| ![Admin](public/img/screenshots/admin.png) | ![Exito](public/img/screenshots/success.png) |
-| *Visualización de modalidades y dorsales* | *Confirmación dinámica de inscripción* |
+| ![Admin](public/assets/img/screenshots/show.png) | ![Exito](public/assets/img/screenshots/success.png) |
+| *Visualización de detalles, modalidades y plazas disponibles* | *Confirmación dinámica de inscripción* |
