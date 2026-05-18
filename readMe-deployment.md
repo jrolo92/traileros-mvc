@@ -60,5 +60,5 @@
         ```
     4. Reiniciamos Apache: `sudo systemctl restart apache2`
     5. He usado DuckDNS para obtener una DNS gratuita que apunta a la IP elástica de la EC2.
-    6. Para obtener certificado de seguridad para HTTPS he usado certbot instalandolo en el server y ejecutando `sudo certbot --apache -d traileros.duckdns.org`.
+    6. Certificado SSL/TLS obtenido con Let's Encrypt a traves de la instalación de certbot en el server.
 

@@ -65,19 +65,36 @@
 
     .form-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr; // Dos columnas
+        grid-template-columns: 1fr 1fr; 
         gap: 25px;
         margin-bottom: 30px;
 
-        .form-section-title {
-        grid-column: 1 / -1; // Esto hace que el H3 ocupe todo el ancho (las 2 columnas)
-        margin: 10px 0;
-        font-size: 1.1rem;
-        color: var(--text-main);
-        border-bottom: 2px solid $primary-green; // Una línea sutil para separar
-        padding-bottom: 5px;
-        font-weight: 700;
-    }
+        .section-header-flex {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 2px solid $primary-green; 
+            padding-bottom: 5px;
+            margin: 10px 0;
+
+            .form-section-title {
+                font-size: 1.1rem;
+                color: var(--text-main);
+                font-weight: 700;
+                margin: 0; 
+                border-bottom: none; 
+            }
+
+            .btn-edit-inline {
+                font-size: 1rem; 
+                text-decoration: none;
+               
+                @media (max-width: 480px) {
+                    font-size: 0.6rem; 
+                }
+            }
+        }
     }
 
     .form-group {

@@ -13,7 +13,7 @@
 .header-container {
     width: 100%;
     display: flex;
-    justify-content: space-between; // Logo a un lado, resto al otro
+    justify-content: space-between;
     align-items: center;
 }
 
@@ -127,6 +127,41 @@
 
         }
         
+    }
+}
+
+@media (max-width: 480px){
+    .main-header{
+        padding-top: 5px;
+        padding-bottom: 5px;
+
+        .header-container{
+            gap: 8px;
+            .header-left{
+                .logo a{
+                    i{
+                        font-size: 1rem;
+                    }
+                    span{
+                        font-size:0.9rem;
+                    }
+                }
+            }
+        }
+
+        .header-right {
+            .header-nav a, 
+            .btn-user span, 
+            .btn-login-header {
+                font-size: 0.8rem;
+                padding: 4px 8px;
+            }
+            
+            .avatar-circle.size-sm {
+                width: 24px;
+                height: 24px;
+            }
+        }
     }
 }
 

@@ -7,9 +7,17 @@
 ![Estado](https://img.shields.io/badge/Status-Live-brightgreen)
 ![SSL](https://img.shields.io/badge/Security-HTTPS-blue)
 
-> **Acceso a la Demo en vivo:** [https://traileros.duckdns.org](https://traileros.duckdns.org)
-
 **Traileros** es una plataforma web robusta diseñada para centralizar la gestión de eventos de Trail Running. Desde la creación de eventos por parte de organizadores hasta la inscripción y pago seguro de los corredores, Traileros ofrece una solución completa bajo una arquitectura MVC personalizada.
+
+## 🚀 Despliegue en Producción
+
+El proyecto ha sido desplegado en una infraestructura de nube real utilizando:
+* **Hosting:** AWS EC2 (Ubuntu 22.04 LTS).
+* **Servidor Web:** Apache con soporte para rutas amigables (mod_rewrite).
+* **Seguridad:** Certificado SSL/TLS de Let's Encrypt.
+* **DNS:** Gestionado mediante DuckDNS vinculado a una Elastic IP.
+
+🔗 **URL del sitio:** [https://traileros.duckdns.org](https://traileros.duckdns.org)
 
 ---
 

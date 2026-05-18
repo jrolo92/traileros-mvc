@@ -1134,6 +1134,31 @@ body {
   color: var(--header-text);
 }
 
+@media (max-width: 480px) {
+  .main-header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .main-header .header-container {
+    gap: 8px;
+  }
+  .main-header .header-container .header-left .logo a i {
+    font-size: 1rem;
+  }
+  .main-header .header-container .header-left .logo a span {
+    font-size: 0.9rem;
+  }
+  .main-header .header-right .header-nav a,
+  .main-header .header-right .btn-user span,
+  .main-header .header-right .btn-login-header {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+  .main-header .header-right .avatar-circle.size-sm {
+    width: 24px;
+    height: 24px;
+  }
+}
 .user-dropdown {
   position: relative;
   display: inline-block;
@@ -1513,7 +1538,7 @@ body {
 @media (max-width: 480px) {
   .carrera-card .card-horizontal {
     flex-direction: column;
-    height: auto;
+    height: 350px;
   }
 }
 .carrera-card .card-img-container {
@@ -1957,6 +1982,22 @@ body {
   margin-left: 4px;
 }
 
+@media (max-width: 480px) {
+  .carrera-info-panel .stats-grid .stat-item i {
+    font-size: 1rem;
+  }
+  .carrera-info-panel .stats-grid .stat-item .label {
+    font-size: 0.5rem;
+  }
+  .perfil-elevacion-container .perfil-wrapper iframe {
+    width: 100%;
+    height: 550px;
+    position: absolute;
+    top: -315px;
+    left: 0;
+    border: none;
+  }
+}
 .disponibilidad-container {
   margin: 10px 0 0 0;
   padding: 10px 0 0 0;
@@ -2251,14 +2292,30 @@ body {
   gap: 25px;
   margin-bottom: 30px;
 }
-.account-content .form-grid .form-section-title {
+.account-content .form-grid .section-header-flex {
   grid-column: 1/-1;
-  margin: 10px 0;
-  font-size: 1.1rem;
-  color: var(--text-main);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border-bottom: 2px solid #2d5a27;
   padding-bottom: 5px;
+  margin: 10px 0;
+}
+.account-content .form-grid .section-header-flex .form-section-title {
+  font-size: 1.1rem;
+  color: var(--text-main);
   font-weight: 700;
+  margin: 0;
+  border-bottom: none;
+}
+.account-content .form-grid .section-header-flex .btn-edit-inline {
+  font-size: 1rem;
+  text-decoration: none;
+}
+@media (max-width: 480px) {
+  .account-content .form-grid .section-header-flex .btn-edit-inline {
+    font-size: 0.6rem;
+  }
 }
 .account-content .form-group {
   display: flex;

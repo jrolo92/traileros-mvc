@@ -284,66 +284,93 @@
 }
 
 .perfil-elevacion-container {
-    grid-column: 1 / -1;
-    margin: 20px auto 0; 
-    width: 90%;
+  grid-column: 1 / -1;
+  margin: 20px auto 0; 
+  width: 90%;
 
-    .perfil-titulo {
-      font-size: 1rem;
-      margin-bottom: 10px;
-      color: #333;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+  .perfil-titulo {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .perfil-wrapper {
+    width: 100%;
+    height: 100px; 
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    position: relative;
+    background: #fff;
+
+    iframe {
+      width: 100%;
+      height: 550px; 
+      position: absolute;
+      top: -390px;
+      left: 0;
+      border: none;
+    }
+  }
+
+  .perfil-footer {
+    margin-top: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .perfil-info {
+      font-size: 0.75rem;
+      color: #888;
     }
 
-    .perfil-wrapper {
+    .perfil-link {
+      font-size: 0.8rem;
+      color: #4a7c2c;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.2s ease;
+
+      &:hover {
+          color: darken(#4a7c2c, 10%);
+          text-decoration: underline;
+      }
+
+      i {
+          margin-left: 4px;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px){
+  .carrera-info-panel{
+    .stats-grid{
+      .stat-item{
+        i{
+          font-size: 1rem;
+        }
+        .label{
+          font-size: 0.5rem;
+        }
+      }
+    }
+  }
+  .perfil-elevacion-container{
+    .perfil-wrapper{
+      iframe{
         width: 100%;
-        height: 100px; 
-        overflow: hidden;
-        border-radius: 8px;
-        border: 1px solid #ddd;
-        position: relative;
-        background: #fff;
-
-        iframe {
-            width: 100%;
-            height: 550px; 
-            position: absolute;
-            top: -390px;
-            left: 0;
-            border: none;
-        }
+        height: 550px; 
+        position: absolute;
+        top: -315px;
+        left: 0;
+        border: none;
+      }
     }
-
-    .perfil-footer {
-        margin-top: 5px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        .perfil-info {
-            font-size: 0.75rem;
-            color: #888;
-        }
-
-        .perfil-link {
-            font-size: 0.8rem;
-            color: #4a7c2c;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.2s ease;
-
-            &:hover {
-                color: darken(#4a7c2c, 10%);
-                text-decoration: underline;
-            }
-
-            i {
-                margin-left: 4px;
-            }
-        }
-    }
+  }
 }
 
 // Disponibilidad plazas
