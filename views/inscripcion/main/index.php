@@ -61,22 +61,6 @@
                                 >
                             </div>
                         </form>
-
-                        <!-- <div class="carreras-dropdown" id="orderDropdown">
-                            <button type="button" class="dropdown-button" id="dropdownBtn">
-                                <span>Ordenar por</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-
-                            <ul class="dropdown-list">
-                                <li>Id</a></li>
-                                <li>Participante</a></li>
-                                <li>Evento</a></li>
-                                <li>Dorsal</a></li>
-                                <li>Fecha</a></li>
-                                <li>Estado de Pago</a></li>
-                            </ul>
-                        </div> -->
                     </div>
 
                 <div class="account-content">
@@ -114,32 +98,32 @@
                                 <tbody>
                                     <?php foreach ($this->inscripciones as $i): ?>
                                         <tr>
-                                            <td><?= $i['id'] ?></td>
+                                            <td data-label="Id:"><?= $i['id'] ?></td>
                                             <?php if ($_SESSION['role_id'] < 3): ?>
-                                                <td>
+                                                <td data-label="Usuario:">
                                                     <strong><?= htmlspecialchars($i['usuario_nombre']) ?></strong>
                                                 </td>
                                             <?php endif; ?>
 
-                                            <td>
+                                            <td data-label="Carrera:">
                                                 <span class="club-text" style="font-weight: 600;"><?= htmlspecialchars($i['evento_nombre']) ?></span>
                                             </td>
 
-                                            <td class="text-center">
+                                            <td data-label="Dorsal:" class="text-center">
                                                 <span class="role-badge" style="background: #e9ecef; color: #495057;">
                                                     #<?= $i['dorsal'] ?>
                                                 </span>
                                             </td>
 
-                                            <td class="text-nowrap"><?= date('d/m/Y', strtotime($i['evento_fecha'])) ?></td>
+                                            <td data-label="Fecha:" class="text-nowrap"><?= date('d/m/Y', strtotime($i['evento_fecha'])) ?></td>
 
-                                            <td>
+                                            <td data-label="Pago:">
                                                 <span class="role-badge <?= ($i['estado_pago'] == 'completado') ? 'admin' : 'editor' ?>">
                                                     <?= strtoupper($i['estado_pago']) ?>
                                                 </span>
                                             </td>
 
-                                            <td class="text-right"><strong><?= number_format($i['precio_final'], 2) ?>€</strong></td>
+                                            <td data-label="Precio:" class="text-right"><strong><?= number_format($i['precio_final'], 2) ?>€</strong></td>
 
                                             <td class="actions-column">
                                                 <div class="admin-actions">

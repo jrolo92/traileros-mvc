@@ -89,46 +89,46 @@
                                 <tbody>
                                     <?php foreach ($this->resultados as $r): ?>
                                         <tr>
-                                            <td class="text-center">
+                                            <td data-label="Id:" class="text-center">
                                                 <span class="club-text"><?= htmlspecialchars($r['id']) ?></span>
                                             </td>
-                                            <td class="text-center">
+                                            <td data-label="Pos. General:" class="text-center">
                                                 <strong style="font-size: 1.1rem;">
                                                     <?= ($r['estado'] == 'FINISHER') ? $r['posicion_general'] . 'º' : '-' ?>
                                                 </strong>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Modalidad:">
                                                 <span class="club-text"><?= htmlspecialchars($r['modalidad']) ?></span>
                                             </td>
 
-                                            <td class="text-center">
+                                            <td data-label="Pos. Categoría:" class="text-center">
                                                 <strong style="font-size: 1.1rem;">
                                                     <?= ($r['estado'] == 'FINISHER') ? $r['posicion_categoria'] . 'º' : '-' ?>
                                                 </strong>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Categoría:">
                                                 <span class="club-text"><?= htmlspecialchars($r['categoria']) ?></span>
                                             </td>
                                             
-                                            <td class="text-center">
+                                            <td data-label="Dorsal:" class="text-center">
                                                 <span class="role-badge" style="background: #e9ecef; color: #495057;">
                                                     #<?= $r['dorsal'] ?>
                                                 </span>
                                             </td>
                                             
-                                            <td>
+                                            <td data-label="Corredor">
                                                 <strong><?= htmlspecialchars($r['nombre']) ?></strong>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Tiempo:">
                                                 <span style="font-family: monospace; font-weight: bold; font-size: 1rem;">
                                                     <?= ($r['estado'] == 'FINISHER') ? $r['tiempo'] : '--:--:--' ?>
                                                 </span>
                                             </td>
 
-                                            <td>
+                                            <td data-label="Estado:">
                                                 <?php
                                                     // Lógica de colores según el estado
                                                     $clase_badge = 'editor'; 

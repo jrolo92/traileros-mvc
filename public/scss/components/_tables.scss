@@ -1,0 +1,180 @@
+// ========================================================
+// 🖥️ ESTILOS BASE (ESCRITORIO Y PANTALLAS GRANDES)
+// ========================================================
+
+.table-responsive {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+}
+
+.admin-table, .account-table {
+    width: 100% !important;
+    table-layout: auto;
+    border-collapse: separate;
+    border-spacing: 0 8px; 
+    margin-top: 10px;
+    word-break: break-word;
+
+    thead th {
+        padding: 12px 15px;
+        color: #777;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        border-bottom: 2px solid #eee;
+        
+        a {
+            text-decoration: none;
+            color: #777;
+        }
+    }
+
+    tbody tr {
+        background: var(--bg-card);
+        transition: transform 0.2s;
+        text-align: center;
+        
+        &:hover {
+            background-color: field; 
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+            color: var(--text-main);
+
+            a.table-link {
+                text-decoration: none;
+                color: var(--text-main); 
+                background-color: rgba($primary-green, 0.10); 
+                padding: 4px 10px;
+                border-radius: 6px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                transition: all 0.3s ease;
+                border: 1px solid transparent;
+
+                &:hover {
+                    background-color: $primary-green;     
+                    color: white; 
+                    transform: translateY(-2px); 
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                    border-color: rgba(255, 255, 255, 0.1);
+                }
+            }
+        }
+    }
+}
+
+.admin-table th:first-child, 
+.admin-table td:first-child {
+    width: 60px;
+    text-align: center;
+}
+
+.admin-table-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+// ========================================================
+// ⚡ TRANSICIÓN RESPONSIVE: MÓVILES Y TABLETS (< 768px)
+// ========================================================
+
+@media (max-width: 768px) {
+    
+    .table-responsive {
+        border-radius: 0;
+        box-shadow: none;
+        overflow-x: visible; 
+    }
+
+    .admin-table, .account-table {
+        display: block; 
+        border-spacing: 0; 
+
+        thead {
+            display: none; 
+        }
+
+        tbody {
+            display: block;
+            width: 100%;
+        }
+
+        tbody tr {
+            display: block;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color, #f0f0f0);
+            border-radius: 10px;
+            margin-bottom: 1.2rem;
+            padding: 10px 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            text-align: left; 
+            
+            &:hover {
+                background-color: var(--bg-card); 
+            }
+
+            td {
+                display: flex;
+                justify-content: space-between; 
+                align-items: center;
+                padding: 10px 0;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+                font-size: 0.9rem;
+                text-align: right;
+                word-break: break-all; 
+
+                @media (max-width: 400px) {
+                    flex-direction: column; // Pone la etiqueta arriba y el valor abajo
+                    align-items: flex-start; // Lo alinea todo a la izquierda de la tarjeta
+                    text-align: left;
+                    gap: 4px;
+                }
+
+                &::before {
+                    content: attr(data-label);
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    font-size: 0.75rem;
+                    color: #777;
+                    float: left;
+                    margin-right: 15px;
+                }
+
+                &:last-child, &.actions-column {
+                    border-bottom: 0; 
+                    justify-content: center; 
+                    padding-top: 15px;
+                    background: transparent;
+                    &::before { display: none; }
+                }
+            }
+        }
+
+
+    }
+
+    .admin-table th:first-child, 
+    .admin-table td:first-child {
+        width: 100% !important;
+        text-align: right;
+    }
+    
+    .admin-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        width: 100%;
+    }
+}

@@ -69,20 +69,6 @@
                                 <input type="hidden" name="order" value="<?php echo $this->order ?? 1 ?>">
                             </div>
                         </form>
-
-                        <!-- <div class="carreras-dropdown" id="orderDropdown">
-                            <button type="button" class="dropdown-button" id="dropdownBtn">
-                                <span>Ordenar por</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-
-                            <ul class="dropdown-list">
-                                <li>Id</a></li>
-                                <li>Nombre</a></li>
-                                <li>Fecha</a></li>
-                                <li>Estado</a></li>
-                            </ul>
-                        </div> -->
                     </div>
 
                 <div class="account-content">
@@ -108,10 +94,10 @@
                                 <tbody>
                                     <?php foreach ($this->eventos as $e): ?>
                                         <tr>
-                                            <td><?= $e['id'] ?></td>
-                                            <td><strong><?= htmlspecialchars($e['nombre']) ?></strong></td>
-                                            <td class="text-nowrap"><?= date('d/m/Y', strtotime($e['fecha'])) ?></td>
-                                            <td class="text-center">
+                                            <td data-label="Id:"><?= $e['id'] ?></td>
+                                            <td data-label="Nombre:"><strong><?= htmlspecialchars($e['nombre']) ?></strong></td>
+                                            <td data-label="Fecha:" class="text-nowrap"><?= date('d/m/Y', strtotime($e['fecha'])) ?></td>
+                                            <td data-label="Estado:" class="text-center">
                                                 <span class="role-badge <?= strtolower($e['estado']) ?>">
                                                     <?= $e['estado'] ?>
                                                 </span>

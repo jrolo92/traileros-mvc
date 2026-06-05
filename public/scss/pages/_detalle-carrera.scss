@@ -269,20 +269,7 @@
   }
 }
 
-@media (max-width: 700px) {
-  .modal-content {
-    width: 95%;
-    max-height: 70vh;
-  }
-}
-
-.carrera-actions {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
+// Perfil de elevación
 .perfil-elevacion-container {
   grid-column: 1 / -1;
   margin: 20px auto 0; 
@@ -310,7 +297,7 @@
       width: 100%;
       height: 550px; 
       position: absolute;
-      top: -390px;
+      top: -390px; // <-- Valor para pantallas grandes (Más de 700px)
       left: 0;
       border: none;
     }
@@ -322,52 +309,57 @@
     justify-content: space-between;
     align-items: center;
 
-    .perfil-info {
-      font-size: 0.75rem;
-      color: #888;
-    }
-
+    .perfil-info { font-size: 0.75rem; color: #888; }
     .perfil-link {
       font-size: 0.8rem;
       color: #4a7c2c;
       text-decoration: none;
       font-weight: bold;
       transition: color 0.2s ease;
+      &:hover { color: darken(#4a7c2c, 10%); text-decoration: underline; }
+      i { margin-left: 4px; }
+    }
+  }
+}
 
-      &:hover {
-          color: darken(#4a7c2c, 10%);
-          text-decoration: underline;
-      }
+.carrera-actions {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-      i {
-          margin-left: 4px;
+// 1. Todo lo que cambia al bajar de 700px (Incluye tu rango intermedio)
+@media (max-width: 700px) {
+  .modal-content {
+    width: 95%;
+    max-height: 70vh;
+  }
+
+  .perfil-elevacion-container {
+    .perfil-wrapper {
+      iframe {
+        top: -340px; // <-- Se activa JUSTO en el píxel 700 hacia abajo. Adiós limbo.
       }
     }
   }
 }
 
-@media (max-width: 480px){
-  .carrera-info-panel{
-    .stats-grid{
-      .stat-item{
-        i{
-          font-size: 1rem;
-        }
-        .label{
-          font-size: 0.5rem;
-        }
+// 2. Todo lo que cambia al bajar de 480px (Móviles pequeños)
+@media (max-width: 480px) {
+  .carrera-info-panel {
+    .stats-grid {
+      .stat-item {
+        i { font-size: 1rem; }
+        .label { font-size: 0.5rem; }
       }
     }
   }
-  .perfil-elevacion-container{
-    .perfil-wrapper{
-      iframe{
-        width: 100%;
-        height: 550px; 
-        position: absolute;
-        top: -315px;
-        left: 0;
-        border: none;
+
+  .perfil-elevacion-container {
+    .perfil-wrapper {
+      iframe {
+        top: -335px; // <-- Al medir menos de 480px, este pisa al -340px automáticamente
       }
     }
   }

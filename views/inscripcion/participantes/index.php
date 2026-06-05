@@ -56,12 +56,12 @@
                                 <tbody>
                                     <?php foreach ($this->inscritos as $corredor): ?>
                                         <tr>
-                                            <td><?= $corredor['inscripcion_id'] ?></td>
-                                            <td><?= htmlspecialchars($corredor['nombre_completo']) ?></td>
-                                            <td><?= htmlspecialchars($corredor['email']) ?></td>
-                                            <td><?= htmlspecialchars($corredor['modalidad']) ?></td>
-                                            <td><?= htmlspecialchars($corredor['dorsal']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($corredor['fecha_inscripcion'])) ?></td>
+                                            <td data-label="Id Inscripción:"><?= $corredor['inscripcion_id'] ?></td>
+                                            <td data-label="Nombre:"><?= htmlspecialchars($corredor['nombre_completo']) ?></td>
+                                            <td data-label="Email:"><?= htmlspecialchars($corredor['email']) ?></td>
+                                            <td data-label="Modalidad:"><?= htmlspecialchars($corredor['modalidad']) ?></td>
+                                            <td data-label="Dorsal:"><?= htmlspecialchars($corredor['dorsal']) ?></td>
+                                            <td data-label="Fecha:"><?= date('d/m/Y H:i', strtotime($corredor['fecha_inscripcion'])) ?></td>
                                         </tr>
                                     <?php endforeach; ?>
                                 </tbody>

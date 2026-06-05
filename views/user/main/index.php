@@ -99,19 +99,6 @@
                                 >
                             </div>
                         </form>
-                        <!-- <div class="carreras-dropdown" id="orderDropdown">
-                            <button type="button" class="dropdown-button" id="dropdownBtn">
-                                <span>Ordenar por</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-
-                            <ul class="dropdown-list">
-                                <li><a href="<?= URL ?>user/order/1">ID</a></li>
-                                <li><a href="<?= URL ?>user/order/2">Nombre</a></li>
-                                <li><a href="<?= URL ?>user/order/3">Email</a></li>
-                                <li><a href="<?= URL ?>user/order/4">Rol</a></li>
-                            </ul>
-                        </div> -->
                     </div>
                 
 
@@ -133,25 +120,25 @@
                             <tbody>
                                 <?php while ($user = $this->users->fetch()): ?>
                                     <tr>
-                                        <td class="id-column">#<?= $user['id'] ?></td>
+                                        <td data-label="Id:" class="id-column">#<?= $user['id'] ?></td>
                                         
-                                        <td>
+                                        <td data-label="Nombre:">
                                             <strong><?= htmlspecialchars($user['nombre'] . ' ' . $user['apellidos']) ?></strong>
                                         </td>
                                         
-                                        <td class="text-nowrap"><?= htmlspecialchars($user['dni'] ?? '-') ?></td>
+                                        <td data-label="DNI:" class="text-nowrap"><?= htmlspecialchars($user['dni'] ?? '-') ?></td>
                                         
-                                        <td><small><?= htmlspecialchars($user['email']) ?></small></td>
+                                        <td data-label="Email:"><small><?= htmlspecialchars($user['email']) ?></small></td>
                                         
-                                        <td>
+                                        <td data-label="Club:">
                                             <span class="club-text"><?= htmlspecialchars($user['club'] ?: 'Independiente') ?></span>
                                         </td>
 
-                                        <td class="text-center">
+                                        <td data-label="Fed:" class="text-center">
                                             <?= $user['es_federado'] ? '<i class="fas fa-check-circle" title="Federado"></i>' : '<i class="fas fa-times-circle" title="No federado"></i>' ?>
                                         </td>
 
-                                        <td>
+                                        <td data-label="Rol:">
                                             <span class="role-badge <?= strtolower($user['rol']) ?>">
                                                 <?= $user['rol'] ?>
                                             </span>

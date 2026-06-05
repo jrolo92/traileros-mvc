@@ -10,16 +10,19 @@
         </div>
 
         <div class="header-right">
-            <!-- Acceso a panel de control -->
-            <nav class="header-nav">
+            <!-- Acceso a panel de control de eventos-->
+            <nav class="header-nav nav-gestion-eventos">
                 <?php if (isset($_SESSION['role_id']) && ($_SESSION['role_id'] == 1 || $_SESSION['role_id'] == 2)): ?>
-                    <a href="<?= URL ?>carrera/gestion" title="Gestionar Carreras"> Gestión de Eventos</a>
+                    <a href="<?= URL ?>carrera/gestion" title="Gestionar Carreras">
+                        <i class="fas fa-tasks"></i> <span>Gestión de Eventos</span>
+                    </a>
                 <?php endif; ?>
             </nav>
-
-            <nav class ="header-nav">
+            <!-- Acceso a panel de control de usuarios-->
+            <nav class ="header-nav nav-gestion-usuarios">
                 <?php if (isset($_SESSION['role_id']) && $_SESSION['role_id'] == 1): ?>
-                    <a href="<?= URL ?>user" title="Administrar Usuarios">Gestión de Usuarios
+                    <a href="<?= URL ?>user" title="Administrar Usuarios">
+                        <i class="fas fa-users"></i> <span>Gestión de Usuarios</span>
                         <?php if (isset($this->solicitudes_pendientes) && $this->solicitudes_pendientes > 0): ?>
                             <span class="badge-notificacion">
                                 <?= $this->solicitudes_pendientes ?>
@@ -28,13 +31,13 @@
                     </a>
                 <?php endif; ?>
             </nav>
-
-            <nav class="header-nav">
+            <!-- Acceso a carreras -->
+            <nav class="header-nav nav-carreras">
                 <a href="<?= URL ?>carrera" class="<?= (isset($_GET['url']) && strpos($_GET['url'], 'carrera') !== false) ? 'active' : '' ?>">
-                    Carreras
+                    <i class="fas fa-flag-checkered"></i> <span>Carreras</span>
                 </a>
             </nav>
-
+            <!-- Acceso a menú desplegable -->
             <?php if (isset($_SESSION['user_id'])): ?>
                 <div class="user-dropdown">
                     <button class="btn-user">

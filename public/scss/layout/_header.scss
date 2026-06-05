@@ -1,3 +1,7 @@
+// ========================================================
+// 🖥️ ESTILOS ESTRUCTURALES DEL HEADER (ESCRITORIO)
+// ========================================================
+
 .main-header {
     background-color: var(--header-bg);
     color: var(--header-text);
@@ -8,6 +12,7 @@
     top: 0;
     z-index: 1000;
     padding: 0 2rem;
+    transition: all 0.3s ease;
 }
 
 .header-container {
@@ -17,12 +22,43 @@
     align-items: center;
 }
 
+.header-left {
+    transition: transform 0.3s ease;
+    display: inline-block;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+
+    .logo a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 800;
+        font-size: 1.4rem;
+        color: var(--header-text);
+        text-decoration: none;
+
+        i {
+            font-size: 1.8rem;
+            color: var(--header-text); 
+        }
+        
+        span {
+            display: inline-block;
+        }
+    }
+}
+
 .header-right {
     display: flex;
     align-items: center;
     gap: 30px; 
 
     .header-nav {
+        display: flex;
+        align-items: center;
+
         a {
             position: relative;
             color: rgba(255, 255, 255, 0.8);
@@ -30,37 +66,27 @@
             font-weight: 600;
             font-size: 0.95rem;
             transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
 
-            display: inline-block;
+            i {
+                font-size: 1rem;
+                display: inline-block;
+            }
+
+            span {
+                display: inline-block;
+            }
 
             &:hover, &.active {
                 color: $primary-green;
+                i { color: $primary-green; }
             }
 
             &.active {
                 font-weight: 700;
                 padding-bottom: 4px;
-            }
-
-            .badge-notificacion {
-                background-color: $primary-green; 
-                color: white;
-                font-size: 0.50rem; 
-                font-weight: bold;
-                border-radius: 50%;
-                position: absolute;
-                
-                top: -12px;   
-                right: -20px;  
-                
-                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-width: 18px;
-                height: 18px;
-                border: 2px solid var(--header-bg); 
-                pointer-events: none;
             }
         }
     }
@@ -100,70 +126,42 @@
             color: $primary-green; 
             font-size: 1.3rem;
         }
+
+        span {
+            display: inline-block;
+        }
     }
 }
 
-.header-left {
+.theme-toggle-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-color); 
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     transition: transform 0.3s ease;
-    display: inline-block;
+    min-width: 24px;
 
     &:hover {
-        // Aumenta un 5% el tamaño
-        transform: scale(1.05);
+        transform: scale(1.1);
     }
 
-    .logo a {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 800;
-        font-size: 1.4rem;
-        color: var(--header-text);
-        text-decoration: none;
-
-        i {
-            font-size: 1.8rem;
-            color: var(--header-text); 
-
-        }
-        
+    &:active #theme-icon {
+        transform: rotate(90deg) scale(0.8);
     }
 }
 
-@media (max-width: 480px){
-    .main-header{
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        .header-container{
-            gap: 8px;
-            .header-left{
-                .logo a{
-                    i{
-                        font-size: 1rem;
-                    }
-                    span{
-                        font-size:0.9rem;
-                    }
-                }
-            }
-        }
-
-        .header-right {
-            .header-nav a, 
-            .btn-user span, 
-            .btn-login-header {
-                font-size: 0.8rem;
-                padding: 4px 8px;
-            }
-            
-            .avatar-circle.size-sm {
-                width: 24px;
-                height: 24px;
-            }
-        }
-    }
+#theme-icon {
+    transition: transform 0.4s ease, opacity 0.3s ease;
 }
+
+// ========================================================
+// VISTAS DESPLEGABLES (DROPDOWNS)
+// ========================================================
 
 .user-dropdown {
     position: relative;
@@ -185,18 +183,15 @@
     top: 100%;
     right: 0;
     background-color: var(--bg-card);
-    min-width: 200px; // Un pelín más ancho para el toggle
+    min-width: 200px;
     box-shadow: 0px 8px 16px rgba(0,0,0,0.15);
     border-radius: 8px;
     z-index: 1000;
-    padding: 10px 0; // Equilibrado
-    background-clip: content-box;
+    padding: 10px 0;
     overflow: hidden;
-    opacity: 0;
     transform: translateY(10px);
     transition: all 0.3s ease;
 
-    // Estilos compartidos para enlaces y el ítem del modo oscuro
     a, .theme-switch-item {
         color: var(--text-main);
         padding: 12px 16px;
@@ -211,17 +206,16 @@
         i { width: 16px; color: #777; transition: color 0.2s; }
 
         &:hover {
-            background-color: rgba(0, 0, 0, 0.03); // Sutil fondo en hover
+            background-color: rgba(0, 0, 0, 0.03);
             color: $primary-green;
             i { color: $primary-green; }
         }
     }
 
     .theme-switch-item {
-        span { flex-grow: 1; } // Empuja el toggle a la derecha
+        span { flex-grow: 1; }
     }
 
-    // El Logout sigue teniendo su color rojo
     a.logout-link {
         color: #e74c3c;
         &:hover { i { color: #e74c3c; } }
@@ -234,7 +228,6 @@
     }
 }
 
-// Desplegable
 .switch {
     position: relative;
     display: inline-block;
@@ -271,55 +264,102 @@
     }
 }
 
-@media(max-width: 500px){
-    .header-right{
-        display:flex;
-        justify-content: right;
-        gap: 5px;
-    }
-}
-
-// Botón modo claro/oscuro
-.theme-toggle-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-color); 
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 8px 0;
-    // margin: 0 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
-.theme-toggle-btn:hover {
-    transform: scale(1.1);
-}
-
-#theme-icon {
-    transition: transform 0.4s ease, opacity 0.3s ease;
-}
-
-.theme-toggle-btn:active #theme-icon {
-    transform: rotate(90deg) scale(0.8);
-}
-
 .badge-notificacion {
     background-color: #ff4757; 
     color: white;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: bold;
-    padding: 2px 6px;
+    padding: 2px 5px;
     border-radius: 50%;
     position: absolute;
-    top: -5px;
+    top: -6px;
     right: -10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 18px;
-    height: 18px;
+    min-width: 16px;
+    height: 16px;
+    border: 1.5px solid var(--header-bg);
+    pointer-events: none;
+}
+
+// ========================================================
+// MEDIA QUERY: PANTALLAS < 768px 
+// ========================================================
+
+@media (max-width: 900px) {
+    .main-header {
+        height: 60px;       
+        padding: 0 10px;    
+
+        .header-container {
+            gap: 4px;
+            flex-wrap: nowrap; 
+        }
+
+        .header-left {
+            .logo a {
+                gap: 0;
+                i { font-size: 1.4rem; }
+            }
+        }
+
+        .header-right {
+            flex-grow: 1;
+            justify-content: flex-end;
+            gap: 10px; 
+
+            .header-nav {
+                a {
+                    padding: 6px 8px;
+                    i { font-size: 1.2rem; }
+                    span { display: none !important; } 
+                }
+            }
+
+            .btn-user {
+                padding: 4px;
+                gap: 0;
+                background: transparent;
+
+                span, .fa-chevron-down {
+                    display: none !important; 
+                }
+                i { font-size: 1.4rem; }
+            }
+
+            .avatar-circle.size-sm {
+                width: 28px;
+                height: 28px;
+                margin: 0;
+            }
+
+            .btn-login-header {
+                font-size: 0.8rem;
+                padding: 5px 10px;
+                border-radius: 4px;
+            }
+
+            .theme-toggle-btn {
+                padding: 4px 6px;
+                font-size: 1.2rem;
+                display: flex !important; 
+            }
+        }
+    }
+
+    @media (max-width: 400px) {
+    .main-header {
+        padding: 0 6px; 
+        
+        .header-right {
+            gap: 6px; 
+            
+            .header-nav a {
+                padding: 6px 4px; 
+            }
+        }
+    }
+}
 }
